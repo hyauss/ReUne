@@ -18,7 +18,7 @@ class LoginViewModel {
     
     var isLogged: Bool = false
     
-    var container = CKContainer.default()
+    var container : CKContainer
     
     var preference: Preference? = nil
       
@@ -28,7 +28,9 @@ class LoginViewModel {
         createPreference(name: name!)
     }
     
-    init() {
+    init(container: CKContainer = .default()) {
+        self.container = container
+        
         getPreferenceRecordID { recordID, error in
             if let returnedPreferenceID = recordID?.recordName {
                 self.isLogged(idUser: returnedPreferenceID)
@@ -152,4 +154,5 @@ class LoginViewModel {
     
     
 }
+
 

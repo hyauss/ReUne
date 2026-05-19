@@ -24,6 +24,9 @@ struct ContentView2: View {
             TextField("Enter price", text: $price)
                 .textFieldStyle(.roundedBorder)
         }
+        
+        Spacer()
+        
         Button("Save"){
             guard let price = try? Decimal(price, format: .number) else {return}
             vm.saveItem(title: title, price: price)
@@ -31,18 +34,43 @@ struct ContentView2: View {
             self.price = ""
         }
         
+        Spacer()
+        
         Button("Permissions") {
             vmNotification.requestNotificationPermission()
         }
+        
+        Spacer()
         
         Button("subscription") {
             vmNotification.subscribeToNotification()
         }
         
+        Spacer()
+        
         Button("unsubscription") {
             vmNotification.unsubscribeToNotification()
         }
+        
+        Spacer()
+        
+        List{
+            ForEach(vm.items, id: \.recordId){ item in
+                HStack{
+                    Text(item.title)
+                    Spacer()
+                    Text("$" + String(describing: item.price))
+                }
+            }
+        }
+        
+        .navigationTitle("Items")
+        .padding()
+        .onAppear {
+            vm.fetchItem()
+        }
     }
+       
 }
 
 //#Preview {

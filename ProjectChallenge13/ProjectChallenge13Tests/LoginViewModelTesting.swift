@@ -1,8 +1,8 @@
-//
-//  ProjectChallenge13Tests.swift
-//  ProjectChallenge13Tests
-//
-//  Created by Vinicius Marques on 14/05/26.
+////
+////  ProjectChallenge13Tests.swift
+////  ProjectChallenge13Tests
+////
+////  Created by Vinicius Marques on 14/05/26.
 //
 //
 //import Testing
@@ -17,12 +17,12 @@
 //        var loginViewModel =  LoginViewModel()
 //        loginViewModel.createPreference(name: "lerolero")
 //    }
-    
-    //MARK: Testing Delete
-    
+//    
+//    //MARK: Testing Delete
+//    
 //    @MainActor @Test func deleteSave() {
 //        var loginViewModel =  LoginViewModel()
 //        loginViewModel.fetchAndDeletePreference()
 //    }
-    
+//    
 //}
