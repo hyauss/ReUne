@@ -11,8 +11,10 @@ struct CalendarView: View {
     @State private var currentMonth = Date.now
     @State private var days: [Date] = []
     
+    
     let daysOfWeek = Date.capitalizedFirstLettersOfWeekdays
     let columns = Array(repeating: GridItem(.flexible()), count: 7)
+    
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -60,7 +62,7 @@ struct CalendarView: View {
                             .foregroundStyle(Date.now.startOfDay == day.startOfDay ? .blue : .black)
                             .background(
                                 RoundedRectangle(cornerRadius: 10)
-                                    .foregroundStyle(.gray.opacity(0.5))
+                                    .foregroundStyle(.blue.opacity(opacity(for: day)))
                             )
                     }
                 }
@@ -75,6 +77,27 @@ struct CalendarView: View {
     private func updateDays() {
         days = currentMonth.calendarDisplayDays
     }
+    
+    func dateFormater(date: Date) -> String{
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let formattedDate = dateFormatter.string(from: date)
+        
+        return formattedDate
+    }
+    let stringDates = ["2026-05-19","2026-05-20", "2026-05-19","2026-05-19","2026-05-22","2026-05-22", "2026-05-03", "2026-05-05", "2026-05-05", "2026-05-05", "2026-05-05", "2026-05-05", "2026-05-05", "2026-05-05", "2026-05-05"]
+    
+    private func opacity(for day: Date) -> Double{
+        var countDay: Double = 0
+        for i in stringDates{
+            if i == dateFormater(date:day){
+                countDay += 1
+            }
+        }
+        return countDay/Double(stringDates.count)
+    }
+
 }
 
 #Preview {

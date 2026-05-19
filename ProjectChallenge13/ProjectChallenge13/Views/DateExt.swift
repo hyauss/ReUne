@@ -73,4 +73,11 @@ extension Date {
     var startOfDay: Date {
         Calendar.current.startOfDay(for: self)
     }
+    
+    var formattedDate: String {
+        let formatter = ISO8601DateFormatter()
+        formatter.timeZone = .current
+        formatter.formatOptions = [.withFullDate]
+        return formatter.string(from: self)
+    }
 }
