@@ -6,12 +6,17 @@
 //
 
 import SwiftUI
+import Aptabase
 
 @main
 struct ProjectChallenge13App: App {
+    init() {
+            Aptabase.shared.initialize(appKey: "A-US-8107330164") // 👈 this is where you enter your App Key
+        }
     var body: some Scene {
         WindowGroup {
-            ContentView()
+//            ContentView()
+            AptabaseView()
         }
     }
 }
