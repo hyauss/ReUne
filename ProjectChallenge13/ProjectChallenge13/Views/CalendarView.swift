@@ -7,21 +7,31 @@
 
 import SwiftUI
 
+/// Custom Calendar View with heat map
+///- Parameter currentMonth: Continuously update the current month
+///- Parameter days: Array about current month date
+///- Parameter viewModel: called calendarViewModel
+///- Parameter daysOfWeek: days of week
+///- Parameter columns: size and number of grid
 struct CalendarView: View {
     @State private var currentMonth = Date.now
     @State private var days: [Date] = []
     
-    
+    let viewModel = CalendarViewModel()
     let daysOfWeek = Date.capitalizedFirstLettersOfWeekdays
     let columns = Array(repeating: GridItem(.flexible()), count: 7)
-    
+    let stringDates = ["2026-05-19","2026-05-20", "2026-05-19","2026-05-19","2026-05-22","2026-05-22", "2026-05-03", "2026-05-05", "2026-05-05", "2026-05-05", "2026-05-05", "2026-05-05", "2026-05-05", "2026-05-05", "2026-05-05"]
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
+            
+            // Month
             HStack {
                 Text(currentMonth.formatted(.dateTime.year().month()))
                     .font(.system(size: 16, weight: .bold))
+                
                 Spacer()
+                
                 Button {
                     currentMonth = Calendar.current.date(byAdding: .month, value: -1, to: currentMonth)!
                     updateDays()
@@ -30,6 +40,7 @@ struct CalendarView: View {
                         .font(.title2)
                         .foregroundStyle(.blue)
                 }
+                
                 Button {
                     currentMonth = Calendar.current.date(byAdding: .month, value: 1, to: currentMonth)!
                     updateDays()
@@ -40,6 +51,7 @@ struct CalendarView: View {
                 }
             }
             
+            // Days of week
             HStack {
                 ForEach(daysOfWeek.indices, id: \.self) { index in
                     Text(daysOfWeek[index])
@@ -49,6 +61,7 @@ struct CalendarView: View {
                 }
             }
             
+            //date of month
             LazyVGrid(columns: columns, spacing: 10) {
                 ForEach(days, id: \.self) { day in
                     
@@ -62,7 +75,7 @@ struct CalendarView: View {
                             .foregroundStyle(Date.now.startOfDay == day.startOfDay ? .blue : .black)
                             .background(
                                 RoundedRectangle(cornerRadius: 10)
-                                    .foregroundStyle(.blue.opacity(opacity(for: day)))
+                                    .foregroundStyle(.blue.opacity(viewModel.opacity(for: day, dates: stringDates)))
                             )
                     }
                 }
@@ -74,30 +87,10 @@ struct CalendarView: View {
         }
     }
     
+    /// update the days in month
     private func updateDays() {
         days = currentMonth.calendarDisplayDays
     }
-    
-    func dateFormater(date: Date) -> String{
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        let formattedDate = dateFormatter.string(from: date)
-        
-        return formattedDate
-    }
-    let stringDates = ["2026-05-19","2026-05-20", "2026-05-19","2026-05-19","2026-05-22","2026-05-22", "2026-05-03", "2026-05-05", "2026-05-05", "2026-05-05", "2026-05-05", "2026-05-05", "2026-05-05", "2026-05-05", "2026-05-05"]
-    
-    private func opacity(for day: Date) -> Double{
-        var countDay: Double = 0
-        for i in stringDates{
-            if i == dateFormater(date:day){
-                countDay += 1
-            }
-        }
-        return countDay/Double(stringDates.count)
-    }
-
 }
 
 #Preview {
