@@ -60,10 +60,10 @@ struct OnboardingView: View {
 }
 
 
-#Preview {
-    @Previewable @State var ckViewModel = LoginViewModel()
-    @Previewable @State var isLoading = false
-    @Previewable @State var state = 0
-    OnboardingView(name: "", state: $state, isLoading: $isLoading)
-        .environment(ckViewModel)
-}
+//#Preview {
+//    @Previewable @State var ckViewModel = LoginViewModel()
+//    @Previewable @State var isLoading = false
+//    @Previewable @State var state = 0
+//    OnboardingView(name: "", state: $state, isLoading: $isLoading)
+//        .environment(ckViewModel)
+//}

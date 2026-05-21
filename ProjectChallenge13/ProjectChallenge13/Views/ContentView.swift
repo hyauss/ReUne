@@ -14,7 +14,7 @@ struct ContentView: View {
             VStack {
                 EntryView()
                 NavigationLink {
-                    ContentView2(vm: ItemListingViewModel())
+                    ContentView2()
                 } label: {
                     Text("PushNotificationIcloud")
                 }

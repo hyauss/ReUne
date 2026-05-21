@@ -6,18 +6,18 @@
 //
 
 import SwiftUI
+import CloudKit
 
 struct ContentView2: View {
-    @StateObject private var vm: ItemListingViewModel
+    @StateObject private var vm =  GroupViewModel.shared
     @State private var title: String = ""
     @State private var price: String = ""
+    @State var ckViewModel = LoginViewModel.shared
+    @State private var users: Set<String> = []
     @StateObject private var vmNotification = PushNotificationViewModel()
     
-    init(vm: ItemListingViewModel) {
-            _vm = StateObject(wrappedValue: vm)
-    }
-    
     var body: some View {
+    
         VStack{
             TextField("Enter title", text: $title)
                 .textFieldStyle(.roundedBorder)
@@ -29,10 +29,13 @@ struct ContentView2: View {
         
         Button("Save"){
             guard let price = try? Decimal(price, format: .number) else {return}
-            vm.saveItem(title: title, price: price)
+            users.insert(ckViewModel.preference?.userID ?? "")
+            
+            vm.saveItem(title: title, price: price, users: users)
             self.title = ""
             self.price = ""
         }
+        
         
         Spacer()
         
@@ -60,6 +63,12 @@ struct ContentView2: View {
                     Text(item.title)
                     Spacer()
                     Text("$" + String(describing: item.price))
+                    Text(item.users.description)
+                    if let url = URL(string: "challenge13://\(item.recordId?.recordName ?? "NoGroup")") {
+                        ShareLink(item: url) {
+                            Label("Compartilhar", systemImage: "square.and.arrow.up")
+                        }
+                    }
                 }
             }
         }
@@ -67,7 +76,7 @@ struct ContentView2: View {
         .navigationTitle("Items")
         .padding()
         .onAppear {
-            vm.fetchItem()
+            vm.fetchGroupsWithUserId()
         }
     }
        

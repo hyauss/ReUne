@@ -8,28 +8,39 @@
 import Foundation
 import CloudKit
 import Combine
+import SwiftUI
 
 enum RecordType: String{
     case itemListing = "ItemListing"
 }
 
 
-class ItemListingViewModel: ObservableObject {
+class GroupViewModel: ObservableObject {
     
+    var ckViewModel = LoginViewModel.shared
+    static let shared = GroupViewModel()
     private var database: CKDatabase
     private var contaniner: CKContainer
     
     @Published var items: [ItemViewModel] = []
     
-    init() {
+    private init() {
         self.contaniner = CKContainer.default()
         self.database = self.contaniner.publicCloudDatabase
         
     }
     
-    func saveItem (title: String, price: Decimal){
+    func save(groupRecord: CKRecord) async{
+        do{
+            try await self.database.save(groupRecord)
+        }catch{
+            print(error.localizedDescription)
+        }
+    }
+    
+    func saveItem (title: String, price: Decimal, users: Set<String>){
         let record = CKRecord(recordType: RecordType.itemListing.rawValue)
-        let itemListing = ItemListing(title: title, price: price)
+        let itemListing = EventGroup(title: title, price: price, users: users)
         record.setValuesForKeys(itemListing.toDictionary())
         
         self.database.save(record){ newRecord, error in
@@ -43,11 +54,11 @@ class ItemListingViewModel: ObservableObject {
         }
     }
     
-    func fetchItem(){
+    func fetchGroupsWithUserId(){
         
-        var items: [ItemListing] = []
+        var items: [EventGroup] = []
         
-        let query = CKQuery(recordType: RecordType.itemListing.rawValue, predicate: NSPredicate(value: true))
+        let query = CKQuery(recordType: RecordType.itemListing.rawValue, predicate: NSPredicate(format: "ANY users == %@", ckViewModel.preference?.userID ?? ""))
         
         database.fetch(withQuery: query){ result in
             switch result{
@@ -56,7 +67,7 @@ class ItemListingViewModel: ObservableObject {
                     .forEach{
                         switch $0 {
                         case .success(let record):
-                            if let itemListing  = ItemListing.fromRecord(record){
+                            if let itemListing  = EventGroup.fromRecord(record){
                                 items.append(itemListing)
                             }
                         case .failure(let error):
@@ -72,31 +83,32 @@ class ItemListingViewModel: ObservableObject {
             }
         }
     }
+    
+    func fetchGroupsWithId(groupID: String) async throws -> CKRecord {
+            
+        let recordID = CKRecord.ID(recordName: groupID)
+
+        return try await database.record(for: recordID)
+    }
 }
 
+struct ItemViewModel{
+    let itemListing: EventGroup
+    
+    var recordId: CKRecord.ID?{
+        itemListing.recordId
+    }
+    
+    var title: String {
+        itemListing.title
+    }
+    
+    var price: Decimal{
+        itemListing.price
+    }
+    
+    var users: Set<String>{
+        itemListing.users
+    }
+}
 
-    
-    func editItem(){
-        
-    }
-    
-    func deteleItem(){
-        
-    }
-    
-    struct ItemViewModel{
-        let itemListing: ItemListing
-        
-        var recordId: CKRecord.ID?{
-            itemListing.recordId
-        }
-        
-        var title: String {
-            itemListing.title
-        }
-        
-        var price: Decimal{
-            itemListing.price
-        }
-    }
-    

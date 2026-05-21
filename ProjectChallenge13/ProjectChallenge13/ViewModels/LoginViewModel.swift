@@ -13,6 +13,9 @@ import Observation
 @Observable
 @MainActor
 class LoginViewModel {
+    
+    static let shared = LoginViewModel()
+    
     private var userID: String = ""
     var name: String? = ""
     
@@ -21,14 +24,14 @@ class LoginViewModel {
     var container : CKContainer
     
     var preference: Preference? = nil
-      
+    
     func loginButtonPressed() {
         guard name != nil, !name!.isEmpty else { return }
         
         createPreference(name: name!)
     }
     
-    init(container: CKContainer = .default()) {
+    private init(container: CKContainer = .default()) {
         self.container = container
         
         getPreferenceRecordID { recordID, error in
@@ -57,7 +60,7 @@ class LoginViewModel {
     func removePreference(preference: Preference) async throws {
         let record = preference.record
         do {
-            try await container.publicCloudDatabase.deleteRecord(withID: record.recordID)
+            try await container.privateCloudDatabase.deleteRecord(withID: record.recordID)
         }
         catch {
             print(error.localizedDescription)
@@ -132,10 +135,27 @@ class LoginViewModel {
     
     func sendPreferenceToDB(record: CKRecord) {
         container.privateCloudDatabase.save(record) { [weak self] returnedRecord, returnedError in
-            print(returnedError ?? "")
-            print(returnedRecord ?? "")
-
+            if let error = returnedError {
+                print(error.localizedDescription)
+                return
+            }
+            
+            guard let returnedRecord = returnedRecord,
+                  let name = returnedRecord["name"] as? String,
+                  let userID = returnedRecord["ID"] as? String
+            else {
+                return
+            }
+            
+            let pref = Preference(
+                name: name,
+                userID: userID,
+                record: returnedRecord
+            )
+            
             DispatchQueue.main.async {
+                self?.preference = pref
+                self?.isLogged = true
                 self?.name = ""
             }
         }

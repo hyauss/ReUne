@@ -11,7 +11,7 @@ import CloudKit
 struct EntryView: View {
     @Environment(\.dismiss) var dismiss
     
-    @State var ckViewModel = LoginViewModel()
+    @State var ckViewModel = LoginViewModel.shared
     
     @StateObject var viewModel = EntryViewModel()
     
@@ -87,6 +87,11 @@ struct EntryView: View {
                         .navigationTitle("Boas vindas")
                     }
                 }
+                Button{
+                    ckViewModel.fetchAndDeletePreference()
+                }label: {
+                    Text("deletar conta")
+                }
             }
             else {
                 if isLoading {
@@ -101,7 +106,10 @@ struct EntryView: View {
                             .environment(ckViewModel)
                     }
                 }
+                
             }
+            
+            
         }
     }
 }
