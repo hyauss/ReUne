@@ -18,13 +18,16 @@ struct ActivitiesModel: Codable {
     let votos: Int
 }
 
-struct EventGroup{
+struct EventGroup: Identifiable{
     
     var recordId: CKRecord.ID?
     var users: Set<String>
     var categories: [CategoryModel]
     var activities: [ActivitiesModel]
     var dates: [Date]
+    var id: String {
+        recordId?.recordName ?? UUID().uuidString
+    }
     
     init(recordId: CKRecord.ID? = nil, users: Set<String>, categories: [CategoryModel], activities: [ActivitiesModel], dates: [Date]) {
         self.recordId = recordId
@@ -53,10 +56,10 @@ struct EventGroup{
         }
         
         let categories = try? JSONDecoder()
-                        .decode([CategoryModel].self, from: categoriesData)
-
-                    let activities = try? JSONDecoder()
-                        .decode([ActivitiesModel].self, from: activitiesData)
+            .decode([CategoryModel].self, from: categoriesData)
+        
+        let activities = try? JSONDecoder()
+            .decode([ActivitiesModel].self, from: activitiesData)
         
         return EventGroup(users: Set(users), categories: categories ?? [], activities: activities ?? [], dates: dates)
     }

@@ -32,6 +32,8 @@
 		247136D82FB66E9A0001E130 /* ProjectChallenge13Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ProjectChallenge13Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		247136E22FB66E9A0001E130 /* ProjectChallenge13UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ProjectChallenge13UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
 		247139362FBE48960001E130 /* Exceptions for "ProjectChallenge13" folder in "ProjectChallenge13" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
