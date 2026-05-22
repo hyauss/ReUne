@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 import Aptabase
 
-struct AptabaseView: View {
+struct AptabaseTesteView: View {
     //Aptabase.shared.trackEvent("app_started") // An event with no properties
     //Aptabase.shared.trackEvent("screen_view", with: ["name": "Settings"]) // An event with a custom property
     @State private var day = 19.0

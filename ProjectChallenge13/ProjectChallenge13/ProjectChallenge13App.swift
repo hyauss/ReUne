@@ -16,7 +16,7 @@ struct ProjectChallenge13App: App {
     var body: some Scene {
         WindowGroup {
 //            ContentView()
-            AptabaseView()
+            AptabaseTesteView()
         }
     }
 }
