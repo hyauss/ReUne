@@ -18,16 +18,16 @@ struct ActivitiesModel: Codable {
     let votos: Int
 }
 
-struct EventGroup: Identifiable{
+struct EventGroup{
     
     var recordId: CKRecord.ID?
     var users: Set<String>
     var categories: [CategoryModel]
     var activities: [ActivitiesModel]
     var dates: [Date]
-    var id: String {
-        recordId?.recordName ?? UUID().uuidString
-    }
+//    var id: String {
+//        recordId?.recordName ?? UUID().uuidString
+//    }
     
     init(recordId: CKRecord.ID, users: Set<String>, categories: [CategoryModel], activities: [ActivitiesModel], dates: [Date]) {
         self.recordId = recordId

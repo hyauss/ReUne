@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ResultView: View {
-    let group: EventGroup
+//    let group: EventGroup
     
     var body: some View {
         NavigationStack{

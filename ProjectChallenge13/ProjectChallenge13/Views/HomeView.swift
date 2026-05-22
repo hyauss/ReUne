@@ -8,20 +8,13 @@
 import SwiftUI
 
 struct HomeView: View {
-    @State private var grupos: [EventGroup] = [
-        EventGroup(users: [], categories: [], activities: [], dates: []),
-        EventGroup(users: [], categories: [], activities: [], dates: []),
-        EventGroup(users: [], categories: [], activities: [], dates: []),
-        EventGroup(users: [], categories: [], activities: [], dates: []),
-        EventGroup(users: [], categories: [], activities: [], dates: []),
-        EventGroup(users: [], categories: [], activities: [], dates: [])
-    ]
-    
+    @StateObject private var vm =  GroupViewModel.shared
+
     var body: some View {
         NavigationStack {
             VStack{
                 ScrollView {
-                    ForEach(Array(grupos.enumerated()), id: \.element.id) { index, grupo in
+                    ForEach(Array(vm.items.enumerated()), id: \.element.recordId) { index, item in
                         GroupCardComponent(groupNumber: index + 1)
                     }
                 }
