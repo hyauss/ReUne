@@ -11,7 +11,7 @@ import SwiftUI
 struct ProjectChallenge13App: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContactsView()
         }
     }
 }
