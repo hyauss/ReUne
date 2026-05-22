@@ -26,7 +26,7 @@ struct EventGroup{
     var activities: [ActivitiesModel]
     var dates: [Date]
     
-    init(recordId: CKRecord.ID? = nil, users: Set<String>, categories: [CategoryModel], activities: [ActivitiesModel], dates: [Date]) {
+    init(recordId: CKRecord.ID, users: Set<String>, categories: [CategoryModel], activities: [ActivitiesModel], dates: [Date]) {
         self.recordId = recordId
         self.users = users
         self.categories = categories
@@ -58,6 +58,6 @@ struct EventGroup{
                     let activities = try? JSONDecoder()
                         .decode([ActivitiesModel].self, from: activitiesData)
         
-        return EventGroup(users: Set(users), categories: categories ?? [], activities: activities ?? [], dates: dates)
+        return EventGroup(recordId: record.recordID, users: Set(users), categories: categories ?? [], activities: activities ?? [], dates: dates)
     }
 }

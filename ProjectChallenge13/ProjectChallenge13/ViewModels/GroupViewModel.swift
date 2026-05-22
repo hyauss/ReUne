@@ -40,7 +40,7 @@ class GroupViewModel: ObservableObject {
     
     func saveItem (categories: [CategoryModel], activities: [ActivitiesModel], dates: [Date],users: Set<String>){
         let record = CKRecord(recordType: RecordType.itemListing.rawValue)
-        let itemListing = EventGroup(users: users, categories: categories, activities: activities, dates: dates)
+        let itemListing = EventGroup(recordId: record.recordID, users: users, categories: categories, activities: activities, dates: dates)
         record.setValuesForKeys(itemListing.toDictionary())
         
         self.database.save(record){ newRecord, error in
