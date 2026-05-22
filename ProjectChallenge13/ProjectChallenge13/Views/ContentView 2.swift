@@ -10,30 +10,16 @@ import CloudKit
 
 struct ContentView2: View {
     @StateObject private var vm =  GroupViewModel.shared
-    @State private var title: String = ""
-    @State private var price: String = ""
     @State var ckViewModel = LoginViewModel.shared
     @State private var users: Set<String> = []
     @StateObject private var vmNotification = PushNotificationViewModel()
     
     var body: some View {
-    
-        VStack{
-            TextField("Enter title", text: $title)
-                .textFieldStyle(.roundedBorder)
-            TextField("Enter price", text: $price)
-                .textFieldStyle(.roundedBorder)
-        }
-        
         Spacer()
         
         Button("Save"){
-            guard let price = try? Decimal(price, format: .number) else {return}
-            users.insert(ckViewModel.preference?.userID ?? "")
-            
-            vm.saveItem(title: title, price: price, users: users)
-            self.title = ""
-            self.price = ""
+            users.insert(ckViewModel.preference!.userID)
+            vm.saveItem(categories: [CategoryModel(name: "testes1", votos: 0)], activities: [ActivitiesModel(name: "lerolero", votos: 0)], dates: [Date.now], users: users)
         }
         
         
@@ -60,9 +46,10 @@ struct ContentView2: View {
         List{
             ForEach(vm.items, id: \.recordId){ item in
                 HStack{
-                    Text(item.title)
                     Spacer()
-                    Text("$" + String(describing: item.price))
+                    Text(item.dates.description)
+                    Text(item.categories.description)
+                    Text(item.actitivies.description)
                     Text(item.users.description)
                     if let url = URL(string: "challenge13://\(item.recordId?.recordName ?? "NoGroup")") {
                         ShareLink(item: url) {

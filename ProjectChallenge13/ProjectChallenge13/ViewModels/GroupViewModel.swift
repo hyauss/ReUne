@@ -99,16 +99,20 @@ struct ItemViewModel{
         itemListing.recordId
     }
     
-    var categories: String {
-        itemListing.title
+    var categories: [CategoryModel] {
+        itemListing.categories
     }
     
-    var actitivies: Decimal{
-        itemListing.price
+    var actitivies: [ActivitiesModel]{
+        itemListing.activities
     }
     
     var users: Set<String>{
         itemListing.users
+    }
+    
+    var dates: [Date]{
+        itemListing.dates
     }
 }
 
