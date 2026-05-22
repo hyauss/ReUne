@@ -8,31 +8,56 @@
 import Foundation
 import CloudKit
 
+struct CategoryModel: Codable {
+    let name: String
+    let votos: Int
+}
+
+struct ActivitiesModel: Codable {
+    let name: String
+    let votos: Int
+}
+
 struct EventGroup{
     
     var recordId: CKRecord.ID?
-    var title: String
-    var price: Decimal
     var users: Set<String>
+    var categories: [CategoryModel]
+    var activities: [ActivitiesModel]
+    var dates: [Date]
     
-    init(recordId: CKRecord.ID? = nil, title: String, price: Decimal, users: Set<String>) {
+    init(recordId: CKRecord.ID? = nil, users: Set<String>, categories: [CategoryModel], activities: [ActivitiesModel], dates: [Date]) {
         self.recordId = recordId
-        self.title = title
-        self.price = price
         self.users = users
+        self.categories = categories
+        self.activities = activities
+        self.dates = dates
     }
     
     func toDictionary() -> [String: Any]{
-        return ["title": title, "price": price, "users": Array(users)]
+        do{
+            let categoriesData = try JSONEncoder().encode(categories)
+            let activitiesData = try JSONEncoder().encode(activities)
+            return ["categories": categoriesData, "activities": activitiesData, "dates": dates, "users": Array(users)]
+        }catch{
+            print("Erro ao codificar:", error.localizedDescription)
+            return ["Erro ao codificar" : error.localizedDescription]
+        }
     }
     
     static func fromRecord(_ record: CKRecord) -> EventGroup? {
         
-        guard let title = record.value(forKey: "title") as? String, let price = record.value(forKey: "price") as? Double, let users = record.value(forKey: "users") as? [String]
+        guard let categoriesData = record.value(forKey: "categories") as? Data, let activitiesData = record.value(forKey: "activities") as? Data, let users = record.value(forKey: "users") as? [String], let dates = record.value(forKey: "dates") as? [Date]
         else{
             return nil
         }
         
-        return EventGroup(recordId: record.recordID, title: title, price: Decimal(price), users: Set(users))
+        let categories = try? JSONDecoder()
+                        .decode([CategoryModel].self, from: categoriesData)
+
+                    let activities = try? JSONDecoder()
+                        .decode([ActivitiesModel].self, from: activitiesData)
+        
+        return EventGroup(users: Set(users), categories: categories ?? [], activities: activities ?? [], dates: dates)
     }
 }
