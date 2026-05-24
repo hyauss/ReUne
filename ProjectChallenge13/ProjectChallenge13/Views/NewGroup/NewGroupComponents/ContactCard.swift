@@ -8,14 +8,14 @@
 import SwiftUI
 import ContactsUI
 
-struct ContactImage: View {
+struct ContactCard: View {
     @Environment(ContactsViewModel.self) private var contactsVM
 
     var contact: CNContact
     
     var body: some View {
         Button {
-            contactsVM.selectedContacts.removeAll(where: { $0.identifier == contact.identifier })
+            contactsVM.removeContact(contact: contact)
         } label: {
             ZStack {
                 if let imageData = contact.thumbnailImageData, let uiImage = UIImage(data: imageData) {
@@ -38,6 +38,7 @@ struct ContactImage: View {
                     }
                     .padding(.trailing, 12)
                 }
+                
                 Image(systemName: "xmark.circle.fill")
                     .foregroundStyle(.white, .gray)
                     .font(.system(size: 20))

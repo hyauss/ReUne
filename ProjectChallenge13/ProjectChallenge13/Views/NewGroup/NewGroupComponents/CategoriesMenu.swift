@@ -37,5 +37,6 @@ struct CategoriesMenu: View {
                 .padding(.top)
         }
         .menuActionDismissBehavior(.disabled)
-        .padding(.bottom)    }
+        .padding(.bottom)
+    }
 }

@@ -8,7 +8,6 @@
 import SwiftUI
 import ContactsUI
 
-var participante: [String] = ["person", "person", "person", "person", "person", "person", "person"]
 struct NewGroupSheetView: View {
     @State var selectedCategory: Set<String> = []
     @State var showMessage = false
@@ -29,7 +28,7 @@ struct NewGroupSheetView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach(contactsVM.selectedContacts, id: \.identifier) { contact in
-                            ContactImage(contact: contact)
+                            ContactCard(contact: contact)
                                 .environment(contactsVM)
                         }
                     }
@@ -45,14 +44,9 @@ struct NewGroupSheetView: View {
                 CategoriesMenu(selectedCategory: $selectedCategory)
                 
                 ForEach(Array(selectedCategory), id: \.self) { category in
-                    Text(category)
-                        .foregroundStyle(.newGroupCategoriesText)
-                        .padding(.horizontal, 22)
-                        .padding(.vertical, 5)
-                        .background(.newGroupCategoriesBackground)
-                        .clipShape(RoundedRectangle(cornerRadius: 90))
-                        .padding(.leading, 48)
+                    CategoryCard(category: category)
                 }
+                
                 Spacer()
                 
                 NewGroupToolbar(showMessage: $showMessage)
