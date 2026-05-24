@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CategoriesMenu: View {
     @Binding var selectedCategory: Set<String>
+    
     var viewModel = NewGroupViewModel()
 
     var body: some View {

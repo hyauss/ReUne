@@ -8,11 +8,17 @@
 import SwiftUI
 
 struct NewGroupToolbar: View {
+    @Environment(ContactsViewModel.self) private var contactsVM
+    @Binding var showMessage: Bool
+    
     var body: some View {
         Text("")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
+                        if !contactsVM.selectedContacts.isEmpty {
+                            showMessage = true
+                        }
                         
                     } label: {
                         Image(systemName: "checkmark")
@@ -33,8 +39,4 @@ struct NewGroupToolbar: View {
                 }
             }
     }
-}
-
-#Preview {
-    NewGroupToolbar()
 }

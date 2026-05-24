@@ -3,7 +3,7 @@
 //  ProjectChallenge13
 //
 //  Created by Francisco Losada on 22/05/26.
-//
+//  Built with AI assistance
 
 import MessageUI
 import SwiftUI

@@ -6,14 +6,19 @@
 //
 
 import SwiftUI
+import ContactsUI
 
-//TODO: Contacts Button Animation
 var participante: [String] = ["person", "person", "person", "person", "person", "person", "person"]
 struct NewGroupSheetView: View {
     @State var selectedCategory: Set<String> = []
-    @State var contactButtonIsPressed: Bool = false
+    @State var showMessage = false
+    @State var contactsVM = ContactsViewModel()
     
-    var viewModel = NewGroupViewModel()
+    var phoneNumbers: [String] {
+        contactsVM.selectedContacts.compactMap {
+            $0.phoneNumbers.first?.value.stringValue
+        }
+    }
     
     var body: some View {
         NavigationStack {
@@ -23,30 +28,21 @@ struct NewGroupSheetView: View {
                 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
-                        ForEach(participante, id: \.self) { invite in
-                            Image(invite)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .clipShape(Circle())
-                                .frame(width: 70)
-                                .padding(.trailing, 12)
+                        ForEach(contactsVM.selectedContacts, id: \.identifier) { contact in
+                            ContactImage(contact: contact)
+                                .environment(contactsVM)
                         }
                     }
                     .padding(.leading, 29)
-                    
                 }
-                Button {
-                } label: {
-                    PlusButton()
-                        .padding(.leading, 48)
-                        .padding(.bottom, 10)
-                }
-                    
-
+                
+                ContactsView()
+                    .environment(contactsVM)
+                
                 Text("Quais categorias você gostaria de adicionar?")
                     .padding(.leading, 29)
                 
-               CategoriesMenu(selectedCategory: $selectedCategory)
+                CategoriesMenu(selectedCategory: $selectedCategory)
                 
                 ForEach(Array(selectedCategory), id: \.self) { category in
                     Text(category)
@@ -59,7 +55,14 @@ struct NewGroupSheetView: View {
                 }
                 Spacer()
                 
-                NewGroupToolbar()
+                NewGroupToolbar(showMessage: $showMessage)
+                    .environment(contactsVM)
+                    .sheet(isPresented: $showMessage) {
+                        MessageView(
+                            recipients: phoneNumbers,
+                            body: "Confira esse link: https://seuapp.com"
+                        )
+                    }
             }
         }
     }

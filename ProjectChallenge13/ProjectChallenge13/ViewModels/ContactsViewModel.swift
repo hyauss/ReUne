@@ -6,3 +6,9 @@
 //
 
 import Foundation
+import Contacts
+
+@Observable
+class ContactsViewModel {
+    var selectedContacts: [CNContact] = []
+}
