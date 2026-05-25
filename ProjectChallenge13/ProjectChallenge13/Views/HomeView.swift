@@ -17,7 +17,11 @@ struct HomeView: View {
             VStack{
                 ScrollView {
                     ForEach(Array(vm.items.enumerated()), id: \.element.recordId) { index, item in
-                        GroupCardComponent(groupNumber: index + 1)
+                        NavigationLink {
+                            GroupResultView(group:item)
+                        } label: {
+                            GroupCardComponent(groupNumber: index + 1)
+                        }
                     }
                 }
             }
@@ -36,4 +40,5 @@ struct HomeView: View {
 
 #Preview {
     HomeView()
+//    ContentView()
 }
