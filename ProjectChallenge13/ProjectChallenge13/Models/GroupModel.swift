@@ -26,7 +26,7 @@ struct EventGroup{
     var activities: [ActivitiesModel]
     var dates: [Date]
     
-    init(recordId: CKRecord.ID, users: Set<String>, categories: [CategoryModel], activities: [ActivitiesModel], dates: [Date]) {
+    init(recordId: CKRecord.ID?, users: Set<String>, categories: [CategoryModel], activities: [ActivitiesModel], dates: [Date]) {
         self.recordId = recordId
         self.users = users
         self.categories = categories
