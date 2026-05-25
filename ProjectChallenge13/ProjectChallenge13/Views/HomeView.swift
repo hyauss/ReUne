@@ -11,7 +11,7 @@ struct HomeView: View {
     @StateObject private var vm =  GroupViewModel.shared
     
     @State var newGroupCreated: Bool = false
-
+    
     var body: some View {
         NavigationStack {
             VStack{
@@ -28,8 +28,8 @@ struct HomeView: View {
                 }
             }
             .navigationDestination(isPresented: $newGroupCreated) {
-                    ResultView()
-                }
+                ResultView()
+            }
         }
     }
 }
