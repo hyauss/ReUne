@@ -25,7 +25,7 @@ struct TimeLineView: View {
                 Text(mostFrequncyDate.formattedDate)
                     .font(.system(size: 14, weight: .medium))
                     .frame(maxWidth: .infinity)
-                Text(secondFrequncyDate.formattedDate)
+                Text(secondFrequncyDate == mostFrequncyDate ? " " : secondFrequncyDate.formattedDate )
                     .font(.system(size: 14, weight: .medium))
                     .frame(maxWidth: .infinity)
             }
@@ -33,7 +33,7 @@ struct TimeLineView: View {
                 VStack(spacing: -10){
                     ForEach(hours, id: \.self){
                         time in
-                        TimeComponent(time: time, opacity1: viewModelCalendar.opacityForHour(dates: dates, day: mostFrequncyDate, hour: time),opacity2: viewModelCalendar.opacityForHour(dates: dates, day: secondFrequncyDate, hour: time))
+                        TimeComponent(time: time, opacity1: viewModelCalendar.opacityForHour(dates: dates, day: mostFrequncyDate, hour: time),opacity2:secondFrequncyDate == mostFrequncyDate ? 0.1 :  viewModelCalendar.opacityForHour(dates: dates, day: secondFrequncyDate, hour: time) )
                     }
                 }
             }

@@ -66,7 +66,12 @@ class CalendarViewModel {
         
         let newArray = counts.sorted { $0.value > $1.value }.map { $0.key }
         
-        return newArray[1]
+        if newArray.count >= 2 {
+            return newArray[1]
+        }
+        else{
+            return newArray[0]
+        }
     }
     
     func filterDate(dates: [Date], day: Date) -> [Date]{

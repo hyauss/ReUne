@@ -21,7 +21,7 @@ struct GrupResultView: View {
         Calendar.current.date(from: DateComponents(year: 2026, month: 5, day: 20, hour: 10))!
     ]
 
-    var group: EventGroup
+    var group: ItemViewModel
     
     var body: some View {
         ScrollView{
@@ -30,7 +30,7 @@ struct GrupResultView: View {
                 
                 CalendarView(dates: group.dates)
                 
-                TimeLineView(mostFrequncyDate: viewModelCalendar.mostFrequencyDate(dates: mockDates), secondFrequncyDate: viewModelCalendar.secondFrequencyDate(dates: mockDates), datefilterArray: viewModelCalendar.filterDate(dates: mockDates, day: viewModelCalendar.mostFrequencyDate(dates: mockDates)), dates: mockDates)
+                TimeLineView(mostFrequncyDate: viewModelCalendar.mostFrequencyDate(dates: group.dates), secondFrequncyDate: viewModelCalendar.secondFrequencyDate(dates: group.dates), datefilterArray: viewModelCalendar.filterDate(dates: group.dates, day: viewModelCalendar.mostFrequencyDate(dates: group.dates)), dates: group.dates)
                 
                 
             }
