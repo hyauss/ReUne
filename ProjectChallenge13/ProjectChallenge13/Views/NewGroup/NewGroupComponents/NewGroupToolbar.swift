@@ -25,12 +25,16 @@ struct NewGroupToolbar: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
-                        if !contactsVM.selectedContacts.isEmpty {
-                            showMessage = true
-                        }
                         users.insert(ckViewModel.preference!.userID)
                         vm.saveItem(categories: Array(newGroupVM.selectedCategory), activities: [], dates: [], users: users, owner: ckViewModel.preference!.userID)
-                        newGroupCreated.toggle()
+                        if !contactsVM.selectedContacts.isEmpty {
+                            showMessage = true
+                            newGroupCreated.toggle()
+                        }
+                        else {
+                            isDismiss.toggle()
+                            newGroupCreated.toggle()
+                        }
                     } label: {
                         Image(systemName: "checkmark")
                     }

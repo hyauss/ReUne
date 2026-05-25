@@ -64,7 +64,7 @@ struct NewGroupSheetView: View {
                         MessageView(recipients: phoneNumbers, body: "Confira esse link: https://seuapp.com")
                     }
             }
-            .onChange(of: newGroupCreated) {
+            .onChange(of: isDismiss) {
                 dismiss()
             }
         }
