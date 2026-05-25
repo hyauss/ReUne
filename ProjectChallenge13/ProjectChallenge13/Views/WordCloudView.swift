@@ -141,13 +141,13 @@ struct WordSizeGetter: View {
     }
 }
 
-#Preview {
-    let sampleActivities = [
-        ActivitiesModel(name: "Cinema", votos: 8),
-        ActivitiesModel(name: "Parque", votos: 5),
-        ActivitiesModel(name: "Brunch", votos: 2),
-        ActivitiesModel(name: "Museu", votos: 0)
-    ]
-    let sampleGroup = EventGroup(recordId: nil, users: Set(["previewUser"]), categories: [], activities: sampleActivities, dates: [])
-    WordCloudView(group: sampleGroup)
-}
+//#Preview {
+//    let sampleActivities = [
+//        ActivitiesModel(name: "Cinema", votos: 8),
+//        ActivitiesModel(name: "Parque", votos: 5),
+//        ActivitiesModel(name: "Brunch", votos: 2),
+//        ActivitiesModel(name: "Museu", votos: 0)
+//    ]
+//    let sampleGroup = EventGroup(recordId: nil, users: Set(["previewUser"]), categories: [], activities: sampleActivities, dates: [])
+//    WordCloudView(group: sampleGroup)
+//}
