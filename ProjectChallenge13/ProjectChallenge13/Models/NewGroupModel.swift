@@ -8,20 +8,17 @@
 import Foundation
 
 struct NewGroupModel {
-    let meetingCategories: [String] = [
-        "Ao ar livre",
-        "Bem-estar",
-        "Comunidade",
-        "Criatividade",
-        "Cultura",
-        "Datas comemorativas",
-        "Entretenimento",
-        "Esportes",
-        "Família",
-        "Gastronomia",
-        "Noturno",
-        "Online",
-        "Viagem",
-        "Voluntariado"
+    let meetingCategories: [CategoryModel] = [
+        CategoryModel(name: "Ao ar livre"),
+        CategoryModel(name: "Bem-estar"),
+        CategoryModel(name: "Criatividade"),
+        CategoryModel(name: "Cultura e Entreterimento"),
+        CategoryModel(name: "Entretenimento"),
+        CategoryModel(name: "Esportes"),
+        CategoryModel(name: "Festas"),
+        CategoryModel(name: "Festividades"),
+        CategoryModel(name: "Gastronomia"),
+        CategoryModel(name: "Viagem"),
+        CategoryModel(name: "Outros")
     ]
 }

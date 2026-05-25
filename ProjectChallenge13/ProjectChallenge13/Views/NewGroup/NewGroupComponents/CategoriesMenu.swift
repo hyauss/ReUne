@@ -8,24 +8,22 @@
 import SwiftUI
 
 struct CategoriesMenu: View {
-    @Binding var selectedCategory: Set<String>
-    
     var viewModel = NewGroupViewModel()
 
     var body: some View {
-        Menu () {
+        Menu() {
             Section("Categorias") {
                 ForEach(viewModel.categories, id: \.self) { category in
                     Button {
-                        if selectedCategory.contains(category) {
-                            selectedCategory.remove(category)
+                        if viewModel.selectedCategory.contains(category) {
+                            viewModel.removeCategory(category: category)
                         }
                         else {
-                            selectedCategory.insert(category)
+                            viewModel.addCategory(category: CategoryModel(name: category.name))
                         }
                     } label: {
-                        Text(category)
-                        if selectedCategory.contains(category) {
+                        Text(category.name)
+                        if viewModel.selectedCategory.contains(category) {
                             Image(systemName: "checkmark")
                         }
                     }

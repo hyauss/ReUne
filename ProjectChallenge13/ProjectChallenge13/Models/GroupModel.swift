@@ -8,9 +8,8 @@
 import Foundation
 import CloudKit
 
-struct CategoryModel: Codable {
+struct CategoryModel: Codable, Hashable {
     let name: String
-    let votos: Int
 }
 
 struct ActivitiesModel: Codable {

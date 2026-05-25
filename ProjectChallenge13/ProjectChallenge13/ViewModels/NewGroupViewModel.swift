@@ -7,11 +7,21 @@
 
 import Foundation
 
-struct NewGroupViewModel {
+@Observable
+class NewGroupViewModel {
     let newGroupModel = NewGroupModel()
-    let categories: [String]
+    var categories: [CategoryModel]
+    var selectedCategory: Set<CategoryModel> = []
     
     init() {
         self.categories = newGroupModel.meetingCategories
+    }
+    
+    func removeCategory(category: CategoryModel) {
+        self.selectedCategory.remove(category)
+    }
+    
+    func addCategory(category: CategoryModel) {
+        self.selectedCategory.insert(category)
     }
 }
