@@ -10,6 +10,8 @@ import SwiftUI
 struct HomeView: View {
     @StateObject private var vm =  GroupViewModel.shared
     
+    @State var newGroupCreated: Bool = false
+    
     var body: some View {
         NavigationStack {
             VStack{
@@ -26,8 +28,11 @@ struct HomeView: View {
             .navigationTitle("Seus Grupos")
             .toolbar{
                 ToolbarItem(placement:.confirmationAction){
-                    AddGroupButtonComponent()
+                    AddGroupButtonComponent(newGroupCreated: $newGroupCreated)
                 }
+            }
+            .navigationDestination(isPresented: $newGroupCreated) {
+                ResultView()
             }
         }
     }
