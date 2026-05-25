@@ -19,7 +19,7 @@ struct ContentView2: View {
         
         Button("Save"){
             users.insert(ckViewModel.preference!.userID)
-            vm.saveItem(categories: [CategoryModel(name: "testes1")], activities: [ActivitiesModel(name: "lerolero", votos: 0)], dates: [Date.now], users: users)
+            vm.saveItem(categories: [CategoryModel(name: "testes1")], activities: [ActivitiesModel(name: "lerolero", votos: 0)], dates: [Date.now], users: users, owner: ckViewModel.preference!.userID)
         }
         
         
@@ -47,6 +47,7 @@ struct ContentView2: View {
             ForEach(vm.items, id: \.recordId){ item in
                 HStack{
                     Spacer()
+                    Text(item.owner)
                     Text(item.dates.description)
                     Text(item.categories.description)
                     Text(item.actitivies.description)
