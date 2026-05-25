@@ -9,9 +9,14 @@ import SwiftUI
 import ContactsUI
 
 struct NewGroupSheetView: View {
-    @State var showMessage = false
+    @Environment(\.dismiss) private var dismiss
+
     @State var contactsVM = ContactsViewModel()
     @State var newGroupVM = NewGroupViewModel()
+    @State var showMessage = false
+    @State var isDismiss: Bool = false
+    
+    @Binding var newGroupCreated: Bool
     
     var phoneNumbers: [String] {
         contactsVM.selectedContacts.compactMap {
@@ -50,19 +55,18 @@ struct NewGroupSheetView: View {
                 
                 Spacer()
                 
-                NewGroupToolbar(showMessage: $showMessage)
+                NewGroupToolbar(showMessage: $showMessage, newGroupCreated: $newGroupCreated, isDismiss: $isDismiss)
                     .environment(contactsVM)
-                    .sheet(isPresented: $showMessage) {
-                        MessageView(
-                            recipients: phoneNumbers,
-                            body: "Confira esse link: https://seuapp.com"
-                        )
+                    .environment(newGroupVM)
+                    .sheet(isPresented: $showMessage, onDismiss: {
+                        dismiss()
+                    }) {
+                        MessageView(recipients: phoneNumbers, body: "Confira esse link: https://seuapp.com")
                     }
+            }
+            .onChange(of: newGroupCreated) {
+                dismiss()
             }
         }
     }
-}
-
-#Preview {
-    NewGroupSheetView()
 }
