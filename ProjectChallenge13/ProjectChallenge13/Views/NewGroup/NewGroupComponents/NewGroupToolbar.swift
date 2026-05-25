@@ -19,7 +19,7 @@ struct NewGroupToolbar: View {
     
     @State var ckViewModel = LoginViewModel.shared
     @State private var users: Set<String> = []
-    
+     
     var body: some View {
         Text("")
             .toolbar {
