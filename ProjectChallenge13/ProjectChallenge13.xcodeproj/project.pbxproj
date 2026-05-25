@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		064BD7652FBCDCB2007DAB80 /* Aptabase in Frameworks */ = {isa = PBXBuildFile; productRef = 064BD7642FBCDCB2007DAB80 /* Aptabase */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		247136D92FB66E9A0001E130 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -65,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				064BD7652FBCDCB2007DAB80 /* Aptabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,6 +130,7 @@
 			);
 			name = ProjectChallenge13;
 			packageProductDependencies = (
+				064BD7642FBCDCB2007DAB80 /* Aptabase */,
 			);
 			productName = ProjectChallenge13;
 			productReference = 247136CB2FB66E980001E130 /* ProjectChallenge13.app */;
@@ -208,6 +214,9 @@
 			);
 			mainGroup = 247136C22FB66E980001E130;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				064BD7632FBCDCB2007DAB80 /* XCRemoteSwiftPackageReference "aptabase-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 247136CC2FB66E980001E130 /* Products */;
 			projectDirPath = "";
@@ -597,6 +606,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		064BD7632FBCDCB2007DAB80 /* XCRemoteSwiftPackageReference "aptabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/aptabase/aptabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.3.11;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		064BD7642FBCDCB2007DAB80 /* Aptabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 064BD7632FBCDCB2007DAB80 /* XCRemoteSwiftPackageReference "aptabase-swift" */;
+			productName = Aptabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 247136C32FB66E980001E130 /* Project object */;
 }
