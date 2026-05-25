@@ -6,22 +6,24 @@
 //
 
 import SwiftUI
+import CloudKit
 
 struct ResultView: View {
-//    let group: EventGroup
+    let group: ItemViewModel
     
     var body: some View {
         NavigationStack{
             VStack{
+                Text("Resultados para o Grupo: \(group.recordId?.recordName ?? "Sem ID")")
+                    .font(.headline)
                 CalendarView()
-                //TimeView()
-                //WordCloudView()
+                // outras coisas de resultado
             }
             .navigationTitle("Resultados do Grupo")
         }
     }
 }
 
-#Preview {
-    ResultView()
-}
+//#Preview {
+//    ResultView()
+//}
