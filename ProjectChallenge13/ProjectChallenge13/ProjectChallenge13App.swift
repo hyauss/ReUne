@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CloudKit
+import Aptabase
 
 @main
 struct ProjectChallenge13App: App {
@@ -14,8 +15,14 @@ struct ProjectChallenge13App: App {
     @State var ckViewModel = LoginViewModel.shared
     @State private var showLogin = false
     
+    init() {
+        Aptabase.shared.initialize(appKey: "A-US-8107330164") // 👈 this is where you enter your App Key
+    }
+    
     var body: some Scene {
         WindowGroup {
+            //            AptabaseTesteView()
+            HomeView()
             ContentView()
                 .sheet(isPresented: $showLogin) {
                     EntryView()
@@ -43,8 +50,6 @@ struct ProjectChallenge13App: App {
                             print(error.localizedDescription)
                         }
                     }
-                    
-                    
                 }
         }
     }

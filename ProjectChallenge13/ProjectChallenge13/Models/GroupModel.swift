@@ -54,10 +54,10 @@ struct EventGroup{
         }
         
         let categories = try? JSONDecoder()
-                        .decode([CategoryModel].self, from: categoriesData)
-
-                    let activities = try? JSONDecoder()
-                        .decode([ActivitiesModel].self, from: activitiesData)
+            .decode([CategoryModel].self, from: categoriesData)
+        
+        let activities = try? JSONDecoder()
+            .decode([ActivitiesModel].self, from: activitiesData)
         
         return EventGroup(recordId: record.recordID, users: Set(users), categories: categories ?? [], activities: activities ?? [], dates: dates, owner: owner)
     }
