@@ -36,7 +36,6 @@ struct ProjectChallenge13App: App {
                                 groupRecord["users"] = Array(group?.users ?? [])
                                 await vm.save(groupRecord: groupRecord)
                             }else{
-                                //ei voce nao esta logado
                                 showLogin = true
                             }
                         }

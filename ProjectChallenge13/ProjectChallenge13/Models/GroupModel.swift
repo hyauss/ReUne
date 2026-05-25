@@ -10,7 +10,6 @@ import CloudKit
 
 struct CategoryModel: Codable {
     let name: String
-    let votos: Int
 }
 
 struct ActivitiesModel: Codable {
