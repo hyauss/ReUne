@@ -9,13 +9,17 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject private var vm =  GroupViewModel.shared
-
+    
     var body: some View {
         NavigationStack {
             VStack{
                 ScrollView {
                     ForEach(Array(vm.items.enumerated()), id: \.element.recordId) { index, item in
-                        GroupCardComponent(groupNumber: index + 1)
+                        NavigationLink {
+                            GrupResultView(group:item)
+                        } label: {
+                            GroupCardComponent(groupNumber: index + 1)
+                        }
                     }
                 }
             }
@@ -31,4 +35,5 @@ struct HomeView: View {
 
 #Preview {
     HomeView()
+//    ContentView()
 }
