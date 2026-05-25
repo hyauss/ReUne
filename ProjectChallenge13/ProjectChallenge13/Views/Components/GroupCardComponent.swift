@@ -16,6 +16,7 @@ struct GroupCardComponent: View {
             .frame(width: 344, height: 104)
             .overlay(
                 Text("Grupo \(groupNumber)")
+                    .foregroundStyle(.black)
                     .padding(.leading, 22)
                     .frame(width:344,height: 54,alignment: .leading)
                     .background(.blue)
