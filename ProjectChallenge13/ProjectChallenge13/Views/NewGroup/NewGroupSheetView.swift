@@ -1,0 +1,72 @@
+//
+//  NewGroupSheetView.swift
+//  ProjectChallenge13
+//
+//  Created by Francisco Losada on 22/05/26.
+//
+
+import SwiftUI
+import ContactsUI
+
+struct NewGroupSheetView: View {
+    @Environment(\.dismiss) private var dismiss
+    
+    @State var contactsVM = ContactsViewModel()
+    @State var newGroupVM = NewGroupViewModel()
+    @State var showMessage = false
+    @State var isDismiss: Bool = false
+    
+    @Binding var newGroupCreated: Bool
+    
+    var phoneNumbers: [String] {
+        contactsVM.selectedContacts.compactMap {
+            $0.phoneNumbers.first?.value.stringValue
+        }
+    }
+    
+    var body: some View {
+        NavigationStack {
+            VStack(alignment: .leading) {
+                Text("Adicione participante no seu grupo")
+                    .padding(.leading, 29)
+                
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack {
+                        ForEach(contactsVM.selectedContacts, id: \.identifier) { contact in
+                            ContactCard(contact: contact)
+                                .environment(contactsVM)
+                        }
+                    }
+                    .padding(.leading, 29)
+                }
+                
+                ContactsView()
+                    .environment(contactsVM)
+                
+                Text("Quais categorias você gostaria de adicionar?")
+                    .padding(.leading, 29)
+                
+                CategoriesMenu()
+                    .environment(newGroupVM)
+                
+                ForEach(Array(newGroupVM.selectedCategory), id: \.self) { category in
+                    CategoryCard(category: category)
+                }
+                
+                Spacer()
+                
+                NewGroupToolbar(showMessage: $showMessage, newGroupCreated: $newGroupCreated, isDismiss: $isDismiss)
+                    .environment(contactsVM)
+                    .environment(newGroupVM)
+                    .sheet(isPresented: $showMessage, onDismiss: {
+                        dismiss()
+                    }) {
+                        MessageView(recipients: phoneNumbers, body: "Confira esse link: https://seuapp.com")
+                    }
+            }
+            .onChange(of: isDismiss) {
+                dismiss()
+            }
+        }
+    }
+}
