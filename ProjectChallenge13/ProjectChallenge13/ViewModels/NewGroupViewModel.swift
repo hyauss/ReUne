@@ -13,6 +13,7 @@ class NewGroupViewModel {
     var categories: [CategoryModel]
     var selectedCategory: Set<CategoryModel> = []
     
+    
     init() {
         self.categories = newGroupModel.meetingCategories
     }

@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct CategoryCard: View {
-    var category: String
+    var category: CategoryModel
     var body: some View {
-        Text(category)
+        Text(category.name)
             .foregroundStyle(.newGroupCategoriesText)
             .padding(.horizontal, 22)
             .padding(.vertical, 5)
@@ -19,6 +19,6 @@ struct CategoryCard: View {
             .padding(.leading, 48)    }
 }
 
-#Preview {
-    CategoryCard(category: "Piscina")
-}
+//#Preview {
+//    CategoryCard(category: "Piscina")
+//}

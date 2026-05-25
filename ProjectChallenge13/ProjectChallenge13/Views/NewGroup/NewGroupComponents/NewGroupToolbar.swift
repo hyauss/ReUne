@@ -15,15 +15,16 @@ struct NewGroupToolbar: View {
         Text("")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button {
-                        if !contactsVM.selectedContacts.isEmpty {
-                            showMessage = true
-                        }
+                    NavigationLink {
                         
                     } label: {
                         Image(systemName: "checkmark")
                     }
-                    .buttonStyle(.borderedProminent)
+                    .simultaneousGesture(TapGesture().onEnded {
+                        if !contactsVM.selectedContacts.isEmpty {
+                            showMessage = true
+                        }
+                    })
                 }
                 
                 ToolbarItem(placement: .cancellationAction) {

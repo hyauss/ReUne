@@ -9,9 +9,9 @@ import SwiftUI
 import ContactsUI
 
 struct NewGroupSheetView: View {
-    @State var selectedCategory: Set<CategoryModel> = []
     @State var showMessage = false
     @State var contactsVM = ContactsViewModel()
+    @State var newGroupVM = NewGroupViewModel()
     
     var phoneNumbers: [String] {
         contactsVM.selectedContacts.compactMap {
@@ -42,9 +42,10 @@ struct NewGroupSheetView: View {
                     .padding(.leading, 29)
                 
                 CategoriesMenu()
+                    .environment(newGroupVM)
                 
-                ForEach(Array(selectedCategory), id: \.self) { category in
-                    CategoryCard(category: category.name)
+                ForEach(Array(newGroupVM.selectedCategory), id: \.self) { category in
+                    CategoryCard(category: category)
                 }
                 
                 Spacer()
@@ -63,5 +64,5 @@ struct NewGroupSheetView: View {
 }
 
 #Preview {
-    NewGroupSheetView(selectedCategory: [])
+    NewGroupSheetView()
 }
