@@ -117,8 +117,8 @@ final class WordCloudViewModel: ObservableObject {
         recomputePositionsIfNeeded()
     }
 
-    func setGroup(_ group: EventGroup) {
-        setActivities(group.activities)
+    func setGroup(_ group: ItemViewModel) {
+        setActivities(group.actitivies)
     }
 
     func updateSize(_ size: CGSize, at index: Int) {

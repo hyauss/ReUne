@@ -19,7 +19,7 @@ struct ContentView2: View {
         
         Button("Save"){
             users.insert(ckViewModel.preference!.userID)
-            vm.saveItem(categories: [CategoryModel(name: "testes1")], activities: [ActivitiesModel(name: "lerolero", votos: 0)], dates: [Calendar.current.date(from: DateComponents(year: 2026, month: 5, day: 22, hour: 10))!], users: users, owner: ckViewModel.preference!.userID)
+            vm.saveItem(categories: [CategoryModel(name: "testes1")], activities: [ActivitiesModel(name: "1131231", votos: 1),ActivitiesModel(name: "wow", votos: 5),ActivitiesModel(name: "abate", votos: 10),ActivitiesModel(name: "birobiro", votos: 0)], dates: [Calendar.current.date(from: DateComponents(year: 2026, month: 5, day: 22, hour: 10))!], users: users, owner: ckViewModel.preference!.userID)
         }
         
         

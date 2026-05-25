@@ -16,11 +16,7 @@ extension CGRect {
 struct WordCloudView: View {
     @StateObject private var vm = WordCloudViewModel()
     @State private var canvasRect = CGRect()
-    let group: EventGroup?
-
-    init(group: EventGroup? = nil) {
-        self.group = group
-    }
+    let group: ItemViewModel?
 
     var body: some View {
         let positions = vm.positions.count == vm.words.count ? vm.positions : Array(repeating: .zero, count: vm.words.count)
@@ -30,7 +26,7 @@ struct WordCloudView: View {
         Group {
             if vm.words.isEmpty {
                 VStack(spacing: 12) {
-                    Image(systemName: "cloud.slash")
+                    Image(systemName: "house")
                         .font(.largeTitle)
                         .foregroundColor(.secondary)
                     Text("Nenhuma atividade com votos ainda")
@@ -83,7 +79,7 @@ struct WordCloudView: View {
                                     }
                             }
                         )
-                )
+                )   
             }
         }
         .padding(32)

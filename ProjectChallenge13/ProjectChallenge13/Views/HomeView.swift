@@ -16,7 +16,7 @@ struct HomeView: View {
                 ScrollView {
                     ForEach(Array(vm.items.enumerated()), id: \.element.recordId) { index, item in
                         NavigationLink {
-                            GrupResultView(group:item)
+                            GroupResultView(group:item)
                         } label: {
                             GroupCardComponent(groupNumber: index + 1)
                         }
