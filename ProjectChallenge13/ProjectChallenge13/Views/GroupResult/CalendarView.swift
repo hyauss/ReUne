@@ -17,10 +17,11 @@ struct CalendarView: View {
     @State private var currentMonth = Date.now
     @State private var days: [Date] = []
     
-    let viewModel = CalendarViewModel()
+    let viewModel: CalendarViewModel
     let daysOfWeek = Date.capitalizedFirstLettersOfWeekdays
     let columns = Array(repeating: GridItem(.flexible()), count: 7)
-    let stringDates = ["2026-05-19","2026-05-20", "2026-05-19","2026-05-19","2026-05-22","2026-05-22", "2026-05-03", "2026-05-05", "2026-05-05", "2026-05-05", "2026-05-05", "2026-05-05", "2026-05-05", "2026-05-05", "2026-05-05"]
+    
+    let dates: [Date]
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -72,10 +73,10 @@ struct CalendarView: View {
                         Text(day.formatted(.dateTime.day()))
                             .font(.system(size: 14, weight: .medium))
                             .frame(maxWidth: .infinity, minHeight: 40)
-                            .foregroundStyle(Date.now.startOfDay == day.startOfDay ? .blue : .black)
+                            .foregroundStyle(Date.now.startOfDay == day.startOfDay ? .pink : .black)
                             .background(
                                 RoundedRectangle(cornerRadius: 10)
-                                    .foregroundStyle(.blue.opacity(viewModel.opacity(for: day, dates: stringDates)))
+                                    .foregroundStyle(Color(hue: 0.9, saturation: viewModel.opacity(for: day, dates: dates), brightness: 1))
                             )
                     }
                 }
@@ -94,5 +95,5 @@ struct CalendarView: View {
 }
 
 #Preview {
-    CalendarView()
+    CalendarView(viewModel: CalendarViewModel(), dates: [Date(), Date(), Date()])
 }

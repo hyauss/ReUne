@@ -80,4 +80,44 @@ extension Date {
         formatter.formatOptions = [.withFullDate]
         return formatter.string(from: self)
     }
+    
+    var formattedDateHourCombined: String {
+        let formatter = ISO8601DateFormatter()
+        formatter.timeZone = .current
+        return formatter.string(from: self)
+    }
+    
+    /// Transform Date to String, convert to the form you want
+    /// - Parameter format: Receives the date format you want
+    /// - Returns: Return Date in String
+    func toString(format: String) -> String{
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = format
+        return dateFormatter.string(from: self)
+    }
+}
+
+extension Calendar{
+    /// List the hour of a day
+    func arrayHours(day: Date) -> [Date]{
+        let startTime = self.startOfDay(for: day) //Returns the first moment of a given Date
+        var hours: [Date] = []
+        for i in 0..<24{
+            if let date = Calendar.current.date(byAdding: .hour, value: i, to: startTime){
+                hours.append(date)
+            }
+        }
+        return hours
+    }
+    
+    var hourOfDay:[Date]{
+        let startTime = self.startOfDay(for: Date()) //Returns the first moment of a given Date
+        var hours: [Date] = []
+        for i in 0..<24{
+            if let date = Calendar.current.date(byAdding: .hour, value: i, to: startTime){
+                hours.append(date)
+            }
+        }
+        return hours
+    }
 }
