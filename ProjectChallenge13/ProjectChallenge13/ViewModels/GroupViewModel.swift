@@ -38,9 +38,9 @@ class GroupViewModel: ObservableObject {
         }
     }
     
-    func saveItem (categories: [CategoryModel], activities: [ActivitiesModel], dates: [Date],users: Set<String>){
+    func saveItem (categories: [CategoryModel], activities: [ActivitiesModel], dates: [Date],users: Set<String>, owner: String){
         let record = CKRecord(recordType: RecordType.itemListing.rawValue)
-        let itemListing = EventGroup(recordId: record.recordID, users: users, categories: categories, activities: activities, dates: dates)
+        let itemListing = EventGroup(recordId: record.recordID, users: users, categories: categories, activities: activities, dates: dates, owner: owner)
         record.setValuesForKeys(itemListing.toDictionary())
         
         self.database.save(record){ newRecord, error in
@@ -113,6 +113,10 @@ struct ItemViewModel{
     
     var dates: [Date]{
         itemListing.dates
+    }
+    
+    var owner: String{
+        itemListing.owner
     }
 }
 

@@ -10,7 +10,6 @@ import CloudKit
 
 struct CategoryModel: Codable {
     let name: String
-    let votos: Int
 }
 
 struct ActivitiesModel: Codable {
@@ -25,20 +24,22 @@ struct EventGroup{
     var categories: [CategoryModel]
     var activities: [ActivitiesModel]
     var dates: [Date]
+    var owner: String
     
-    init(recordId: CKRecord.ID, users: Set<String>, categories: [CategoryModel], activities: [ActivitiesModel], dates: [Date]) {
+    init(recordId: CKRecord.ID, users: Set<String>, categories: [CategoryModel], activities: [ActivitiesModel], dates: [Date], owner: String) {
         self.recordId = recordId
         self.users = users
         self.categories = categories
         self.activities = activities
         self.dates = dates
+        self.owner = owner
     }
     
     func toDictionary() -> [String: Any]{
         do{
             let categoriesData = try JSONEncoder().encode(categories)
             let activitiesData = try JSONEncoder().encode(activities)
-            return ["categories": categoriesData, "activities": activitiesData, "dates": dates, "users": Array(users)]
+            return ["categories": categoriesData, "activities": activitiesData, "dates": dates, "users": Array(users), "owner": owner]
         }catch{
             print("Erro ao codificar:", error.localizedDescription)
             return ["Erro ao codificar" : error.localizedDescription]
@@ -47,7 +48,7 @@ struct EventGroup{
     
     static func fromRecord(_ record: CKRecord) -> EventGroup? {
         
-        guard let categoriesData = record.value(forKey: "categories") as? Data, let activitiesData = record.value(forKey: "activities") as? Data, let users = record.value(forKey: "users") as? [String], let dates = record.value(forKey: "dates") as? [Date]
+        guard let categoriesData = record.value(forKey: "categories") as? Data, let activitiesData = record.value(forKey: "activities") as? Data, let users = record.value(forKey: "users") as? [String], let dates = record.value(forKey: "dates") as? [Date], let owner = record.value(forKey: "owner") as? String
         else{
             return nil
         }
@@ -58,6 +59,6 @@ struct EventGroup{
                     let activities = try? JSONDecoder()
                         .decode([ActivitiesModel].self, from: activitiesData)
         
-        return EventGroup(recordId: record.recordID, users: Set(users), categories: categories ?? [], activities: activities ?? [], dates: dates)
+        return EventGroup(recordId: record.recordID, users: Set(users), categories: categories ?? [], activities: activities ?? [], dates: dates, owner: owner)
     }
 }
