@@ -6,11 +6,12 @@
 //
 
 import SwiftUI
+import CloudKit
 
 struct GrupResultView: View {
-
-    let viewModel = CalendarViewModel()
-    let datesResult = [Date(), Date(), Date()]
+    @StateObject private var vm = GroupViewModel.shared
+    
+    let viewModelCalendar = CalendarViewModel()
     let mockDates: [Date] = [
         Calendar.current.date(from: DateComponents(year: 2026, month: 5, day: 10, hour: 10))!,
         Calendar.current.date(from: DateComponents(year: 2026, month: 5, day: 15, hour: 11))!,
@@ -19,19 +20,24 @@ struct GrupResultView: View {
         Calendar.current.date(from: DateComponents(year: 2026, month: 5, day: 22, hour: 10))!,
         Calendar.current.date(from: DateComponents(year: 2026, month: 5, day: 20, hour: 10))!
     ]
+
+    var group: EventGroup
     
     var body: some View {
         ScrollView{
             VStack{
                 
-                CalendarView(viewModel: viewModel, dates: mockDates)
                 
-                TimeLineView(viewModel: viewModel, mostFrequncyDate: viewModel.mostFrequencyDate(dates: mockDates), secondFrequncyDate: viewModel.secondFrequencyDate(dates: mockDates), datefilterArray: viewModel.filterDate(dates: mockDates, day: viewModel.mostFrequencyDate(dates: datesResult)), dates: mockDates)
+                CalendarView(dates: group.dates)
+                
+                TimeLineView(mostFrequncyDate: viewModelCalendar.mostFrequencyDate(dates: mockDates), secondFrequncyDate: viewModelCalendar.secondFrequencyDate(dates: mockDates), datefilterArray: viewModelCalendar.filterDate(dates: mockDates, day: viewModelCalendar.mostFrequencyDate(dates: mockDates)), dates: mockDates)
+                
+                
             }
         }
     }
 }
 
-#Preview {
-    GrupResultView()
-}
+//#Preview {
+//    GrupResultView()
+//}

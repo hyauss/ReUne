@@ -17,7 +17,7 @@ struct CalendarView: View {
     @State private var currentMonth = Date.now
     @State private var days: [Date] = []
     
-    let viewModel: CalendarViewModel
+    let viewModelCalendar =  CalendarViewModel()
     let daysOfWeek = Date.capitalizedFirstLettersOfWeekdays
     let columns = Array(repeating: GridItem(.flexible()), count: 7)
     
@@ -76,7 +76,7 @@ struct CalendarView: View {
                             .foregroundStyle(Date.now.startOfDay == day.startOfDay ? .pink : .black)
                             .background(
                                 RoundedRectangle(cornerRadius: 10)
-                                    .foregroundStyle(Color(hue: 0.9, saturation: viewModel.opacity(for: day, dates: dates), brightness: 1))
+                                    .foregroundStyle(Color(hue: 0.9, saturation: viewModelCalendar.opacity(for: day, dates: dates), brightness: 1))
                             )
                     }
                 }
@@ -95,5 +95,5 @@ struct CalendarView: View {
 }
 
 #Preview {
-    CalendarView(viewModel: CalendarViewModel(), dates: [Date(), Date(), Date()])
+    CalendarView(dates: [Date(), Date(), Date()])
 }

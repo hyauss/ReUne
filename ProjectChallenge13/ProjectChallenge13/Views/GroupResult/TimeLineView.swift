@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TimeLineView: View {
     
-    let viewModel: CalendarViewModel
+    let viewModelCalendar =  CalendarViewModel()
     let hours = Calendar.current.hourOfDay
     var mostFrequncyDate : Date
     var secondFrequncyDate : Date
@@ -33,7 +33,7 @@ struct TimeLineView: View {
                 VStack(spacing: -10){
                     ForEach(hours, id: \.self){
                         time in
-                        TimeComponent(time: time, opacity1: viewModel.opacityForHour(dates: dates, day: mostFrequncyDate, hour: time),opacity2: viewModel.opacityForHour(dates: dates, day: secondFrequncyDate, hour: time))
+                        TimeComponent(time: time, opacity1: viewModelCalendar.opacityForHour(dates: dates, day: mostFrequncyDate, hour: time),opacity2: viewModelCalendar.opacityForHour(dates: dates, day: secondFrequncyDate, hour: time))
                     }
                 }
             }

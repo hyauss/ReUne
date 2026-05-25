@@ -13,7 +13,7 @@ struct ResultView: View {
     var body: some View {
         NavigationStack{
             VStack{
-                CalendarView()
+//                CalendarView()
                 //TimeView()
                 //WordCloudView()
             }

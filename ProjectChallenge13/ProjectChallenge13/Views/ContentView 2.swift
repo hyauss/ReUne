@@ -47,6 +47,7 @@ struct ContentView2: View {
             ForEach(vm.items, id: \.recordId){ item in
                 HStack{
                     Spacer()
+                    GrupResultView(grupoID: item.recordId!.recordName)
                     Text(item.owner)
                     Text(item.dates.description)
                     Text(item.categories.description)
