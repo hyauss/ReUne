@@ -47,7 +47,7 @@ struct HomeView: View {
                 vm.needFetch = false
             }
         }
-        .onChange(of: ckViewModel.isLogged){
+        .onAppear(){
             vm.fetchGroupsWithUserId()
         }
     }
