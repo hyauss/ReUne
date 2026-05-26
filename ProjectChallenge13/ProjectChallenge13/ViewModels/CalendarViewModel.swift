@@ -38,33 +38,49 @@ class CalendarViewModel {
         return countDay/Double(dates.count)
     }
     
-    func opacityForHour(dates: [Date], day: Date, hour: Date) -> Double{
+    func opacityForHour(dates: [Date], day: String, hour: Date) -> Double{
         
         let hourFilted = filterHour(dates: dates, day: day, hour: hour)
         
         return Double(hourFilted.count)/Double(dates.count) + 0.1
     }
     
-    func mostFrequencyDate (dates: [Date]) -> Date{
-        var counts: [Date: Int] = [:]
+    func mostFrequencyDate (dates: [Date]) -> String{
+        var counts: [String: Int] = [:]
         
         for item in dates {
-            counts[item] = (counts[item] ?? 0) + 1
+//            let dayOnly = Calendar.current.startOfDay(for: item)
+            
+            counts[item.formattedDate] = (counts[item.formattedDate] ?? 0) + 1
         }
         
-        let newArray = counts.sorted { $0.value > $1.value }.map { $0.key }
+        let newArray = counts.sorted {
+            
+            if $0.value == $1.value {
+                return $0.key < $1.key
+            }
+            return $0.value > $1.value
+            
+        }.map { $0.key }
         
         return newArray[0]
     }
     
-    func secondFrequencyDate (dates: [Date]) -> Date{
-        var counts: [Date: Int] = [:]
+    func secondFrequencyDate (dates: [Date]) -> String{
+        var counts: [String: Int] = [:]
         
         for item in dates {
-            counts[item] = (counts[item] ?? 0) + 1
+            counts[item.formattedDate] = (counts[item.formattedDate] ?? 0) + 1
         }
         
-        let newArray = counts.sorted { $0.value > $1.value }.map { $0.key }
+        let newArray = counts.sorted {
+            
+            if $0.value == $1.value {
+                return $0.key < $1.key
+            }
+            return $0.value > $1.value
+            
+        }.map { $0.key }
         
         if newArray.count >= 2 {
             return newArray[1]
@@ -74,15 +90,15 @@ class CalendarViewModel {
         }
     }
     
-    func filterDate(dates: [Date], day: Date) -> [Date]{
+    func filterDate(dates: [Date], day: String) -> [Date]{
         dates.filter { date in
-            date.formattedDate.contains(day.formattedDate)
+            date.formattedDate.contains(day)
         }
     }
 
-    func filterHour(dates: [Date], day: Date, hour: Date) -> [Date] {
+    func filterHour(dates: [Date], day: String, hour: Date) -> [Date] {
         dates.filter { date in
-            date.formattedDate.contains(day.formattedDate) &&
+            date.formattedDate.contains(day) &&
             hourFormater(date: date) == hourFormater(date: hour)
         }
     }
