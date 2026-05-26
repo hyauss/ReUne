@@ -20,6 +20,7 @@ struct EntryView: View {
     @State private var showingAlert1: Bool = false
     @State private var showingAlert2: Bool = false
     @State private var isLoadingLocal: Bool = false
+
     
     @State private var state: Int = 0
     
@@ -37,6 +38,8 @@ struct EntryView: View {
     var body: some View {
         if isLoading {
             loadingView()
+        } else if ckViewModel.isLogged{
+            HomeView()
         }
         else {
             if state == 0 {
@@ -87,11 +90,11 @@ struct EntryView: View {
                         .navigationTitle("Boas vindas")
                     }
                 }
-                Button{
-                    ckViewModel.fetchAndDeletePreference()
-                }label: {
-                    Text("deletar conta")
-                }
+//                Button{
+//                    ckViewModel.fetchAndDeletePreference()
+//                }label: {
+//                    Text("deletar conta")
+//                }
             }
             else {
                 if isLoading {
