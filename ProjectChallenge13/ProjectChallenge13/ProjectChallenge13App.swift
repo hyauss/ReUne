@@ -22,35 +22,36 @@ struct ProjectChallenge13App: App {
     var body: some Scene {
         WindowGroup {
             //            AptabaseTesteView()
-            HomeView()
-            ContentView()
-                .sheet(isPresented: $showLogin) {
-                    EntryView()
-                }
-                .onOpenURL { url in
-                    print(url)
-                    guard let recordID = url.host else {
-                        return
-                    }
-                    
-                    print(recordID)
-                    Task{
-                        do{
-                            let groupRecord = try await vm.fetchGroupsWithId(groupID: recordID)
-                            var group = EventGroup.fromRecord(groupRecord)
-                            if(ckViewModel.isLogged){
-                                group?.users.insert(ckViewModel.preference?.userID ?? "Não Logado")
-                                groupRecord["users"] = Array(group?.users ?? [])
-                                await vm.save(groupRecord: groupRecord)
-                            }else{
-                                showLogin = true
-                            }
-                        }
-                        catch{
-                            print(error.localizedDescription)
-                        }
-                    }
-                }
+            FormView()
+//            HomeView()
+//            ContentView()
+//                .sheet(isPresented: $showLogin) {
+//                    EntryView()
+//                }
+//                .onOpenURL { url in
+//                    print(url)
+//                    guard let recordID = url.host else {
+//                        return
+//                    }
+//                    
+//                    print(recordID)
+//                    Task{
+//                        do{
+//                            let groupRecord = try await vm.fetchGroupsWithId(groupID: recordID)
+//                            var group = EventGroup.fromRecord(groupRecord)
+//                            if(ckViewModel.isLogged){
+//                                group?.users.insert(ckViewModel.preference?.userID ?? "Não Logado")
+//                                groupRecord["users"] = Array(group?.users ?? [])
+//                                await vm.save(groupRecord: groupRecord)
+//                            }else{
+//                                showLogin = true
+//                            }
+//                        }
+//                        catch{
+//                            print(error.localizedDescription)
+//                        }
+//                    }
+//                }
         }
     }
 }

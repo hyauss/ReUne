@@ -15,6 +15,7 @@ struct CategoryModel: Codable, Hashable {
 struct ActivitiesModel: Codable {
     let name: String
     let votos: Int
+    let category: CategoryModel
 }
 
 struct EventGroup{
