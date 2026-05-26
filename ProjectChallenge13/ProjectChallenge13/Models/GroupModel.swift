@@ -12,13 +12,12 @@ struct CategoryModel: Codable, Hashable {
     let name: String
 }
 
-struct ActivitiesModel: Codable {
+struct ActivitiesModel: Codable, Hashable {
     let name: String
     let votos: Int
-    let category: CategoryModel
 }
 
-struct EventGroup{
+struct EventGroup: Equatable {
     
     var recordId: CKRecord.ID?
     var users: Set<String>

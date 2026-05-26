@@ -6,12 +6,15 @@
 //
 
 import SwiftUI
+import CloudKit
 
 struct HomeView: View {
     @StateObject private var vm =  GroupViewModel.shared
     
     @State var newGroupCreated: Bool = false
     
+    @State var formRecord: CKRecord = CKRecord(recordType: "SeuTipo")
+
     var body: some View {
         NavigationStack {
             VStack{
@@ -28,17 +31,17 @@ struct HomeView: View {
             .navigationTitle("Seus Grupos")
             .toolbar{
                 ToolbarItem(placement:.confirmationAction){
-                    AddGroupButtonComponent(newGroupCreated: $newGroupCreated)
+                    AddGroupButtonComponent(newGroupCreated: $newGroupCreated, formRecord: $formRecord)
                 }
             }
             .navigationDestination(isPresented: $newGroupCreated) {
-                FormView()
+                FormView(group: EventGroup.fromRecord(formRecord))
             }
         }
     }
 }
 
-#Preview {
-    HomeView()
-//    ContentView()
-}
+//#Preview {
+//    HomeView()
+////    ContentView()
+//}

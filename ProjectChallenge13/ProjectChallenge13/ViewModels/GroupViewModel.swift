@@ -38,7 +38,7 @@ class GroupViewModel: ObservableObject {
         }
     }
     
-    func saveItem (categories: [CategoryModel], activities: [ActivitiesModel], dates: [Date],users: Set<String>, owner: String){
+    func saveItem (categories: [CategoryModel], activities: [ActivitiesModel], dates: [Date],users: Set<String>, owner: String) -> CKRecord {
         let record = CKRecord(recordType: RecordType.itemListing.rawValue)
         let itemListing = EventGroup(recordId: record.recordID, users: users, categories: categories, activities: activities, dates: dates, owner: owner)
         record.setValuesForKeys(itemListing.toDictionary())
@@ -52,6 +52,7 @@ class GroupViewModel: ObservableObject {
                 }
             }
         }
+        return record
     }
     
     func fetchGroupsWithUserId(){

@@ -9,11 +9,17 @@ import SwiftUI
 
 struct FormView: View {
     @State var formVM = FormViewModel()
+    @State var activities: [ActivitiesListModel]?
+    
+    //let categories: [CategoryModel]?
+    
+    let group: EventGroup?
     
     let dateRange: ClosedRange<Date> = {
         let now = Date.now
         return now...Calendar.current.date(byAdding: .day, value: 2000, to: now)!
     }()
+    
     
     var body: some View {
         NavigationStack {
@@ -44,22 +50,34 @@ struct FormView: View {
                 .onChange(of: formVM.dateList) {
                     print(formVM.dateList)
                 }
-
+                
                 Text("Atividades")
                     .font(.body)
                     .fontWeight(.semibold)
                     .foregroundStyle(.newGroupCategoriesText)
                 
+                
                 PlusButton()
                     .padding(.bottom, 40)
-
+                ScrollView {
+                    ForEach(activities ?? [], id: \.self) { category in
+                        Text(category.name)
+                    }
+                }
+                
                 Spacer()
             }
             .padding(.horizontal)
+            .onAppear() {
+                activities = formVM.filterActivities(categories: group?.categories ?? [])
+                print(activities)
+            }
+            
+            FormToolbar()
         }
     }
 }
 
-#Preview {
-    FormView()
-}
+//#Preview {
+//    FormView()
+//}
