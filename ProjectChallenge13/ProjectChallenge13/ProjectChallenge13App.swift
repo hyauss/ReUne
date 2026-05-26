@@ -22,7 +22,6 @@ struct ProjectChallenge13App: App {
     var body: some Scene {
         WindowGroup {
             //            AptabaseTesteView()
-            HomeView()
             ContentView()
                 .sheet(isPresented: $showLogin) {
                     EntryView()
