@@ -26,7 +26,7 @@ struct WordCloudView: View {
         Group {
             if vm.words.isEmpty {
                 VStack(spacing: 12) {
-                    Image(systemName: "house")
+                    Image(systemName: "icloud.slash")
                         .font(.largeTitle)
                         .foregroundColor(.secondary)
                     Text("Nenhuma atividade com votos ainda")
@@ -70,7 +70,7 @@ struct WordCloudView: View {
                                             vm.updateCanvasSize(inner)
                                         }
                                     }
-                                    .onChange(of: proxy.size) { _old, newSize in
+                                    .onChange(of: proxy.size) { newSize in
                                         let inner = CGSize(width: max(0, newSize.width - innerPadding * 2), height: max(0, newSize.height - innerPadding * 2))
                                         DispatchQueue.main.async {
                                             canvasRect = CGRect(origin: .zero, size: inner)
@@ -79,7 +79,7 @@ struct WordCloudView: View {
                                     }
                             }
                         )
-                )   
+                )
             }
         }
         .padding(32)
@@ -91,7 +91,7 @@ struct WordCloudView: View {
             }
             vm.updateCanvasSize(canvasRect.size)
         }
-        .onChange(of: canvasRect) { _old, newRect in
+        .onChange(of: canvasRect) { newRect in
             vm.updateCanvasSize(newRect.size)
         }
         
@@ -105,45 +105,53 @@ struct WordCloudView: View {
 struct WordSizeGetter: View {
     @Binding var sizes: [CGSize]
     let index: Int
-
     init(_ sizes: Binding<[CGSize]>, _ index: Int) {
         self._sizes = sizes
         self.index = index
     }
 
+    @State private var updateTask: Task<Void, Never>? = nil
+    @State private var lastReported: CGSize = .zero
+    private let debounceDelay: TimeInterval = 0.07 // 70 ms
+
     var body: some View {
         GeometryReader { proxy in
             Color.clear
                 .onAppear {
-                    update(with: proxy.size)
+                    scheduleUpdate(with: proxy.size)
                 }
-                .task(id: proxy.size) {
-                    update(with: proxy.size)
+                .onChange(of: proxy.size) { new in
+                    scheduleUpdate(with: new)
+                }
+                .onDisappear {
+                    updateTask?.cancel()
                 }
         }
     }
 
-    private func update(with size: CGSize) {
-        DispatchQueue.main.async {
-            guard index >= 0 else { return }
-            if index < sizes.count {
-                if sizes[index] != size {
-                    sizes[index] = size
+    private func scheduleUpdate(with size: CGSize) {
+        if abs(lastReported.width - size.width) < 1.0 && abs(lastReported.height - size.height) < 1.0 {
+            return
+        }
+
+        updateTask?.cancel()
+
+        updateTask = Task {
+            try? await Task.sleep(nanoseconds: UInt64(debounceDelay * 1_000_000_000))
+            if Task.isCancelled { return }
+
+            await MainActor.run {
+                lastReported = size
+                guard index >= 0 else { return }
+                if index < self.sizes.count {
+                    if self.sizes[index] != size {
+                        self.sizes[index] = size
+                    }
+                } else if index == self.sizes.count {
+                    self.sizes.append(size)
                 }
-            } else if index == sizes.count {
-                sizes.append(size)
             }
         }
     }
 }
 
-//#Preview {
-//    let sampleActivities = [
-//        ActivitiesModel(name: "Cinema", votos: 8),
-//        ActivitiesModel(name: "Parque", votos: 5),
-//        ActivitiesModel(name: "Brunch", votos: 2),
-//        ActivitiesModel(name: "Museu", votos: 0)
-//    ]
-//    let sampleGroup = EventGroup(recordId: nil, users: Set(["previewUser"]), categories: [], activities: sampleActivities, dates: [])
-//    WordCloudView(group: sampleGroup)
-//}

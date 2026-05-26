@@ -10,40 +10,159 @@ import Combine
 import CoreGraphics
 
 protocol WordCloudLayouting {
-    func calcPositions(canvasSize: CGSize, itemSizes: [CGSize]) -> [CGPoint]
+    nonisolated func calcPositions(canvasSize: CGSize, itemSizes: [CGSize]) -> [CGPoint]
 }
 
 struct DefaultWordCloudLayout: WordCloudLayouting {
-    func calcPositions(canvasSize: CGSize, itemSizes: [CGSize]) -> [CGPoint] {
+    nonisolated func calcPositions(canvasSize: CGSize, itemSizes: [CGSize]) -> [CGPoint] {
         var positions = [CGPoint](repeating: .zero, count: itemSizes.count)
-        if canvasSize.height == 0 {
-            return positions
+        guard canvasSize.width > 0 && canvasSize.height > 0 else { return positions }
+
+        // Parameters to tune
+        let maxIterPerItem = 5000
+        let initialStep: CGFloat = 0.03
+        let stepIncrementFactor: CGFloat = 1.0008 // slowly increase step to move faster outward
+
+        // Spatial index bounds: coordinate system centered at (0,0)
+        let halfW = canvasSize.width / 2
+        let halfH = canvasSize.height / 2
+        let bounds = CGRect(x: -halfW, y: -halfH, width: canvasSize.width, height: canvasSize.height)
+
+        // Simple quadtree implementation for fast neighbor queries
+        class QuadTree {
+            let bounds: CGRect
+            let capacity: Int
+            var rects: [CGRect] = []
+            var divided = false
+            var nw: QuadTree?
+            var ne: QuadTree?
+            var sw: QuadTree?
+            var se: QuadTree?
+
+            init(bounds: CGRect, capacity: Int = 4) {
+                self.bounds = bounds
+                self.capacity = capacity
+            }
+
+            func insert(_ rect: CGRect) -> Bool {
+                guard bounds.intersects(rect) else { return false }
+                if !divided {
+                    if rects.count < capacity {
+                        rects.append(rect)
+                        return true
+                    } else {
+                        subdivide()
+                    }
+                }
+                if nw!.insert(rect) { return true }
+                if ne!.insert(rect) { return true }
+                if sw!.insert(rect) { return true }
+                if se!.insert(rect) { return true }
+                // As a fallback keep in this node
+                rects.append(rect)
+                return true
+            }
+
+            func query(in range: CGRect, found: inout [CGRect]) {
+                if !bounds.intersects(range) { return }
+                for r in rects { if r.intersects(range) { found.append(r) } }
+                if !divided { return }
+                nw!.query(in: range, found: &found)
+                ne!.query(in: range, found: &found)
+                sw!.query(in: range, found: &found)
+                se!.query(in: range, found: &found)
+            }
+
+            private func subdivide() {
+                let w = bounds.width / 2
+                let h = bounds.height / 2
+                let x = bounds.minX
+                let y = bounds.minY
+                nw = QuadTree(bounds: CGRect(x: x, y: y + h, width: w, height: h), capacity: capacity)
+                ne = QuadTree(bounds: CGRect(x: x + w, y: y + h, width: w, height: h), capacity: capacity)
+                sw = QuadTree(bounds: CGRect(x: x, y: y, width: w, height: h), capacity: capacity)
+                se = QuadTree(bounds: CGRect(x: x + w, y: y, width: w, height: h), capacity: capacity)
+                divided = true
+            }
         }
 
-        var rects = [CGRect]()
-        var step: CGFloat = 0
-        let ratio = canvasSize.width * 1.5 / canvasSize.height
+        // Order indices by area descending, keep original index mapping
+        let indices = Array(0..<itemSizes.count).sorted { (a, b) -> Bool in
+            let areaA = itemSizes[a].width * itemSizes[a].height
+            let areaB = itemSizes[b].width * itemSizes[b].height
+            return areaA > areaB
+        }
+
+        var quad = QuadTree(bounds: bounds)
+        var placedRects = [CGRect]()
+        var fallbackStackOffset: CGFloat = 0
+
         let startPos = CGPoint(x: 0, y: 0)
 
-        for (index, itemSize) in itemSizes.enumerated() {
-            var nextRect = CGRect(
-                origin: CGPoint(
-                    x: startPos.x - itemSize.width / 2,
-                    y: startPos.y - itemSize.height / 2
-                ),
-                size: itemSize
-            )
-            if index > 0 {
-                while checkIntersects(rect: nextRect, rects: rects) || checkOutsideBoundary(canvasSize: canvasSize, rect: nextRect) {
-                    nextRect.origin.x = startPos.x + ratio * step * cos(step) + startPos.x - itemSize.width / 2
-                    nextRect.origin.y = startPos.y + ratio * step * sin(step) + startPos.y - itemSize.height / 2
-                    step += 0.01
+        // local helpers to avoid actor-isolation issues when called from nonisolated context
+        func rectCenter(_ r: CGRect) -> CGPoint {
+            return CGPoint(x: r.origin.x + r.size.width / 2, y: r.origin.y + r.size.height / 2)
+        }
+
+        func isOutside(_ rect: CGRect) -> Bool {
+            if rect.maxY > canvasSize.height / 2 { return true }
+            if rect.minY < -canvasSize.height / 2 { return true }
+            if rect.maxX > canvasSize.width / 2 { return true }
+            if rect.minX < -canvasSize.width / 2 { return true }
+            return false
+        }
+
+        for idx in indices {
+            let itemSize = itemSizes[idx]
+            // if item is larger than canvas, place centered (clamped)
+            if itemSize.width >= canvasSize.width || itemSize.height >= canvasSize.height {
+                let centered = CGRect(origin: CGPoint(x: startPos.x - itemSize.width / 2, y: startPos.y - itemSize.height / 2), size: itemSize)
+                positions[idx] = rectCenter(centered)
+                _ = quad.insert(centered)
+                placedRects.append(centered)
+                continue
+            }
+
+            var nextRect = CGRect(origin: CGPoint(x: startPos.x - itemSize.width / 2, y: startPos.y - itemSize.height / 2), size: itemSize)
+            if !placedRects.isEmpty {
+                var step: CGFloat = initialStep
+                var iter = 0
+                var placed = false
+                while iter < maxIterPerItem {
+                    // Query nearby rects to test intersection
+                    var candidates: [CGRect] = []
+                    quad.query(in: nextRect.insetBy(dx: -max(itemSize.width, itemSize.height), dy: -max(itemSize.width, itemSize.height)), found: &candidates)
+                    var intersectsAny = false
+                    for r in candidates {
+                        if nextRect.intersects(r) { intersectsAny = true; break }
+                    }
+                    if !intersectsAny && !isOutside(nextRect) {
+                        // place it
+                        placed = true
+                        break
+                    }
+
+                    // advance along spiral
+                    nextRect.origin.x = startPos.x + (halfW * 0.01) * step * cos(step) + startPos.x - itemSize.width / 2
+                    nextRect.origin.y = startPos.y + (halfH * 0.01) * step * sin(step) + startPos.y - itemSize.height / 2
+                    step *= stepIncrementFactor
+                    iter += 1
+                }
+
+                if !placed {
+                    // fallback: stack along left edge inward
+                    let x = -halfW + 4 + itemSize.width / 2
+                    let y = -halfH + 4 + fallbackStackOffset + itemSize.height / 2
+                    nextRect = CGRect(origin: CGPoint(x: x - itemSize.width / 2, y: y - itemSize.height / 2), size: itemSize)
+                    fallbackStackOffset += itemSize.height + 4
                 }
             }
 
-            positions[index] = nextRect.center
-            rects.append(nextRect)
+            positions[idx] = rectCenter(nextRect)
+            placedRects.append(nextRect)
+            _ = quad.insert(nextRect)
         }
+
         return positions
     }
 
@@ -57,12 +176,11 @@ struct DefaultWordCloudLayout: WordCloudLayouting {
     }
 
     private func checkOutsideBoundary(canvasSize: CGSize, rect: CGRect) -> Bool {
-        if rect.maxY > canvasSize.height / 2 {
-            return true
-        }
-        if rect.minY < -canvasSize.height / 2 {
-            return true
-        }
+        // Check both X and Y against the canvas centered at (0,0)
+        if rect.maxY > canvasSize.height / 2 { return true }
+        if rect.minY < -canvasSize.height / 2 { return true }
+        if rect.maxX > canvasSize.width / 2 { return true }
+        if rect.minX < -canvasSize.width / 2 { return true }
         return false
     }
 }
@@ -81,9 +199,9 @@ final class WordCloudViewModel: ObservableObject {
     private var layoutCacheCanvasSize: CGSize = .zero
     private var layoutCacheWordSizes: [CGSize] = []
     private var layoutCachePositions: [CGPoint] = []
+    private var computeTask: Task<Void, Never>? = nil
 
     init(words: [WordElement]? = nil, layout: WordCloudLayouting? = nil) {
-        // In production default to no sample words — view should show a placeholder when empty.
         let initialWords = words ?? []
         self.words = initialWords
         self.wordSizes = Array(repeating: .zero, count: initialWords.count)
@@ -147,25 +265,61 @@ final class WordCloudViewModel: ObservableObject {
     }
 
     private func recomputePositionsIfNeeded() {
-        guard canvasSize.height > 0 else { return }
+        // Avoid computing until we have a valid canvas
+        guard canvasSize.height > 0 && canvasSize.width > 0 else { return }
 
+        // If inputs didn't change meaningfully, reuse cache synchronously
         if layoutCacheCanvasSize == canvasSize && simularWordSizes(a: layoutCacheWordSizes, b: wordSizes) {
             positions = layoutCachePositions
             return
         }
 
-        let newPositions = layout.calcPositions(canvasSize: canvasSize, itemSizes: wordSizes)
-        if newPositions.count == words.count {
-            positions = newPositions
-        } else if newPositions.count < words.count {
-            positions = newPositions + Array(repeating: .zero, count: words.count - newPositions.count)
-        } else {
-            positions = Array(newPositions.prefix(words.count))
-        }
+        // Cancel any in-flight computation to avoid piling work on the CPU/main thread
+        computeTask?.cancel()
 
-        layoutCacheCanvasSize = canvasSize
-        layoutCacheWordSizes = wordSizes
-        layoutCachePositions = positions
+        // Capture the inputs we want to compute for
+        let canvasCopy = canvasSize
+        let sizesCopy = wordSizes
+        let wordsCount = words.count
+        let layoutRef = layout
+
+        // Perform the potentially expensive layout off the main actor
+        computeTask = Task.detached { [layoutRef] in
+            // Respect cooperative cancellation
+            if Task.isCancelled { return }
+
+            let newPositions = layoutRef.calcPositions(canvasSize: canvasCopy, itemSizes: sizesCopy)
+
+            // If cancelled after computing, don't try to publish results
+            if Task.isCancelled { return }
+
+            await MainActor.run {
+                // Only apply results if the model hasn't changed meanwhile in a way that
+                // would make these positions stale. We conservatively check canvas size and
+                // that the sizes are similar.
+                if self.layoutCacheCanvasSize == canvasCopy && self.simularWordSizes(a: self.layoutCacheWordSizes, b: sizesCopy) {
+                    // Another task already set correct cache/results.
+                    return
+                }
+
+                var finalPositions: [CGPoint]
+                if newPositions.count == wordsCount {
+                    finalPositions = newPositions
+                } else if newPositions.count < wordsCount {
+                    finalPositions = newPositions + Array(repeating: .zero, count: wordsCount - newPositions.count)
+                } else {
+                    finalPositions = Array(newPositions.prefix(wordsCount))
+                }
+
+                // Publish on main actor
+                self.positions = finalPositions
+
+                // Update caches
+                self.layoutCacheCanvasSize = canvasCopy
+                self.layoutCacheWordSizes = sizesCopy
+                self.layoutCachePositions = finalPositions
+            }
+        }
     }
 
 }
