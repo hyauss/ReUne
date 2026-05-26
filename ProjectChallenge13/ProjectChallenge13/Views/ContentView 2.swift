@@ -19,7 +19,7 @@ struct ContentView2: View {
         
         Button("Save"){
             users.insert(ckViewModel.preference!.userID)
-            vm.saveItem(categories: [CategoryModel(name: "testes1")], activities: [ActivitiesModel(name: "1131231", votos: 1),ActivitiesModel(name: "wow", votos: 5),ActivitiesModel(name: "abate", votos: 10),ActivitiesModel(name: "birobiro", votos: 0)], dates: [Calendar.current.date(from: DateComponents(year: 2026, month: 5, day: 22, hour: 10))!], users: users, owner: ckViewModel.preference!.userID)
+            vm.saveItem(categories: [CategoryModel(name: "testes1")], activities: [ActivitiesModel(name: "okokok3", votos: 1),ActivitiesModel(name: "wow", votos: 5),ActivitiesModel(name: "okok", votos: 10),ActivitiesModel(name: "11", votos: 7),ActivitiesModel(name: "lllll", votos: 6),ActivitiesModel(name: "birobiro", votos: 0)], dates: [Calendar.current.date(from: DateComponents(year: 2026, month: 5, day: 22, hour: 10))!], users: users, owner: ckViewModel.preference!.userID)
         }
         
         
@@ -63,9 +63,9 @@ struct ContentView2: View {
         
         .navigationTitle("Items")
         .padding()
-        .onAppear {
-            vm.fetchGroupsWithUserId()
-        }
+//        .onAppear {
+//            vm.fetchGroupsWithUserId()
+//        }
     }
        
 }

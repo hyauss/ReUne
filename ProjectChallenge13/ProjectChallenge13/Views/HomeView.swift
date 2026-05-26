@@ -6,23 +6,29 @@
 //
 
 import SwiftUI
+import CloudKit
 
 struct HomeView: View {
     @StateObject private var vm =  GroupViewModel.shared
-    
+    @State var ckViewModel = LoginViewModel.shared
     @State var newGroupCreated: Bool = false
+    
+    
     
     var body: some View {
         NavigationStack {
             VStack{
                 ScrollView {
-                    ForEach(Array(vm.items.enumerated()), id: \.element.recordId) { index, item in
+                    ForEach(Array(vm.records.enumerated()), id: \.element.recordID) { index, item in
                         NavigationLink {
-                            GroupResultView(group:item)
+                            GroupResultView(group: ItemViewModel(itemListing: EventGroup.fromRecord(item)!))
                         } label: {
                             GroupCardComponent(groupNumber: index + 1)
                         }
                     }
+                }
+                .refreshable {
+                    vm.fetchGroupsWithUserId()
                 }
             }
             .navigationTitle("Seus Grupos")
@@ -34,11 +40,20 @@ struct HomeView: View {
             .navigationDestination(isPresented: $newGroupCreated) {
                 //ResultView()
             }
+        }.onChange(of: vm.needFetch) {
+            Task{
+                try? await Task.sleep(for: .seconds(2))
+                vm.fetchGroupsWithUserId()
+                vm.needFetch = false
+            }
+        }
+        .onChange(of: ckViewModel.isLogged){
+            vm.fetchGroupsWithUserId()
         }
     }
 }
 
 #Preview {
     HomeView()
-//    ContentView()
+    //    ContentView()
 }

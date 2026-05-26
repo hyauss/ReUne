@@ -87,11 +87,11 @@ struct EntryView: View {
                         .navigationTitle("Boas vindas")
                     }
                 }
-                Button{
-                    ckViewModel.fetchAndDeletePreference()
-                }label: {
-                    Text("deletar conta")
-                }
+//                Button{
+//                    ckViewModel.fetchAndDeletePreference()
+//                }label: {
+//                    Text("deletar conta")
+//                }
             }
             else {
                 if isLoading {
