@@ -15,11 +15,17 @@ struct ProjectChallenge13Tests {
 
     @Test func opacityCheckTrue() {
         let vm = CalendarViewModel()
-        let actualDate = vm.dateFormater(date: Date())
-        let date: String = Date().formattedDate
+        let calendar = Calendar.current
+        let mockDates: [Date] = [
+            calendar.date(from: DateComponents(year: 2026, month: 5, day: 10))!,
+            calendar.date(from: DateComponents(year: 2026, month: 5, day: 15))!,
+            calendar.date(from: DateComponents(year: 2026, month: 5, day: 15))!,
+            calendar.date(from: DateComponents(year: 2026, month: 5, day: 22))!,
+            calendar.date(from: DateComponents(year: 2026, month: 5, day: 20))!
+        ]
         
-        let result = vm.opacity(for: Date(), dates: [actualDate, actualDate, "2026-05-19","2026-05-20"])
-        let expect = 0.75
+        let result = vm.opacity(for: Date(), dates: mockDates)
+        let expect = 0.2
         #expect(result==expect)
     }
 

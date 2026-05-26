@@ -9,21 +9,30 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject private var vm =  GroupViewModel.shared
-
+    
+    @State var newGroupCreated: Bool = false
+    
     var body: some View {
         NavigationStack {
             VStack{
                 ScrollView {
                     ForEach(Array(vm.items.enumerated()), id: \.element.recordId) { index, item in
-                        GroupCardComponent(groupNumber: index + 1)
+                        NavigationLink {
+                            GroupResultView(group:item)
+                        } label: {
+                            GroupCardComponent(groupNumber: index + 1)
+                        }
                     }
                 }
             }
             .navigationTitle("Seus Grupos")
             .toolbar{
                 ToolbarItem(placement:.confirmationAction){
-                    AddGroupButtonComponent()
+                    AddGroupButtonComponent(newGroupCreated: $newGroupCreated)
                 }
+            }
+            .navigationDestination(isPresented: $newGroupCreated) {
+                ResultView()
             }
         }
     }
@@ -31,4 +40,5 @@ struct HomeView: View {
 
 #Preview {
     HomeView()
+//    ContentView()
 }

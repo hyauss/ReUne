@@ -18,7 +18,3 @@ struct CategoryCard: View {
             .clipShape(RoundedRectangle(cornerRadius: 90))
             .padding(.leading, 48)    }
 }
-
-//#Preview {
-//    CategoryCard(category: "Piscina")
-//}
