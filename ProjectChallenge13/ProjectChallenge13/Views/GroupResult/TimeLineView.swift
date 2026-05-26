@@ -11,8 +11,8 @@ struct TimeLineView: View {
     
     let viewModelCalendar =  CalendarViewModel()
     let hours = Calendar.current.hourOfDay
-    var mostFrequncyDate : Date
-    var secondFrequncyDate : Date
+    var mostFrequncyDate : String
+    var secondFrequncyDate : String
     var datefilterArray: [Date]
     var dates: [Date]
     
@@ -22,10 +22,10 @@ struct TimeLineView: View {
                 Text("Horarios")
                     .font(.system(size: 14, weight: .medium))
                     .frame(maxWidth: .infinity)
-                Text(mostFrequncyDate.formattedDate)
+                Text(mostFrequncyDate)
                     .font(.system(size: 14, weight: .medium))
                     .frame(maxWidth: .infinity)
-                Text(secondFrequncyDate == mostFrequncyDate ? " " : secondFrequncyDate.formattedDate )
+                Text(secondFrequncyDate == mostFrequncyDate ? " " : secondFrequncyDate)
                     .font(.system(size: 14, weight: .medium))
                     .frame(maxWidth: .infinity)
             }
