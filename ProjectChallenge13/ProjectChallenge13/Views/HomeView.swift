@@ -32,7 +32,7 @@ struct HomeView: View {
                 }
             }
             .navigationDestination(isPresented: $newGroupCreated) {
-                ResultView()
+//                ResultView()
             }
         }
     }
