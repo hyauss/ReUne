@@ -53,10 +53,8 @@ struct WordCloudView: View {
                             .accessibilityLabel("\(word.text), \(word.votos) votes")
                     }
                 }
-                // Height is driven entirely by the layout result — no GeometryReader involved.
                 .frame(height: layout.requiredHeight)
                 .padding(.horizontal)
-                // Hidden zero-height view just to read available width once.
                 .background(
                     GeometryReader { geo in
                         Color.clear
@@ -77,14 +75,12 @@ struct WordCloudView: View {
         }
     }
  
-    // MARK: - Trigger
- 
     private func recalculate() {
         guard availableWidth > 0 else { return }
         layout = computeLayout(for: viewModel.words, width: availableWidth)
     }
  
-    // MARK: - Layout engine
+    // MARK: - Layout
  
     struct LayoutResult: Equatable {
         let positions: [CGPoint]
@@ -93,14 +89,14 @@ struct WordCloudView: View {
  
     /// Measures each word, then places them using an Archimedean spiral.
     /// The canvas grows vertically until every word fits, so `requiredHeight`
-    /// always reflects the true space needed — independent of any SwiftUI frame.
+    /// always reflects the true space needed
     func computeLayout(for words: [WordElement], width: CGFloat) -> LayoutResult {
         guard !words.isEmpty, width > 0 else {
             return LayoutResult(positions: [], requiredHeight: 140)
         }
  
-        let padding: CGFloat = 2          // espaço entre palavras
-        let edgePadding: CGFloat = 24     // margem interna entre as palavras e as bordas do retângulo
+        let padding: CGFloat = 2
+        let edgePadding: CGFloat = 24
         let minHeight: CGFloat = 140
  
         // Measure all words up-front with UIKit for accurate bounding boxes.
@@ -174,7 +170,7 @@ struct WordCloudView: View {
         )
     }
  
-    // MARK: - Placement pass
+    // MARK: - Placement
  
     private struct PlacementResult {
         let positions: [CGPoint]

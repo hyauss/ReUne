@@ -18,7 +18,7 @@ final class WordCloudViewModel: ObservableObject {
         buildWords(from: item)
     }
 
-    /// Rebuilds the words from the provided item (useful if the item updates).
+    /// Rebuilds the words from the provided item.
     func buildWords(from item: ItemViewModel, maxWords: Int = 10, minFont: CGFloat = 14, maxFont: CGFloat = 48) {
         let activities = item.actitivies
 

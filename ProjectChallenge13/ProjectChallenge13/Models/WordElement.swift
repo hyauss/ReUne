@@ -8,14 +8,13 @@
 import SwiftUI
 
 /// Model that represents a single word in the word-cloud.
-/// Keeps lightweight metadata used by the view and view-model.
 struct WordElement: Identifiable, Hashable, Codable {
     let id: UUID
     let text: String
     let votos: Int
     /// Computed font size (points) used by the view. Can be set by the view model.
     var fontSize: CGFloat
-    /// Deterministic seed used for stable pseudo-random placement or color selection.
+    /// Deterministic seed used for stable pseudo-random placement.
     let seed: Int
 
     init(text: String, votos: Int, fontSize: CGFloat) {
@@ -36,7 +35,6 @@ struct WordElement: Identifiable, Hashable, Codable {
             return (minFont + maxFont) / 2
         }
 
-        // normalized in [0, 1]
         let normalized = CGFloat(votos - minVotes) / CGFloat(maxVotes - minVotes)
 
         // apply power scaling to emphasize top entries
