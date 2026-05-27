@@ -54,7 +54,7 @@ struct NewGroupSheetView: View {
                 
                 ForEach(Array(newGroupVM.selectedCategory), id: \.self) { category in
                     CategoryCard(category: category)
-                }
+                } 
                 
                 Spacer()
                 

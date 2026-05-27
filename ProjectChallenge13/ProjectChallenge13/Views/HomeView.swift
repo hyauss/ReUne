@@ -12,16 +12,18 @@ struct HomeView: View {
     @StateObject private var vm =  GroupViewModel.shared
     
     @State var newGroupCreated: Bool = false
+    @State var newActivityCreated: Bool = false
+    
     
     @State var formRecord: CKRecord = CKRecord(recordType: "SeuTipo")
-
+    
     var body: some View {
         NavigationStack {
             VStack{
                 ScrollView {
                     ForEach(Array(vm.items.enumerated()), id: \.element.recordId) { index, item in
                         NavigationLink {
-                            GroupResultView(group:item)
+                            GroupResultView(group: item)
                         } label: {
                             GroupCardComponent(groupNumber: index + 1)
                         }
@@ -35,13 +37,13 @@ struct HomeView: View {
                 }
             }
             .navigationDestination(isPresented: $newGroupCreated) {
-                FormView(group: EventGroup.fromRecord(formRecord))
+                FormView(newActivityCreated: $newActivityCreated, group: EventGroup.fromRecord(formRecord))
+            }
+            .navigationDestination(isPresented: $newActivityCreated) {
+                if newActivityCreated == true  {
+                    GroupResultView(group: ItemViewModel(itemListing: EventGroup.fromRecord(formRecord)!))
+                }
             }
         }
     }
 }
-
-//#Preview {
-//    HomeView()
-////    ContentView()
-//}

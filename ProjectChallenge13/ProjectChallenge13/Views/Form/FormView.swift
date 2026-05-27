@@ -6,13 +6,16 @@
 //
 
 import SwiftUI
+import CloudKit
 
 struct FormView: View {
+    
     @State var formVM = FormViewModel()
-    @State var activities: [ActivitiesListModel]?
+    @State var activities: [ActivitiesListModel] = []
+    @State var newList: [ActivitiesModel] = []
     
-    //let categories: [CategoryModel]?
-    
+    @Binding var newActivityCreated: Bool
+            
     let group: EventGroup?
     
     let dateRange: ClosedRange<Date> = {
@@ -57,23 +60,28 @@ struct FormView: View {
                     .foregroundStyle(.newGroupCategoriesText)
                 
                 
-                PlusButton()
-                    .padding(.bottom, 40)
-                ScrollView {
-                    ForEach(activities ?? [], id: \.self) { category in
-                        Text(category.name)
-                    }
+                if group != nil && !newList.isEmpty {
+                    ActivityMenu(activities: newList)
+                }
+                
+                ForEach(Array(formVM.selectedActivities), id: \.self) { activity in
+                    ActivityCard(activity: activity)
                 }
                 
                 Spacer()
             }
             .padding(.horizontal)
             .onAppear() {
-                activities = formVM.filterActivities(categories: group?.categories ?? [])
-                print(activities)
+                //activities = formVM.filterActivities(categories: group?.categories!)
+            }
+            .environment(formVM)
+            .onAppear() {
+                activities = formVM.filterActivities(categories: group!.categories)
+                newList = formVM.activityListModelToActivityModel(actv: activities)
             }
             
-            FormToolbar()
+            FormToolbar(group: group!, newActivityCreated: $newActivityCreated)
+                .environment(formVM)
         }
     }
 }
