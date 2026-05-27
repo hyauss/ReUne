@@ -15,7 +15,9 @@ struct FormView: View {
     @State var newList: [ActivitiesModel] = []
     
     @Binding var newActivityCreated: Bool
-            
+    
+    @Binding var groupCKRecord: CKRecord
+        
     let group: EventGroup?
     
     let dateRange: ClosedRange<Date> = {
@@ -80,7 +82,7 @@ struct FormView: View {
                 newList = formVM.activityListModelToActivityModel(actv: activities)
             }
             
-            FormToolbar(group: group!, newActivityCreated: $newActivityCreated)
+            FormToolbar(group: group!, newActivityCreated: $newActivityCreated, groupCKRecord: $groupCKRecord)
                 .environment(formVM)
         }
     }

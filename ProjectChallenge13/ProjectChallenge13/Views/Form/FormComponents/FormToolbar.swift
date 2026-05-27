@@ -16,6 +16,8 @@ struct FormToolbar: View {
     @State var group: EventGroup
     
     @Binding var newActivityCreated: Bool
+    @Binding var groupCKRecord: CKRecord
+
     
     var body: some View {
         NavigationStack {
@@ -42,7 +44,7 @@ struct FormToolbar: View {
                                         groupRecord["activities"] = activitiesData
                                         groupRecord["dates"] = group.dates
                                         await vm.save(groupRecord: groupRecord)
-                                                                                
+                                        groupCKRecord = groupRecord
                                         newActivityCreated.toggle()
                                     }
                                     catch {

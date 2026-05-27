@@ -17,6 +17,8 @@ struct ProjectChallenge13App: App {
     @State var openForm: Bool = false
     @State var groupInvitation: EventGroup?
     @State var newActivityCreated: Bool = false
+    @State var formRecord: CKRecord = CKRecord(recordType: "SeuTipo")
+
     
     init() {
         Aptabase.shared.initialize(appKey: "A-US-8107330164") // 👈 this is where you enter your App Key
@@ -63,7 +65,7 @@ struct ProjectChallenge13App: App {
                     }
                     .navigationDestination(isPresented: $openForm) {
                         if ckViewModel.isLogged && groupInvitation != nil{
-                            FormView(newActivityCreated: $newActivityCreated, group: groupInvitation)
+                            FormView(newActivityCreated: $newActivityCreated, groupCKRecord: $formRecord, group: groupInvitation)
                         }
                     }
             }

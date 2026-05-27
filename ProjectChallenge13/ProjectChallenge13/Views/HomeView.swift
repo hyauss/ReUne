@@ -14,7 +14,6 @@ struct HomeView: View {
     @State var newGroupCreated: Bool = false
     @State var newActivityCreated: Bool = false
     
-    
     @State var formRecord: CKRecord = CKRecord(recordType: "SeuTipo")
     
     var body: some View {
@@ -37,7 +36,7 @@ struct HomeView: View {
                 }
             }
             .navigationDestination(isPresented: $newGroupCreated) {
-                FormView(newActivityCreated: $newActivityCreated, group: EventGroup.fromRecord(formRecord))
+                FormView(newActivityCreated: $newActivityCreated, groupCKRecord: $formRecord, group: EventGroup.fromRecord(formRecord))
             }
             .navigationDestination(isPresented: $newActivityCreated) {
                 if newActivityCreated == true  {
