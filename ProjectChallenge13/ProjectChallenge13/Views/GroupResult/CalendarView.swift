@@ -14,7 +14,7 @@ import SwiftUI
 ///- Parameter daysOfWeek: days of week
 ///- Parameter columns: size and number of grid
 struct CalendarView: View {
-    @State private var currentMonth = Date.now
+    @State private var currentMonthIndex = Calendar.current.component(.month, from: Date.now) - 1
     @State private var days: [Date] = []
     
     let viewModelCalendar =  CalendarViewModel()
@@ -23,68 +23,83 @@ struct CalendarView: View {
     
     let dates: [Date]
     
+    let months = Calendar.current.monthSymbols
+    
+    var currentMonth: Date {
+        Calendar.current.date(from: DateComponents(
+            year: Calendar.current.component(.year, from: Date.now),
+            month: currentMonthIndex + 1
+        ))!
+    }
+    
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            
-            // Month
-            HStack {
-                Text(currentMonth.formatted(.dateTime.year().month()))
-                    .font(.system(size: 16, weight: .bold))
+        VStack{
+            TabView(selection: $currentMonthIndex.animation()){
                 
-                Spacer()
-                
-                Button {
-                    currentMonth = Calendar.current.date(byAdding: .month, value: -1, to: currentMonth)!
-                    updateDays()
-                } label: {
-                    Image(systemName: "chevron.left")
-                        .font(.title2)
-                        .foregroundStyle(.blue)
-                }
-                
-                Button {
-                    currentMonth = Calendar.current.date(byAdding: .month, value: 1, to: currentMonth)!
-                    updateDays()
-                } label: {
-                    Image(systemName: "chevron.right")
-                        .font(.title2)
-                        .foregroundStyle(.blue)
-                }
-            }
-            
-            // Days of week
-            HStack {
-                ForEach(daysOfWeek.indices, id: \.self) { index in
-                    Text(daysOfWeek[index])
-                        .font(.system(size: 14, weight: .medium))
-                        .frame(maxWidth: .infinity)
-                        .foregroundStyle(.black.opacity(0.5))
-                }
-            }
-            
-            //date of month
-            LazyVGrid(columns: columns, spacing: 10) {
-                ForEach(days, id: \.self) { day in
+                ForEach(months.indices, id: \.self){ index in
+                    let monthDate = Calendar.current.date(from: DateComponents(
+                        year: Calendar.current.component(.year, from: Date.now),
+                        month: index + 1
+                    ))!
                     
-                    if day.monthInt != currentMonth.monthInt {
-                        Text ("")
+                    VStack(alignment: .leading, spacing: 20) {
+                        HStack{
+                            Text(monthDate.formatted(.dateTime.year().month()))
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                            
+                            Spacer()
+                        }
+                        
+                        // Days of week
+                        HStack {
+                            ForEach(daysOfWeek.indices, id: \.self) { index in
+                                Text(daysOfWeek[index])
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .frame(maxWidth: .infinity)
+                                    .foregroundStyle(.black.opacity(0.4))
+                            }
+                        }
+                        
+                        //date of month
+                        LazyVGrid(columns: columns, spacing: 10) {
+                            ForEach(monthDate.calendarDisplayDays, id: \.self) { day in
+                                
+                                if day.monthInt != monthDate.monthInt {
+                                    Text ("")
+                                }
+                                else{
+                                    Text(day.formatted(.dateTime.day()))
+                                        .font(day.formattedDate == viewModelCalendar.mostFrequencyDate(dates: dates) ? .title2 : .title3)
+                                        .fontWeight(day.formattedDate == viewModelCalendar.mostFrequencyDate(dates: dates) ? .medium : .regular)
+                                        .frame(maxWidth: .infinity, minHeight: 40)
+                                        .foregroundStyle( day.formattedDate == viewModelCalendar.mostFrequencyDate(dates: dates) ? .white : .black)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .foregroundStyle(Color(hue: 0.9, saturation: viewModelCalendar.opacity(for: day, dates: dates), brightness: 1))
+                                                .frame(width: 40, height: 40)
+                                        )
+                                }
+                            }
+                        }
                     }
-                    else{
-                        Text(day.formatted(.dateTime.day()))
-                            .font(.system(size: 14, weight: .medium))
-                            .frame(maxWidth: .infinity, minHeight: 40)
-                            .foregroundStyle(Date.now.startOfDay == day.startOfDay ? .pink : .black)
-                            .background(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .foregroundStyle(Color(hue: 0.9, saturation: viewModelCalendar.opacity(for: day, dates: dates), brightness: 1))
-                            )
-                    }
+                    .padding()
+                    .tag(index)
+                    
                 }
+                .frame(width: 345, height: 400, alignment: .top)
+                .background(RoundedRectangle(cornerRadius: 20)
+                    .frame(width: 345, height: 400)
+                    .foregroundStyle(.white)
+                    .shadow(radius: 4, y: 4)
+                )
+                .padding()
             }
-        }
-        .padding()
-        .onAppear{
-            updateDays()
+            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+            .overlay(alignment: .bottom){
+                AnimationCalendarIndexView(numberOfPages: months.count, currentIndex: currentMonthIndex)
+            }
+            .frame(height: 460)
         }
     }
     

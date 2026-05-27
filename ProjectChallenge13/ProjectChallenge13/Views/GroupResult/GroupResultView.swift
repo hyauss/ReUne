@@ -16,19 +16,30 @@ struct GroupResultView: View {
     var group: ItemViewModel
     
     var body: some View {
-        ScrollView{
-            VStack{
-                
-                
-                CalendarView(dates: group.dates)
-                
-                TimeLineView(mostFrequncyDate: viewModelCalendar.mostFrequencyDate(dates: group.dates), secondFrequncyDate: viewModelCalendar.secondFrequencyDate(dates: group.dates), datefilterArray: viewModelCalendar.filterDate(dates: group.dates, day: viewModelCalendar.mostFrequencyDate(dates: group.dates)), dates: group.dates)
-                
-                WordCloudView(group: group)
-                
-                
+        NavigationStack{
+            
+            ScrollView{
+                VStack(spacing: 20){
+                    VStack(spacing: 10){
+                        HStack{
+                            Text("Melhor Data")
+                                .font(.system(size: 20, weight: .semibold))
+                                .foregroundStyle(.gray)
+                            Spacer()
+                        }.frame(width: 345)
+                        
+                        CalendarView(dates: group.dates)
+                    }
+                    
+                    TimeLineView(mostFrequncyDate: viewModelCalendar.mostFrequencyDate(dates: group.dates), secondFrequncyDate: viewModelCalendar.secondFrequencyDate(dates: group.dates), datefilterArray: viewModelCalendar.filterDate(dates: group.dates, day: viewModelCalendar.mostFrequencyDate(dates: group.dates)), dates: group.dates)
+                    
+                    WordCloudView(group: group)
+                    
+                    
+                }
             }
         }
+        .navigationTitle("Resultados do Grupo")
     }
 }
 
