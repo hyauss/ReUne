@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ContactsUI
+import CloudKit
 
 struct NewGroupSheetView: View {
     @Environment(\.dismiss) private var dismiss
@@ -15,6 +16,8 @@ struct NewGroupSheetView: View {
     @State var newGroupVM = NewGroupViewModel()
     @State var showMessage = false
     @State var isDismiss: Bool = false
+    
+    @Binding var formRecord: CKRecord
     
     @Binding var newGroupCreated: Bool
     
@@ -49,22 +52,27 @@ struct NewGroupSheetView: View {
                 CategoriesMenu()
                     .environment(newGroupVM)
                 
-                ForEach(Array(newGroupVM.selectedCategory), id: \.self) { category in
-                    CategoryCard(category: category)
+                ScrollView(showsIndicators: false) {
+                    
+                    ForEach(Array(newGroupVM.selectedCategory), id: \.self) { category in
+                        CategoryCard(category: category)
+                    }
                 }
                 
                 Spacer()
                 
-                NewGroupToolbar(showMessage: $showMessage, newGroupCreated: $newGroupCreated, isDismiss: $isDismiss)
+                NewGroupToolbar(showMessage: $showMessage, isDismiss: $isDismiss)
                     .environment(contactsVM)
                     .environment(newGroupVM)
                     .sheet(isPresented: $showMessage, onDismiss: {
-                        dismiss()
+                        isDismiss.toggle()
                     }) {
                         MessageView(recipients: phoneNumbers, body: "Confira esse link: https://seuapp.com")
                     }
             }
             .onChange(of: isDismiss) {
+                formRecord = newGroupVM.record!
+                newGroupCreated.toggle()
                 dismiss()
             }
         }

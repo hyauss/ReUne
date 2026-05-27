@@ -12,6 +12,9 @@ struct HomeView: View {
     @StateObject private var vm =  GroupViewModel.shared
     @State var ckViewModel = LoginViewModel.shared
     @State var newGroupCreated: Bool = false
+    @State var newActivityCreated: Bool = false
+    
+    @State var formRecord: CKRecord = CKRecord(recordType: "SeuTipo")
     
     
     
@@ -34,26 +37,27 @@ struct HomeView: View {
             .navigationTitle("Seus Grupos")
             .toolbar{
                 ToolbarItem(placement:.confirmationAction){
-                    AddGroupButtonComponent(newGroupCreated: $newGroupCreated)
+                    AddGroupButtonComponent(newGroupCreated: $newGroupCreated, formRecord: $formRecord)
+                }
+            }
+            .onChange(of: vm.needFetch) {
+                Task{
+                    try? await Task.sleep(for: .seconds(2))
+                    vm.fetchGroupsWithUserId()
+                    vm.needFetch = false
                 }
             }
             .navigationDestination(isPresented: $newGroupCreated) {
-                //ResultView()
+                FormView(newActivityCreated: $newActivityCreated, groupCKRecord: $formRecord, group: EventGroup.fromRecord(formRecord))
             }
-        }.onChange(of: vm.needFetch) {
-            Task{
-                try? await Task.sleep(for: .seconds(2))
-                vm.fetchGroupsWithUserId()
-                vm.needFetch = false
+            .navigationDestination(isPresented: $newActivityCreated) {
+                if newActivityCreated == true  {
+                    GroupResultView(group: ItemViewModel(itemListing: EventGroup.fromRecord(formRecord)!))
+                }
             }
         }
         .onAppear(){
             vm.fetchGroupsWithUserId()
         }
     }
-}
-
-#Preview {
-    HomeView()
-    //    ContentView()
 }
