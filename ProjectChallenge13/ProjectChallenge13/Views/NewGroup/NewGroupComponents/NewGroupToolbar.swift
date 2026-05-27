@@ -16,6 +16,7 @@ struct NewGroupToolbar: View {
     @Binding var showMessage: Bool
     //@Binding var newGroupCreated: Bool
     @Binding var isDismiss: Bool
+    @Binding var isDismissNotSave: Bool
     
     @State var ckViewModel = LoginViewModel.shared
     @State private var users: Set<String> = []
@@ -47,7 +48,7 @@ struct NewGroupToolbar: View {
                 
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
-                        isDismiss.toggle()
+                        isDismissNotSave.toggle()
                     } label: {
                         Image(systemName: "xmark")
                     }
