@@ -6,152 +6,245 @@
 //
 
 import SwiftUI
-
-extension CGRect {
-    var center: CGPoint {
-        return CGPoint(x: origin.x + size.width / 2, y: origin.y + size.height / 2)
-    }
-}
+import UIKit
 
 struct WordCloudView: View {
-    @StateObject private var vm = WordCloudViewModel()
-    @State private var canvasRect = CGRect()
-    let group: ItemViewModel?
-
+    @StateObject private var viewModel: WordCloudViewModel
+ 
+    // Available width captured once by a hidden GeometryReader.
+    @State private var availableWidth: CGFloat = 0
+    // Layout result computed from words + availableWidth.
+    @State private var layout: LayoutResult = LayoutResult(positions: [], requiredHeight: 140)
+ 
+    init(group: ItemViewModel) {
+        _viewModel = StateObject(wrappedValue: WordCloudViewModel(item: group))
+    }
+ 
     var body: some View {
-        let positions = vm.positions.count == vm.words.count ? vm.positions : Array(repeating: .zero, count: vm.words.count)
-
-        let innerPadding: CGFloat = 16
-
-        Group {
-            if vm.words.isEmpty {
-                VStack(spacing: 12) {
-                    Image(systemName: "icloud.slash")
-                        .font(.largeTitle)
-                        .foregroundColor(.secondary)
-                    Text("Nenhuma atividade com votos ainda")
-                        .font(.headline)
-                        .multilineTextAlignment(.center)
-                    Text("Peça para os participantes votarem.")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-                .padding(innerPadding)
-                .background(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color.blue.opacity(0.08))
-                )
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Melhor Atividade")
+                .font(.headline)
+                .padding(.leading, 8)
+ 
+            if viewModel.words.isEmpty {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.white)
+                    .frame(height: 140)
+                    .shadow(color: .black.opacity(0.16), radius: 6, x: 0, y: 6)
+                    .overlay(
+                        Text("Nenhuma atividade com votos ainda")
+                            .foregroundColor(Color.ultramarineBlue)
+                    )
+                    .padding(.horizontal)
             } else {
-                ZStack {
-                    ForEach(Array(vm.words.enumerated()), id: \.offset) { index, word in
+                ZStack(alignment: .topLeading) {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.white)
+                        .shadow(color: .black.opacity(0.16), radius: 6, x: 0, y: 6)
+ 
+                    ForEach(Array(zip(viewModel.words, layout.positions)), id: \.0.id) { word, pos in
                         Text(word.text)
-                            .foregroundColor(word.color)
-                            .font(.system(size: word.fontSize))
-                            .lineLimit(1)
-                            .fixedSize(horizontal: true, vertical: false)
-                            .padding(3)
-                            .background(WordSizeGetter(sizesBinding, index))
-                            .position(x: canvasRect.width / 2 + positions[index].x, y: canvasRect.height / 2 + positions[index].y)
+                            .font(.system(size: word.fontSize, weight: .semibold))
+                            .foregroundColor(
+                                word.id == viewModel.words.first?.id ? Color.nightBlue : Color.ultramarineBlue
+                            )
+                            .fixedSize()
+                            .position(pos)
+                            .accessibilityLabel("\(word.text), \(word.votos) votes")
                     }
                 }
-                .padding(innerPadding) //
+                // Height is driven entirely by the layout result — no GeometryReader involved.
+                .frame(height: layout.requiredHeight)
+                .padding(.horizontal)
+                // Hidden zero-height view just to read available width once.
                 .background(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color.blue.opacity(0.08))
-                        .overlay(
-                            GeometryReader { proxy in
-                                Color.clear
-                                    .onAppear {
-                                        let total = proxy.size
-                                        let inner = CGSize(width: max(0, total.width - innerPadding * 2), height: max(0, total.height - innerPadding * 2))
-                                        DispatchQueue.main.async {
-                                            canvasRect = CGRect(origin: .zero, size: inner)
-                                            vm.updateCanvasSize(inner)
-                                        }
-                                    }
-                                    .onChange(of: proxy.size) { newSize in
-                                        let inner = CGSize(width: max(0, newSize.width - innerPadding * 2), height: max(0, newSize.height - innerPadding * 2))
-                                        DispatchQueue.main.async {
-                                            canvasRect = CGRect(origin: .zero, size: inner)
-                                            vm.updateCanvasSize(inner)
-                                        }
-                                    }
+                    GeometryReader { geo in
+                        Color.clear
+                            .onAppear {
+                                availableWidth = geo.size.width
+                                recalculate()
                             }
-                        )
+                            .onChange(of: geo.size.width) { newWidth in
+                                availableWidth = newWidth
+                                recalculate()
+                            }
+                    }
                 )
             }
         }
-        .padding(32)
-        .onAppear {
-            if let g = group {
-                vm.setGroup(g)
-            } else {
-                vm.setActivities([])
-            }
-            vm.updateCanvasSize(canvasRect.size)
+        .onChange(of: viewModel.words) { _ in
+            recalculate()
         }
-        .onChange(of: canvasRect) { newRect in
-            vm.updateCanvasSize(newRect.size)
-        }
-        
     }
-
-    private var sizesBinding: Binding<[CGSize]> {
-        Binding(get: { vm.wordSizes }, set: { vm.wordSizes = $0 })
+ 
+    // MARK: - Trigger
+ 
+    private func recalculate() {
+        guard availableWidth > 0 else { return }
+        layout = computeLayout(for: viewModel.words, width: availableWidth)
+    }
+ 
+    // MARK: - Layout engine
+ 
+    struct LayoutResult: Equatable {
+        let positions: [CGPoint]
+        let requiredHeight: CGFloat
+    }
+ 
+    /// Measures each word, then places them using an Archimedean spiral.
+    /// The canvas grows vertically until every word fits, so `requiredHeight`
+    /// always reflects the true space needed — independent of any SwiftUI frame.
+    func computeLayout(for words: [WordElement], width: CGFloat) -> LayoutResult {
+        guard !words.isEmpty, width > 0 else {
+            return LayoutResult(positions: [], requiredHeight: 140)
+        }
+ 
+        let padding: CGFloat = 2          // espaço entre palavras
+        let edgePadding: CGFloat = 24     // margem interna entre as palavras e as bordas do retângulo
+        let minHeight: CGFloat = 140
+ 
+        // Measure all words up-front with UIKit for accurate bounding boxes.
+        let sizes: [CGSize] = words.map { word in
+            let font = UIFont.systemFont(ofSize: word.fontSize, weight: .semibold)
+            let size = (word.text as NSString).size(withAttributes: [.font: font])
+            return CGSize(width: ceil(size.width) + 4, height: ceil(size.height))
+        }
+ 
+        // Start with a canvas tall enough to hold the tallest word twice,
+        // then grow until every word is placed without overlap.
+        var canvasHeight = max(minHeight, (sizes.map(\.height).max() ?? 0) * 2)
+ 
+        for _ in 0..<12 {
+            let result = place(
+                words: words,
+                sizes: sizes,
+                canvasWidth: width,
+                canvasHeight: canvasHeight,
+                padding: padding,
+                edgePadding: edgePadding
+            )
+ 
+            guard result.allPlaced else {
+                canvasHeight *= 1.4
+                continue
+            }
+ 
+            // Compute the real bounding box of placed words (both axes).
+            let topEdge = result.positions
+                .enumerated()
+                .map { idx, pos in pos.y - sizes[idx].height / 2 - padding }
+                .min() ?? 0
+ 
+            let bottomEdge = result.positions
+                .enumerated()
+                .map { idx, pos in pos.y + sizes[idx].height / 2 + padding }
+                .max() ?? canvasHeight
+ 
+            let leftEdge = result.positions
+                .enumerated()
+                .map { idx, pos in pos.x - sizes[idx].width / 2 - padding }
+                .min() ?? 0
+ 
+            let rightEdge = result.positions
+                .enumerated()
+                .map { idx, pos in pos.x + sizes[idx].width / 2 + padding }
+                .max() ?? width
+ 
+            // Shift positions so content is centred both vertically and
+            // horizontally inside the rectangle, respecting edgePadding on all sides.
+            let contentHeight = bottomEdge - topEdge
+            let contentWidth  = rightEdge - leftEdge
+ 
+            let finalHeight = max(minHeight, contentHeight + edgePadding * 2)
+ 
+            let verticalShift   = edgePadding - topEdge
+            let horizontalShift = (width - contentWidth) / 2 - leftEdge
+ 
+            let centeredPositions = result.positions.map {
+                CGPoint(x: $0.x + horizontalShift, y: $0.y + verticalShift)
+            }
+ 
+            return LayoutResult(positions: centeredPositions, requiredHeight: finalHeight)
+        }
+ 
+        // Fallback: centre everything if all attempts failed.
+        return LayoutResult(
+            positions: words.map { _ in CGPoint(x: width / 2, y: canvasHeight / 2) },
+            requiredHeight: canvasHeight
+        )
+    }
+ 
+    // MARK: - Placement pass
+ 
+    private struct PlacementResult {
+        let positions: [CGPoint]
+        let allPlaced: Bool
+    }
+ 
+    private func place(
+        words: [WordElement],
+        sizes: [CGSize],
+        canvasWidth: CGFloat,
+        canvasHeight: CGFloat,
+        padding: CGFloat,
+        edgePadding: CGFloat
+    ) -> PlacementResult {
+ 
+        var placedRects: [CGRect] = []
+        var positions: [CGPoint] = []
+        var allPlaced = true
+ 
+        let center = CGPoint(x: canvasWidth / 2, y: canvasHeight / 2)
+        let bounds = CGRect(
+            x: edgePadding,
+            y: edgePadding,
+            width: canvasWidth - edgePadding * 2,
+            height: canvasHeight - edgePadding * 2
+        )
+ 
+        for (idx, word) in words.enumerated() {
+            let size = sizes[idx]
+            let halfW = size.width / 2 + padding
+            let halfH = size.height / 2 + padding
+ 
+            var placed = false
+ 
+            let angleStep: CGFloat = 0.25
+            let radiusStep: CGFloat = 1.5
+            let maxSteps = 2000
+            let startAngle = CGFloat(abs(word.seed) % 628) / 100.0
+ 
+            for step in 0..<maxSteps {
+                let t = CGFloat(step)
+                let angle = startAngle + t * angleStep
+                let radius = t * radiusStep
+ 
+                let cx = center.x + cos(angle) * radius
+                let cy = center.y + sin(angle) * radius
+ 
+                let rect = CGRect(
+                    x: cx - halfW,
+                    y: cy - halfH,
+                    width: halfW * 2,
+                    height: halfH * 2
+                )
+ 
+                guard bounds.contains(rect) else { continue }
+ 
+                if placedRects.allSatisfy({ !$0.intersects(rect) }) {
+                    placedRects.append(rect)
+                    positions.append(CGPoint(x: cx, y: cy))
+                    placed = true
+                    break
+                }
+            }
+ 
+            if !placed {
+                allPlaced = false
+                positions.append(center)
+            }
+        }
+ 
+        return PlacementResult(positions: positions, allPlaced: allPlaced)
     }
 }
-
-struct WordSizeGetter: View {
-    @Binding var sizes: [CGSize]
-    let index: Int
-    init(_ sizes: Binding<[CGSize]>, _ index: Int) {
-        self._sizes = sizes
-        self.index = index
-    }
-
-    @State private var updateTask: Task<Void, Never>? = nil
-    @State private var lastReported: CGSize = .zero
-    private let debounceDelay: TimeInterval = 0.07 // 70 ms
-
-    var body: some View {
-        GeometryReader { proxy in
-            Color.clear
-                .onAppear {
-                    scheduleUpdate(with: proxy.size)
-                }
-                .onChange(of: proxy.size) { new in
-                    scheduleUpdate(with: new)
-                }
-                .onDisappear {
-                    updateTask?.cancel()
-                }
-        }
-    }
-
-    private func scheduleUpdate(with size: CGSize) {
-        if abs(lastReported.width - size.width) < 1.0 && abs(lastReported.height - size.height) < 1.0 {
-            return
-        }
-
-        updateTask?.cancel()
-
-        updateTask = Task {
-            try? await Task.sleep(nanoseconds: UInt64(debounceDelay * 1_000_000_000))
-            if Task.isCancelled { return }
-
-            await MainActor.run {
-                lastReported = size
-                guard index >= 0 else { return }
-                if index < self.sizes.count {
-                    if self.sizes[index] != size {
-                        self.sizes[index] = size
-                    }
-                } else if index == self.sizes.count {
-                    self.sizes.append(size)
-                }
-            }
-        }
-    }
-}
-
