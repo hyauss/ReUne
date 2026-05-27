@@ -14,12 +14,12 @@ struct NewGroupToolbar: View {
     @StateObject private var vm =  GroupViewModel.shared
     
     @Binding var showMessage: Bool
-    @Binding var newGroupCreated: Bool
+    //@Binding var newGroupCreated: Bool
     @Binding var isDismiss: Bool
     
     @State var ckViewModel = LoginViewModel.shared
     @State private var users: Set<String> = []
-     
+      
     var body: some View {
         Text("")
             .toolbar {
@@ -33,11 +33,9 @@ struct NewGroupToolbar: View {
                             
                             if !contactsVM.selectedContacts.isEmpty {
                                 showMessage = true
-                                newGroupCreated.toggle()
                             }
                             else {
                                 isDismiss.toggle()
-                                newGroupCreated.toggle()
                             }
                             
                         } label: {

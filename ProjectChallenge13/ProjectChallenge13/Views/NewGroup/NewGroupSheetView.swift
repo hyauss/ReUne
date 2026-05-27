@@ -61,17 +61,18 @@ struct NewGroupSheetView: View {
                 
                 Spacer()
                 
-                NewGroupToolbar(showMessage: $showMessage, newGroupCreated: $newGroupCreated, isDismiss: $isDismiss)
+                NewGroupToolbar(showMessage: $showMessage, isDismiss: $isDismiss)
                     .environment(contactsVM)
                     .environment(newGroupVM)
                     .sheet(isPresented: $showMessage, onDismiss: {
-                        dismiss()
+                        isDismiss.toggle()
                     }) {
                         MessageView(recipients: phoneNumbers, body: "Confira esse link: https://seuapp.com")
                     }
             }
             .onChange(of: isDismiss) {
                 formRecord = newGroupVM.record!
+                newGroupCreated.toggle()
                 dismiss()
             }
         }
