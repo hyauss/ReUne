@@ -16,6 +16,7 @@ struct NewGroupSheetView: View {
     @State var newGroupVM = NewGroupViewModel()
     @State var showMessage = false
     @State var isDismiss: Bool = false
+    @State var isDismissNotSave: Bool = false
     
     @Binding var formRecord: CKRecord
     
@@ -61,7 +62,7 @@ struct NewGroupSheetView: View {
                 
                 Spacer()
                 
-                NewGroupToolbar(showMessage: $showMessage, isDismiss: $isDismiss)
+                NewGroupToolbar(showMessage: $showMessage, isDismiss: $isDismiss, isDismissNotSave: $isDismissNotSave)
                     .environment(contactsVM)
                     .environment(newGroupVM)
                     .sheet(isPresented: $showMessage, onDismiss: {
@@ -73,6 +74,9 @@ struct NewGroupSheetView: View {
             .onChange(of: isDismiss) {
                 formRecord = newGroupVM.record!
                 newGroupCreated.toggle()
+                dismiss()
+            }
+            .onChange(of: isDismissNotSave) {
                 dismiss()
             }
         }
