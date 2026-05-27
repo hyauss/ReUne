@@ -7,165 +7,52 @@
 
 import SwiftUI
 import Combine
-import CoreGraphics
 
-protocol WordCloudLayouting {
-    func calcPositions(canvasSize: CGSize, itemSizes: [CGSize]) -> [CGPoint]
-}
-
-struct DefaultWordCloudLayout: WordCloudLayouting {
-    func calcPositions(canvasSize: CGSize, itemSizes: [CGSize]) -> [CGPoint] {
-        var positions = [CGPoint](repeating: .zero, count: itemSizes.count)
-        if canvasSize.height == 0 {
-            return positions
-        }
-
-        var rects = [CGRect]()
-        var step: CGFloat = 0
-        let ratio = canvasSize.width * 1.5 / canvasSize.height
-        let startPos = CGPoint(x: 0, y: 0)
-
-        for (index, itemSize) in itemSizes.enumerated() {
-            var nextRect = CGRect(
-                origin: CGPoint(
-                    x: startPos.x - itemSize.width / 2,
-                    y: startPos.y - itemSize.height / 2
-                ),
-                size: itemSize
-            )
-            if index > 0 {
-                while checkIntersects(rect: nextRect, rects: rects) || checkOutsideBoundary(canvasSize: canvasSize, rect: nextRect) {
-                    nextRect.origin.x = startPos.x + ratio * step * cos(step) + startPos.x - itemSize.width / 2
-                    nextRect.origin.y = startPos.y + ratio * step * sin(step) + startPos.y - itemSize.height / 2
-                    step += 0.01
-                }
-            }
-
-            positions[index] = nextRect.center
-            rects.append(nextRect)
-        }
-        return positions
-    }
-
-    private func checkIntersects(rect: CGRect, rects: [CGRect]) -> Bool {
-        for r in rects {
-            if rect.intersects(r) {
-                return true
-            }
-        }
-        return false
-    }
-
-    private func checkOutsideBoundary(canvasSize: CGSize, rect: CGRect) -> Bool {
-        if rect.maxY > canvasSize.height / 2 {
-            return true
-        }
-        if rect.minY < -canvasSize.height / 2 {
-            return true
-        }
-        return false
-    }
-}
-
-
-@MainActor
+/// ViewModel responsible for transforming `ItemViewModel.actitivies` into
+/// a small list of `WordElement` suitable for rendering in a word cloud.
 final class WordCloudViewModel: ObservableObject {
-    @Published var words: [WordElement]
-    @Published var wordSizes: [CGSize] {
-        didSet { recomputePositionsIfNeeded() }
-    }
-    @Published var canvasSize: CGSize = .zero
-    @Published private(set) var positions: [CGPoint] = []
+    @Published private(set) var words: [WordElement] = []
 
-    private let layout: WordCloudLayouting
-    private var layoutCacheCanvasSize: CGSize = .zero
-    private var layoutCacheWordSizes: [CGSize] = []
-    private var layoutCachePositions: [CGPoint] = []
-
-    init(words: [WordElement]? = nil, layout: WordCloudLayouting? = nil) {
-        // In production default to no sample words — view should show a placeholder when empty.
-        let initialWords = words ?? []
-        self.words = initialWords
-        self.wordSizes = Array(repeating: .zero, count: initialWords.count)
-        self.layout = layout ?? DefaultWordCloudLayout()
+    /// Create a view model from an `ItemViewModel` and build the top words.
+    init(item: ItemViewModel) {
+        buildWords(from: item)
     }
 
-    func setActivities(_ activities: [ActivitiesModel]) {
-        let filtered = activities.filter { $0.votos > 0 }
+    /// Rebuilds the words from the provided item.
+    func buildWords(from item: ItemViewModel, maxWords: Int = 10, minFont: CGFloat = 14, maxFont: CGFloat = 48) {
+        let activities = item.actitivies
+
+        // Aggregate activities by name (in case there are duplicates), summing votos.
+        var agg: [String: Int] = [:]
+        for a in activities {
+            agg[a.name, default: 0] += a.votos
+        }
+
+        // Keep only activities with votos > 0
+        let filtered = agg.filter { $0.value > 0 }
+
         guard !filtered.isEmpty else {
-            words = []
-            wordSizes = []
-            positions = []
+            DispatchQueue.main.async {
+                self.words = []
+            }
             return
         }
 
-        let maxVotes = filtered.map { $0.votos }.max() ?? 1
-        let minFont: CGFloat = 16
-        let maxFont: CGFloat = 48
-        let highlightColor = Color.blue
-        let normalColor = Color.black
+        // Sort by votos desc and take top `maxWords`
+        let top = filtered.sorted { $0.value > $1.value }.prefix(maxWords)
 
-        let elements: [WordElement] = filtered.map { activity in
-            let normalized = maxVotes > 0 ? CGFloat(activity.votos) / CGFloat(maxVotes) : 0
-            let fontSize = minFont + normalized * (maxFont - minFont)
-            let color: Color = (activity.votos == maxVotes && maxVotes > 0) ? highlightColor : normalColor
-            return WordElement(text: activity.name, color: color, fontSize: fontSize)
+        let votosArray = top.map { $0.value }
+        let minVotes = votosArray.min() ?? 0
+        let maxVotes = votosArray.max() ?? 0
+
+        let elements: [WordElement] = top.map { (name, votos) in
+            // use power scaling to emphasize the top-voted activity
+            let font = WordElement.fontSize(for: votos, minVotes: minVotes, maxVotes: maxVotes, minFont: minFont, maxFont: maxFont, exponent: 1.25)
+            return WordElement(text: name, votos: votos, fontSize: font)
         }
 
-        words = elements
-        wordSizes = Array(repeating: .zero, count: elements.count)
-        recomputePositionsIfNeeded()
-    }
-
-    func setGroup(_ group: ItemViewModel) {
-        setActivities(group.actitivies)
-    }
-
-    func updateSize(_ size: CGSize, at index: Int) {
-        guard index >= 0 && index < wordSizes.count else { return }
-        if wordSizes[index] != size {
-            wordSizes[index] = size
-            recomputePositionsIfNeeded()
+        DispatchQueue.main.async {
+            self.words = elements
         }
     }
-
-    func updateCanvasSize(_ size: CGSize) {
-        if canvasSize != size {
-            canvasSize = size
-            recomputePositionsIfNeeded()
-        }
-    }
-
-    private func simularWordSizes(a: [CGSize], b: [CGSize]) -> Bool {
-        if a == b { return true }
-        if a.count != b.count { return false }
-        var diff: CGFloat = 0
-        for i in 0..<a.count {
-            diff += abs(a[i].width - b[i].width) + abs(a[i].height - b[i].height)
-        }
-        return diff < 1.0
-    }
-
-    private func recomputePositionsIfNeeded() {
-        guard canvasSize.height > 0 else { return }
-
-        if layoutCacheCanvasSize == canvasSize && simularWordSizes(a: layoutCacheWordSizes, b: wordSizes) {
-            positions = layoutCachePositions
-            return
-        }
-
-        let newPositions = layout.calcPositions(canvasSize: canvasSize, itemSizes: wordSizes)
-        if newPositions.count == words.count {
-            positions = newPositions
-        } else if newPositions.count < words.count {
-            positions = newPositions + Array(repeating: .zero, count: words.count - newPositions.count)
-        } else {
-            positions = Array(newPositions.prefix(words.count))
-        }
-
-        layoutCacheCanvasSize = canvasSize
-        layoutCacheWordSizes = wordSizes
-        layoutCachePositions = positions
-    }
-
 }

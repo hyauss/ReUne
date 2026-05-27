@@ -22,7 +22,9 @@ class GroupViewModel: ObservableObject {
     private var database: CKDatabase
     private var contaniner: CKContainer
     
+    @Published var needFetch: Bool = false
     @Published var items: [ItemViewModel] = []
+    @Published var records: [CKRecord] = []
     
     private init() {
         self.contaniner = CKContainer.default()
@@ -33,12 +35,13 @@ class GroupViewModel: ObservableObject {
     func save(groupRecord: CKRecord) async{
         do{
             try await self.database.save(groupRecord)
+            needFetch = true
         }catch{
             print(error.localizedDescription)
         }
     }
     
-    func saveItem (categories: [CategoryModel], activities: [ActivitiesModel], dates: [Date],users: Set<String>, owner: String) -> CKRecord {
+    func saveItem (categories: [CategoryModel], activities: [ActivitiesModel], dates: [Date],users: Set<String>, owner: String) -> CKRecord{
         let record = CKRecord(recordType: RecordType.itemListing.rawValue)
         let itemListing = EventGroup(recordId: record.recordID, users: users, categories: categories, activities: activities, dates: dates, owner: owner)
         record.setValuesForKeys(itemListing.toDictionary())
@@ -49,6 +52,9 @@ class GroupViewModel: ObservableObject {
             }else{
                 if let _ = newRecord{
                     print("SAVED")
+                    DispatchQueue.main.async {
+                        self.needFetch = true
+                    }
                 }
             }
         }
@@ -58,6 +64,7 @@ class GroupViewModel: ObservableObject {
     func fetchGroupsWithUserId(){
         
         var items: [EventGroup] = []
+        var records : [CKRecord] = []
         
         let query = CKQuery(recordType: RecordType.itemListing.rawValue, predicate: NSPredicate(format: "ANY users == %@", ckViewModel.preference?.userID ?? ""))
         
@@ -70,6 +77,7 @@ class GroupViewModel: ObservableObject {
                         case .success(let record):
                             if let itemListing  = EventGroup.fromRecord(record){
                                 items.append(itemListing)
+                                records.append(record)
                             }
                         case .failure(let error):
                             print(error)
@@ -78,6 +86,9 @@ class GroupViewModel: ObservableObject {
                 
                 DispatchQueue.main.async {
                     self.items = items.map(ItemViewModel.init)
+                    self.records = records.sorted {
+                        ($0.creationDate ?? .distantPast) > ($1.creationDate ?? .distantPast)
+                    }
                 }
             case .failure(let error):
                 print(error)

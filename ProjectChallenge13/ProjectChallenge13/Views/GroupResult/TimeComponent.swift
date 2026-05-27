@@ -17,18 +17,19 @@ struct TimeComponent: View {
         HStack{
             Text("\(time.toString(format: "HH")):00")
                 .padding()
+//                .font(.system(size: 30, weight: .semibold))
                 .font(.largeTitle)
                 .foregroundStyle(.gray)
-                .frame(width: 125, alignment: .leading)
+                .frame(width: 140, alignment: .center)
             Spacer()
             ZStack{
                 Capsule()
                     .foregroundStyle(Color(hue: 0.9, saturation: opacity2, brightness: 1))
-                    .frame(width: 260, height: 50)
+                    .frame(maxWidth: 218, maxHeight: 50)
                 HStack{
                     Capsule()
                         .foregroundStyle(Color(hue: 0.9, saturation: opacity1, brightness: 1))
-                        .frame(width: 150, height: 50)
+                        .frame(maxWidth: 108, maxHeight: 50)
                     Spacer()
                 }
             }
@@ -36,7 +37,7 @@ struct TimeComponent: View {
         .background(
             UnevenRoundedRectangle(cornerRadii: .init(bottomTrailing: 50, topTrailing: 50))
                 .foregroundStyle(Color(hue: 0.9, saturation: 0.1, brightness: 1))
-                .frame(width: 380, height: 50)
+                .frame(maxWidth: 360, maxHeight: 50)
         )
     }
 }

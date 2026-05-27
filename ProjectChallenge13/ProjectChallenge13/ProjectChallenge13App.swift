@@ -26,12 +26,15 @@ struct ProjectChallenge13App: App {
     
     var body: some Scene {
         WindowGroup {
-            NavigationStack {
-                //            AptabaseTesteView()
-                HomeView()
-                ContentView()
-                    .sheet(isPresented: $showLogin) {
-                        EntryView()
+            //            AptabaseTesteView()
+            ContentView()
+                .sheet(isPresented: $showLogin) {
+                    EntryView()
+                }
+                .onOpenURL { url in
+                    print(url)
+                    guard let recordID = url.host else {
+                        return
                     }
                     .onOpenURL { url in
                         print(url)

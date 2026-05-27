@@ -10,23 +10,28 @@ import CloudKit
 
 struct HomeView: View {
     @StateObject private var vm =  GroupViewModel.shared
-    
+    @State var ckViewModel = LoginViewModel.shared
     @State var newGroupCreated: Bool = false
     @State var newActivityCreated: Bool = false
     
     @State var formRecord: CKRecord = CKRecord(recordType: "SeuTipo")
     
+    
+    
     var body: some View {
         NavigationStack {
             VStack{
                 ScrollView {
-                    ForEach(Array(vm.items.enumerated()), id: \.element.recordId) { index, item in
+                    ForEach(Array(vm.records.enumerated()), id: \.element.recordID) { index, item in
                         NavigationLink {
-                            GroupResultView(group: item)
+                            GroupResultView(group: ItemViewModel(itemListing: EventGroup.fromRecord(item)!))
                         } label: {
                             GroupCardComponent(groupNumber: index + 1)
                         }
                     }
+                }
+                .refreshable {
+                    vm.fetchGroupsWithUserId()
                 }
             }
             .navigationTitle("Seus Grupos")
@@ -36,6 +41,13 @@ struct HomeView: View {
                 }
             }
             .navigationDestination(isPresented: $newGroupCreated) {
+                //ResultView()
+            }
+        }.onChange(of: vm.needFetch) {
+            Task{
+                try? await Task.sleep(for: .seconds(2))
+                vm.fetchGroupsWithUserId()
+                vm.needFetch = false
                 FormView(newActivityCreated: $newActivityCreated, groupCKRecord: $formRecord, group: EventGroup.fromRecord(formRecord))
             }
             .navigationDestination(isPresented: $newActivityCreated) {
@@ -43,6 +55,9 @@ struct HomeView: View {
                     GroupResultView(group: ItemViewModel(itemListing: EventGroup.fromRecord(formRecord)!))
                 }
             }
+        }
+        .onAppear(){
+            vm.fetchGroupsWithUserId()
         }
     }
 }

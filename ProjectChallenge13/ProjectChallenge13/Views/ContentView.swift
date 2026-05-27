@@ -13,12 +13,12 @@ struct ContentView: View {
         NavigationStack {
             VStack {
                 EntryView()
-                NavigationLink {
-                    ContentView2()
-                } label: {
-                    Text("PushNotificationIcloud")
-                }
-            }
+//                NavigationLink {
+//                    ContentView2()
+//                } label: {
+//                    Text("PushNotificationIcloud")
+//                }
+          }
         }
     }
 }
