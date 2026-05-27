@@ -24,20 +24,25 @@ struct NewGroupToolbar: View {
         Text("")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button {
-                        users.insert(ckViewModel.preference!.userID)
-                        newGroupVM.record = vm.saveItem(categories: Array(newGroupVM.selectedCategory), activities: [], dates: [], users: users, owner: ckViewModel.preference!.userID)
+                    if !newGroupVM.selectedCategory.isEmpty {
                         
-                        if !contactsVM.selectedContacts.isEmpty {
-                            showMessage = true
-                            newGroupCreated.toggle()
+                        Button {
+                            //if !newGroupVM.selectedCategory.isEmpty {
+                            users.insert(ckViewModel.preference!.userID)
+                            newGroupVM.record = vm.saveItem(categories: Array(newGroupVM.selectedCategory), activities: [], dates: [], users: users, owner: ckViewModel.preference!.userID)
+                            
+                            if !contactsVM.selectedContacts.isEmpty {
+                                showMessage = true
+                                newGroupCreated.toggle()
+                            }
+                            else {
+                                isDismiss.toggle()
+                                newGroupCreated.toggle()
+                            }
+                            
+                        } label: {
+                            Image(systemName: "checkmark")
                         }
-                        else {
-                            isDismiss.toggle()
-                            newGroupCreated.toggle()
-                        }
-                    } label: {
-                        Image(systemName: "checkmark")
                     }
                     
                 }

@@ -52,9 +52,12 @@ struct NewGroupSheetView: View {
                 CategoriesMenu()
                     .environment(newGroupVM)
                 
-                ForEach(Array(newGroupVM.selectedCategory), id: \.self) { category in
-                    CategoryCard(category: category)
-                } 
+                ScrollView(showsIndicators: false) {
+                    
+                    ForEach(Array(newGroupVM.selectedCategory), id: \.self) { category in
+                        CategoryCard(category: category)
+                    }
+                }
                 
                 Spacer()
                 
