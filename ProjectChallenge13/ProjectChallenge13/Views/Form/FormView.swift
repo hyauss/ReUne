@@ -41,9 +41,18 @@ struct FormView: View {
                         .foregroundStyle(.newGroupCategoriesText)
                     
                     ForEach(formVM.dateList.enumerated(), id: \.offset) { i, date in
-                        DatePicker("", selection: $formVM.dateList[i], in: dateRange)
-                            .labelsHidden()
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                        HStack {
+                            DatePicker("", selection: $formVM.dateList[i], in: dateRange)
+                                .labelsHidden()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Button {
+                                formVM.dateList.remove(at: i)
+                            } label: {
+                                Image(systemName: "minus")
+                            }
+                            Spacer()
+                        }
+                        .padding(.bottom)
                     }
                     
                     Button {
