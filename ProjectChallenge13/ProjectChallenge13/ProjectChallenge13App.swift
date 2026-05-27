@@ -18,7 +18,7 @@ struct ProjectChallenge13App: App {
     @State var groupInvitation: EventGroup?
     @State var newActivityCreated: Bool = false
     @State var formRecord: CKRecord = CKRecord(recordType: "SeuTipo")
-
+    
     
     init() {
         Aptabase.shared.initialize(appKey: "A-US-8107330164") // 👈 this is where you enter your App Key
@@ -36,42 +36,37 @@ struct ProjectChallenge13App: App {
                     guard let recordID = url.host else {
                         return
                     }
-                    .onOpenURL { url in
-                        print(url)
-                        guard let recordID = url.host else {
-                            return
-                        }
-                        
-                        print(recordID)
-                        Task{
-                            do {
-                                let groupRecord = try await vm.fetchGroupsWithId(groupID: recordID)
-                                var group = EventGroup.fromRecord(groupRecord)
-                                if(ckViewModel.isLogged) {
-                                    group?.users.insert(ckViewModel.preference?.userID ?? "Não Logado")
-                                    groupRecord["users"] = Array(group?.users ?? [])
-                                    await vm.save(groupRecord: groupRecord)
-                                    groupInvitation = group
-                                }
-                                else {
-                                    showLogin = true
-                                }
-                                
+                    
+                    print(recordID)
+                    Task{
+                        do {
+                            let groupRecord = try await vm.fetchGroupsWithId(groupID: recordID)
+                            var group = EventGroup.fromRecord(groupRecord)
+                            if(ckViewModel.isLogged) {
+                                group?.users.insert(ckViewModel.preference?.userID ?? "Não Logado")
+                                groupRecord["users"] = Array(group?.users ?? [])
+                                await vm.save(groupRecord: groupRecord)
+                                groupInvitation = group
                             }
-                            catch{
-                                print(error.localizedDescription)
+                            else {
+                                showLogin = true
                             }
+                            
+                        }
+                        catch{
+                            print(error.localizedDescription)
                         }
                     }
-                    .onChange(of: groupInvitation) {
-                        openForm.toggle()
+                }
+                .onChange(of: groupInvitation) {
+                    openForm.toggle()
+                }
+                .navigationDestination(isPresented: $openForm) {
+                    if ckViewModel.isLogged && groupInvitation != nil{
+                        FormView(newActivityCreated: $newActivityCreated, groupCKRecord: $formRecord, group: groupInvitation)
                     }
-                    .navigationDestination(isPresented: $openForm) {
-                        if ckViewModel.isLogged && groupInvitation != nil{
-                            FormView(newActivityCreated: $newActivityCreated, groupCKRecord: $formRecord, group: groupInvitation)
-                        }
-                    }
-            }
+                }
         }
     }
+    
 }

@@ -25,37 +25,40 @@ struct FormToolbar: View {
                 .toolbar {
                     ToolbarItem(placement: .bottomBar) {
                         HStack {
-                            Button {
-                                for selectedActivity in formVM.selectedActivities {
-                                    if let index = group.activities.firstIndex(where: { $0.name == selectedActivity.name }) {
-                                        group.activities[index].votos += 1
-                                    } else {
-                                        group.activities.append(selectedActivity)
+                            if !formVM.dateList.isEmpty && !formVM.selectedActivities.isEmpty {
+                                Button {
+                                    for selectedActivity in formVM.selectedActivities {
+                                        if let index = group.activities.firstIndex(where: { $0.name == selectedActivity.name }) {
+                                            group.activities[index].votos += 1
+                                        } else {
+                                            group.activities.append(selectedActivity)
+                                        }
                                     }
-                                }
-                                for selectedDate in formVM.dateList {
-                                    group.dates.append(selectedDate)
-                                }
-                                
-                                Task {
-                                    do {
-                                        let groupRecord = try await vm.fetchGroupsWithId(groupID: group.recordId!.recordName)
-                                        let activitiesData = try JSONEncoder().encode(group.activities)
-                                        groupRecord["activities"] = activitiesData
-                                        groupRecord["dates"] = group.dates
-                                        await vm.save(groupRecord: groupRecord)
-                                        groupCKRecord = groupRecord
-                                        newActivityCreated.toggle()
+                                    for selectedDate in formVM.dateList {
+                                        group.dates.append(selectedDate)
                                     }
-                                    catch {
-                                        print(error.localizedDescription)
+                                    
+                                    Task {
+                                        do {
+                                            let groupRecord = try await vm.fetchGroupsWithId(groupID: group.recordId!.recordName)
+                                            let activitiesData = try JSONEncoder().encode(group.activities)
+                                            groupRecord["activities"] = activitiesData
+                                            groupRecord["dates"] = group.dates
+                                            await vm.save(groupRecord: groupRecord)
+                                            groupCKRecord = groupRecord
+                                            newActivityCreated.toggle()
+                                        }
+                                        catch {
+                                            print(error.localizedDescription)
+                                        }
                                     }
+                                    
+                                    
+                                } label: {
+                                    Image(systemName: "checkmark")
                                 }
-
-                            } label: {
-                                Image(systemName: "checkmark")
+                                .buttonStyle(.borderedProminent)
                             }
-                            .buttonStyle(.borderedProminent)
                         }
                     }
                 }

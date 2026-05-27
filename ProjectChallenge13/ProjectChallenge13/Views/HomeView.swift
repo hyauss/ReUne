@@ -40,14 +40,14 @@ struct HomeView: View {
                     AddGroupButtonComponent(newGroupCreated: $newGroupCreated, formRecord: $formRecord)
                 }
             }
-            .navigationDestination(isPresented: $newGroupCreated) {
-                //ResultView()
+            .onChange(of: vm.needFetch) {
+                Task{
+                    try? await Task.sleep(for: .seconds(2))
+                    vm.fetchGroupsWithUserId()
+                    vm.needFetch = false
+                }
             }
-        }.onChange(of: vm.needFetch) {
-            Task{
-                try? await Task.sleep(for: .seconds(2))
-                vm.fetchGroupsWithUserId()
-                vm.needFetch = false
+            .navigationDestination(isPresented: $newGroupCreated) {
                 FormView(newActivityCreated: $newActivityCreated, groupCKRecord: $formRecord, group: EventGroup.fromRecord(formRecord))
             }
             .navigationDestination(isPresented: $newActivityCreated) {
