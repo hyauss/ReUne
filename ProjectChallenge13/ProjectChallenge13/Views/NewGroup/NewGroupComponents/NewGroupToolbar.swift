@@ -26,7 +26,8 @@ struct NewGroupToolbar: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
                         users.insert(ckViewModel.preference!.userID)
-                        vm.saveItem(categories: Array(newGroupVM.selectedCategory), activities: [], dates: [], users: users, owner: ckViewModel.preference!.userID)
+                        newGroupVM.record = vm.saveItem(categories: Array(newGroupVM.selectedCategory), activities: [], dates: [], users: users, owner: ckViewModel.preference!.userID)
+                        
                         if !contactsVM.selectedContacts.isEmpty {
                             showMessage = true
                             newGroupCreated.toggle()

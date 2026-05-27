@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ContactsUI
+import CloudKit
 
 struct NewGroupSheetView: View {
     @Environment(\.dismiss) private var dismiss
@@ -15,6 +16,8 @@ struct NewGroupSheetView: View {
     @State var newGroupVM = NewGroupViewModel()
     @State var showMessage = false
     @State var isDismiss: Bool = false
+    
+    @Binding var formRecord: CKRecord
     
     @Binding var newGroupCreated: Bool
     
@@ -51,7 +54,7 @@ struct NewGroupSheetView: View {
                 
                 ForEach(Array(newGroupVM.selectedCategory), id: \.self) { category in
                     CategoryCard(category: category)
-                }
+                } 
                 
                 Spacer()
                 
@@ -65,6 +68,7 @@ struct NewGroupSheetView: View {
                     }
             }
             .onChange(of: isDismiss) {
+                formRecord = newGroupVM.record!
                 dismiss()
             }
         }

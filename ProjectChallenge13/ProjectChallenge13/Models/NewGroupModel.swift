@@ -13,7 +13,6 @@ struct NewGroupModel {
         CategoryModel(name: "Bem-estar"),
         CategoryModel(name: "Criatividade"),
         CategoryModel(name: "Cultura e Entreterimento"),
-        CategoryModel(name: "Entretenimento"),
         CategoryModel(name: "Esportes"),
         CategoryModel(name: "Festas"),
         CategoryModel(name: "Festividades"),

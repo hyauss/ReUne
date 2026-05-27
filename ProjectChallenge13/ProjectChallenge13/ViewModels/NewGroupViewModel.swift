@@ -6,12 +6,14 @@
 //
 
 import Foundation
+import CloudKit
 
 @Observable
 class NewGroupViewModel {
     let newGroupModel = NewGroupModel()
     var categories: [CategoryModel]
     var selectedCategory: Set<CategoryModel> = []
+    var record: CKRecord?
     
     
     init() {

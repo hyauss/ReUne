@@ -7,10 +7,12 @@
 
 import SwiftUI
 import Aptabase
+import CloudKit
 
 struct AddGroupButtonComponent: View {
     @State var newGroupSheet: Bool = false
     @Binding var newGroupCreated: Bool
+    @Binding var formRecord: CKRecord
     
     var body: some View {
         Button{
@@ -25,7 +27,7 @@ struct AddGroupButtonComponent: View {
         }
         .buttonStyle(.plain)
         .sheet(isPresented: $newGroupSheet) {
-            NewGroupSheetView(newGroupCreated: $newGroupCreated)
+            NewGroupSheetView(formRecord: $formRecord, newGroupCreated: $newGroupCreated)
         }
     }
 }
