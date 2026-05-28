@@ -25,9 +25,7 @@ struct NewGroupToolbar: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     if !newGroupVM.selectedCategory.isEmpty {
-                        
                         Button {
-                            //if !newGroupVM.selectedCategory.isEmpty {
                             users.insert(ckViewModel.preference!.userID)
                             newGroupVM.record = vm.saveItem(categories: Array(newGroupVM.selectedCategory), activities: [], dates: [], users: users, owner: ckViewModel.preference!.userID)
                             
