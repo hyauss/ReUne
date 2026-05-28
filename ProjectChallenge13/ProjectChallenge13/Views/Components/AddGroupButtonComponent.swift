@@ -27,6 +27,7 @@ struct AddGroupButtonComponent: View {
         }
         .buttonStyle(.plain)
         .sheet(isPresented: $newGroupSheet) {
+            //......
             NewGroupSheetView(formRecord: $formRecord, newGroupCreated: $newGroupCreated)
         }
     }

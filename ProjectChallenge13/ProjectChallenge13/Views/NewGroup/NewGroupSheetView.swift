@@ -16,9 +16,8 @@ struct NewGroupSheetView: View {
     @State var newGroupVM = NewGroupViewModel()
     @State var showMessage = false
     @State var isDismiss: Bool = false
-    
+    @State var isDismissNotSave: Bool = false
     @Binding var formRecord: CKRecord
-    
     @Binding var newGroupCreated: Bool
     
     var phoneNumbers: [String] {
@@ -61,19 +60,25 @@ struct NewGroupSheetView: View {
                 
                 Spacer()
                 
-                NewGroupToolbar(showMessage: $showMessage, newGroupCreated: $newGroupCreated, isDismiss: $isDismiss)
+                NewGroupToolbar(showMessage: $showMessage, isDismiss: $isDismiss, isDismissNotSave: $isDismissNotSave)
                     .environment(contactsVM)
                     .environment(newGroupVM)
                     .sheet(isPresented: $showMessage, onDismiss: {
-                        dismiss()
+                        isDismiss.toggle()
                     }) {
-                        MessageView(recipients: phoneNumbers, body: "Confira esse link: https://seuapp.com")
+                        let url = URL(string: "challenge13://\(newGroupVM.record!.recordID.recordName)")
+                        MessageView(recipients: phoneNumbers, body: "Confira esse link: \(String(describing: url?.absoluteString))")
                     }
             }
             .onChange(of: isDismiss) {
                 formRecord = newGroupVM.record!
+                newGroupCreated.toggle()
+                dismiss()
+            }
+            .onChange(of: isDismissNotSave) {
                 dismiss()
             }
         }
     }
 }
+ 
