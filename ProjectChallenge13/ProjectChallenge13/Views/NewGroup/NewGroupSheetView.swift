@@ -31,6 +31,7 @@ struct NewGroupSheetView: View {
             VStack(alignment: .leading) {
                 Text("Adicione participante no seu grupo")
                     .padding(.leading, 29)
+                    .foregroundStyle(.formMainText)
                 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
@@ -47,12 +48,12 @@ struct NewGroupSheetView: View {
                 
                 Text("Quais categorias você gostaria de adicionar?")
                     .padding(.leading, 29)
+                    .foregroundStyle(.formMainText)
                 
                 CategoriesMenu()
                     .environment(newGroupVM)
                 
                 ScrollView(showsIndicators: false) {
-                    
                     ForEach(Array(newGroupVM.selectedCategory), id: \.self) { category in
                         CategoryCard(category: category)
                     }
@@ -79,5 +80,6 @@ struct NewGroupSheetView: View {
                 dismiss()
             }
         }
+        .background(.formBackgroud)
     }
 }

@@ -12,10 +12,10 @@ struct ActivityCard: View {
     
     var body: some View {
         Text(activity.name)
-            .foregroundStyle(.newGroupCategoriesText)
+            .foregroundStyle(.formCardText)
             .padding(.horizontal, 22)
             .padding(.vertical, 5)
-            .background(.newGroupCategoriesBackground)
+            .background(.formCardBack)
             .clipShape(RoundedRectangle(cornerRadius: 90))
             //.padding(.leading, 48)
     }

@@ -42,6 +42,7 @@ struct NewGroupToolbar: View {
                         } label: {
                             Image(systemName: "checkmark")
                         }
+                        .buttonStyle(.borderedProminent)
                     }
                     
                 }
