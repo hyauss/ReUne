@@ -12,7 +12,7 @@ struct NewGroupToolbar: View {
     @Environment(NewGroupViewModel.self) var newGroupVM
     
     @StateObject private var vm =  GroupViewModel.shared
-    
+     
     @Binding var showMessage: Bool
     //@Binding var newGroupCreated: Bool
     @Binding var isDismiss: Bool
