@@ -10,6 +10,7 @@ import SwiftUI
 struct MostVoteHourComponent: View {
     let viewModelCalendar =  CalendarViewModel()
     var date: String
+    var color: Color
     
     var body: some View {
         VStack{
@@ -24,7 +25,7 @@ struct MostVoteHourComponent: View {
         .background(
             RoundedRectangle(cornerRadius: 10)
                 .frame(width: 56, height: 64)
-                .foregroundStyle(.yellow)
+                .foregroundStyle(color.opacity(0.5))
                 .shadow(radius: 4, y: 4)
         )
         

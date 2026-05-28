@@ -32,11 +32,8 @@ struct AnimationCalendarIndexView: View {
                     Circle()
                         .fill(currentIndex == index ? primaryColor : secondaryColor) // 2
                         .scaleEffect(currentIndex == index ? 1 : smallScale)
-                    
                         .frame(width: circleSize, height: circleSize)
-                    
                         .transition(AnyTransition.opacity.combined(with: .scale)) // 3
-                    
                         .id(index) // 4
                 }
             }

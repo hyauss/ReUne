@@ -22,7 +22,7 @@ struct TimeLineView: View {
                 Text(" ")
                     .font(.system(size: 14, weight: .medium))
                     .frame(maxWidth: .infinity)
-                MostVoteHourComponent(date: mostFrequncyDate)
+                MostVoteHourComponent(date: mostFrequncyDate, color: .ultramarineBlue)
                     .frame(maxWidth: .infinity)
                 
                 if secondFrequncyDate == mostFrequncyDate {
@@ -30,7 +30,7 @@ struct TimeLineView: View {
                         .frame(maxWidth: .infinity)
                 }
                 else{
-                    MostVoteHourComponent(date: secondFrequncyDate)
+                    MostVoteHourComponent(date: secondFrequncyDate, color: .formCardBack)
                         .frame(maxWidth: .infinity)
                 }
             }
