@@ -19,30 +19,31 @@ struct NewGroupToolbar: View {
     @Binding var isDismissNotSave: Bool
     @State var ckViewModel = LoginViewModel.shared
     @State private var users: Set<String> = []
-      
+    
     var body: some View {
         Text("")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     if !newGroupVM.selectedCategory.isEmpty {
-                        
-                        Button {
-                            //if !newGroupVM.selectedCategory.isEmpty {
-                            users.insert(ckViewModel.preference!.userID)
-                            newGroupVM.record = vm.saveItem(categories: Array(newGroupVM.selectedCategory), activities: [], dates: [], users: users, owner: ckViewModel.preference!.userID)
-                            
-                            if !contactsVM.selectedContacts.isEmpty {
-//                                group = ItemViewModel(itemListing: EventGroup.fromRecord(newGroupVM.record!)!)
-                                showMessage = true
+                        Image(systemName: "checkmark")
+                            .foregroundStyle(Color.white)
+                            .frame(width: 20, height: 20)
+                            .circularProgressButton {
+                                users.insert(ckViewModel.preference!.userID)
+                                newGroupVM.record = vm.saveItem(
+                                    categories: Array(newGroupVM.selectedCategory),
+                                    activities: [],
+                                    dates: [],
+                                    users: users,
+                                    owner: ckViewModel.preference!.userID
+                                )
+                                if !contactsVM.selectedContacts.isEmpty {
+                                    showMessage = true
+                                } else {
+                                    isDismiss.toggle()
+                                }
                             }
-                            else {
-                                isDismiss.toggle()
-                            }
-                            
-                        } label: {
-                            Image(systemName: "checkmark")
-                        }
-                        .buttonStyle(.borderedProminent)
+                        .scaleEffect(0.9)
                     }
                     
                 }
