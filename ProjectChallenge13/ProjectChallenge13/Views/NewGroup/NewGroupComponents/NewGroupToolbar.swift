@@ -17,7 +17,6 @@ struct NewGroupToolbar: View {
     //@Binding var newGroupCreated: Bool
     @Binding var isDismiss: Bool
     @Binding var isDismissNotSave: Bool
-    
     @State var ckViewModel = LoginViewModel.shared
     @State private var users: Set<String> = []
       
@@ -33,6 +32,7 @@ struct NewGroupToolbar: View {
                             newGroupVM.record = vm.saveItem(categories: Array(newGroupVM.selectedCategory), activities: [], dates: [], users: users, owner: ckViewModel.preference!.userID)
                             
                             if !contactsVM.selectedContacts.isEmpty {
+//                                group = ItemViewModel(itemListing: EventGroup.fromRecord(newGroupVM.record!)!)
                                 showMessage = true
                             }
                             else {

@@ -39,7 +39,7 @@ struct ProjectChallenge13App: App {
                         }
                         
                         print(recordID)
-                        Task {
+                        Task{
                             do {
                                 let groupRecord = try await vm.fetchGroupsWithId(groupID: recordID)
                                 var group = EventGroup.fromRecord(groupRecord)
@@ -70,4 +70,5 @@ struct ProjectChallenge13App: App {
             }
         }
     }
+    
 }

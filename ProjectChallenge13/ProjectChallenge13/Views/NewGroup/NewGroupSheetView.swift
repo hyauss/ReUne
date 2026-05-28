@@ -17,9 +17,7 @@ struct NewGroupSheetView: View {
     @State var showMessage = false
     @State var isDismiss: Bool = false
     @State var isDismissNotSave: Bool = false
-    
     @Binding var formRecord: CKRecord
-    
     @Binding var newGroupCreated: Bool
     
     var phoneNumbers: [String] {
@@ -69,7 +67,8 @@ struct NewGroupSheetView: View {
                     .sheet(isPresented: $showMessage, onDismiss: {
                         isDismiss.toggle()
                     }) {
-                        MessageView(recipients: phoneNumbers, body: "Confira esse link: https://seuapp.com")
+                        let url = URL(string: "challenge13://\(formRecord.recordID.recordName)")
+                        MessageView(recipients: phoneNumbers, body: "Confira esse link: \(String(describing: url?.absoluteString))")
                     }
             }
             .onChange(of: isDismiss) {
