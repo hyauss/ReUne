@@ -103,4 +103,27 @@ class CalendarViewModel {
         }
     }
     
+    func dayNumber(from dateString: String) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        
+        guard let date = formatter.date(from: dateString) else { return "" }
+        
+        let day = Calendar.current.component(.day, from: date)
+        return String(day)
+    }
+    
+    func weekdayAbbreviation(from dateString: String) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.locale = Locale(identifier: "pt_BR")
+        
+        guard let date = formatter.date(from: dateString) else { return "" }
+        
+        var week = Calendar.current
+        week.locale = Locale(identifier: "pt_BR")
+        let idx = week.component(.weekday, from: date) - 1
+        
+        return week.shortWeekdaySymbols[idx].replacingOccurrences(of: ".", with: "")
+    }
 }
