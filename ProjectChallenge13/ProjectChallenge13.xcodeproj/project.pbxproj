@@ -420,7 +420,7 @@
 				CODE_SIGN_ENTITLEMENTS = ProjectChallenge13/ProjectChallenge13.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 539HYZPTH8;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ProjectChallenge13/Info.plist;
@@ -461,7 +461,7 @@
 				CODE_SIGN_ENTITLEMENTS = ProjectChallenge13/ProjectChallenge13.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 539HYZPTH8;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ProjectChallenge13/Info.plist;

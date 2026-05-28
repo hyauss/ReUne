@@ -15,6 +15,8 @@ import SwiftUI
 ///- Parameter columns: size and number of grid
 struct CalendarView: View {
     @State private var currentMonthIndex = Calendar.current.component(.month, from: Date.now) - 1
+    @State private var animatedIndex = Calendar.current.component(.month, from: Date.now) - 1
+
     @State private var days: [Date] = []
     
     let viewModelCalendar =  CalendarViewModel()
@@ -34,7 +36,7 @@ struct CalendarView: View {
     
     var body: some View {
         VStack{
-            TabView(selection: $currentMonthIndex.animation()){
+            TabView(selection: $currentMonthIndex){
                 
                 ForEach(months.indices, id: \.self){ index in
                     let monthDate = Calendar.current.date(from: DateComponents(
@@ -70,41 +72,36 @@ struct CalendarView: View {
                         
                         //date of month
                         LazyVGrid(columns: columns, spacing: 10) {
+                            let mostFrequent = viewModelCalendar.mostFrequencyDate(dates: dates)
+                            
                             ForEach(monthDate.calendarDisplayDays, id: \.self) { day in
                                 
                                 if day.monthInt != monthDate.monthInt {
-                                    Text ("")
-                                }
-                                else{
-                                    Text(day.formatted(.dateTime.day()))
-                                        .font(day.formattedDate == viewModelCalendar.mostFrequencyDate(dates: dates) ? .title2 : .title3)
-                                        .fontWeight(day.formattedDate == viewModelCalendar.mostFrequencyDate(dates: dates) ? .medium : .regular)
-                                        .frame(maxWidth: .infinity, minHeight: 40)
-                                        .foregroundStyle( day.formattedDate == viewModelCalendar.mostFrequencyDate(dates: dates) ? .white : .black)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .foregroundStyle(Color(hue: 0.669, saturation: viewModelCalendar.opacity(for: day, dates: dates) * 0.93, brightness: 1 - (0.40 * viewModelCalendar.opacity(for: day, dates: dates))))
-                                                .frame(width: 40, height: 40)
-                                        )
+                                    Color.clear.frame(height: 40)
+                                } else {
+                                    DayCellView(
+                                        day: day,
+                                        isMostFrequent: day.formattedDate == mostFrequent,
+                                        opacity: viewModelCalendar.opacity(for: day, dates: dates)
+                                    )
                                 }
                             }
                         }
                     }
                     .padding()
+                    .frame(width: 345, height: 400, alignment: .top)
                     .tag(index)
+                    .background(RoundedRectangle(cornerRadius: 20)
+                        .foregroundStyle(.white)
+                        .shadow(radius: 4, y: 4)
+                    )
                     
                 }
-                .frame(width: 345, height: 400, alignment: .top)
-                .background(RoundedRectangle(cornerRadius: 20)
-                    .frame(width: 345, height: 400)
-                    .foregroundStyle(.white)
-                    .shadow(radius: 4, y: 4)
-                )
-                .padding()
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
             .overlay(alignment: .bottom){
                 AnimationCalendarIndexView(numberOfPages: months.count, currentIndex: currentMonthIndex)
+                    .animation(.easeInOut(duration: 0.2), value: currentMonthIndex)
             }
             .frame(height: 460, alignment: .top)
         }
