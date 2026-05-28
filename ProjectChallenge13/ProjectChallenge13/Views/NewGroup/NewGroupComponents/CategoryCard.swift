@@ -9,12 +9,17 @@ import SwiftUI
 
 struct CategoryCard: View {
     var category: CategoryModel
+    
     var body: some View {
-        Text(category.name)
-            .foregroundStyle(.newGroupCategoriesText)
-            .padding(.horizontal, 22)
-            .padding(.vertical, 5)
-            .background(.newGroupCategoriesBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 90))
-            .padding(.leading, 48)    }
+        HStack {
+            Text(category.name)
+                .foregroundStyle(.formCardText)
+                .padding(.horizontal, 22)
+                .padding(.vertical, 5)
+                .background(.formCardBack)
+                .clipShape(RoundedRectangle(cornerRadius: 90))
+                .padding(.leading, 48)
+            Spacer()
+        }
+    }
 }

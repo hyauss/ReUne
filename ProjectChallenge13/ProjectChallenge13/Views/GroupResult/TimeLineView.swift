@@ -19,16 +19,22 @@ struct TimeLineView: View {
     var body: some View {
         VStack{
             HStack{
-                Text("Horarios")
+                Text(" ")
                     .font(.system(size: 14, weight: .medium))
                     .frame(maxWidth: .infinity)
-                Text(mostFrequncyDate)
-                    .font(.system(size: 14, weight: .medium))
+                MostVoteHourComponent(date: mostFrequncyDate, color: .ultramarineBlue)
                     .frame(maxWidth: .infinity)
-                Text(secondFrequncyDate == mostFrequncyDate ? " " : secondFrequncyDate)
-                    .font(.system(size: 14, weight: .medium))
-                    .frame(maxWidth: .infinity)
+                
+                if secondFrequncyDate == mostFrequncyDate {
+                    Text(" ")
+                        .frame(maxWidth: .infinity)
+                }
+                else{
+                    MostVoteHourComponent(date: secondFrequncyDate, color: .formCardBack)
+                        .frame(maxWidth: .infinity)
+                }
             }
+            
             ScrollView{
                 VStack(spacing: -10){
                     ForEach(hours, id: \.self){

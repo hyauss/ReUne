@@ -51,6 +51,7 @@ class GroupViewModel: ObservableObject {
                 print(error)
             }else{
                 if let _ = newRecord{
+                    print(newRecord?.recordID.recordName)
                     print("SAVED")
                     DispatchQueue.main.async {
                         self.needFetch = true

@@ -12,7 +12,8 @@ extension Date {
     static var firstDayOfWeek = Calendar.current.firstWeekday
     
     static var capitalizedFirstLettersOfWeekdays: [String] {
-        let calendar = Calendar.current
+        var calendar = Calendar.current
+        calendar.locale = Locale(identifier: "pt_BR")
         // Adjusted for the different weekday starts
         var weekdays = calendar.shortWeekdaySymbols
         if firstDayOfWeek > 1 {
@@ -23,7 +24,7 @@ extension Date {
                 }
             }
         }
-        return weekdays.map { $0.capitalized.uppercased() }
+        return weekdays.map { $0.capitalized.uppercased().replacingOccurrences(of: ".", with: "")  }
     }
     
     var startOfMonth: Date {
