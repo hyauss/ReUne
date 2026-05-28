@@ -8,21 +8,25 @@
 import Foundation
 import SwiftUI
 import CloudKit
+import Aptabase
 
 struct FormToolbar: View {
     @StateObject private var vm =  GroupViewModel.shared
     @Environment(FormViewModel.self) var formVM
     
     @State var group: EventGroup
+    @State var showingCreateAlert: Bool = false
     
     @Binding var newActivityCreated: Bool
     @Binding var groupCKRecord: CKRecord
-
     
     var body: some View {
         NavigationStack {
             Text("")
                 .toolbar {
+                    ToolbarItem(placement: .bottomBar) {
+                        Spacer()
+                    }
                     ToolbarItem(placement: .bottomBar) {
                         HStack {
                             if !formVM.dateList.isEmpty && !formVM.selectedActivities.isEmpty {
@@ -52,12 +56,20 @@ struct FormToolbar: View {
                                             print(error.localizedDescription)
                                         }
                                     }
-                                    
+                                    Aptabase.shared.trackEvent("new_event")
+                                    showingCreateAlert = true
                                     
                                 } label: {
                                     Image(systemName: "checkmark")
                                 }
                                 .buttonStyle(.borderedProminent)
+                                .alert("Atividade inserida com sucesso!", isPresented: $showingCreateAlert) {
+                                    Button {
+                                        newActivityCreated.toggle()
+                                    } label: {
+                                        Text("Ver Resultados")
+                                    }
+                                }
                             }
                         }
                     }
