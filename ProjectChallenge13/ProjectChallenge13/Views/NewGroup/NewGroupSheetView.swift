@@ -66,7 +66,7 @@ struct NewGroupSheetView: View {
                     .sheet(isPresented: $showMessage, onDismiss: {
                         isDismiss.toggle()
                     }) {
-                        let url = URL(string: "challenge13://\(formRecord.recordID.recordName)")
+                        let url = URL(string: "challenge13://\(newGroupVM.record!.recordID.recordName)")
                         MessageView(recipients: phoneNumbers, body: "Confira esse link: \(String(describing: url?.absoluteString))")
                     }
             }
@@ -81,3 +81,4 @@ struct NewGroupSheetView: View {
         }
     }
 }
+ 
