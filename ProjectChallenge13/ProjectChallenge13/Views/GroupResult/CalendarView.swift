@@ -44,9 +44,16 @@ struct CalendarView: View {
                     
                     VStack(alignment: .leading, spacing: 20) {
                         HStack{
-                            Text(monthDate.formatted(.dateTime.year().month()))
-                                .font(.title3)
-                                .fontWeight(.semibold)
+                            Text(monthDate.formatted(
+                                .dateTime
+                                    .year()
+                                    .month(.wide)
+                                    .locale(Locale(identifier: "pt_BR")))
+                                .replacingOccurrences(of: " de ", with: " ")
+                                .capitalized
+                            )
+                            .font(.title3)
+                            .fontWeight(.semibold)
                             
                             Spacer()
                         }
@@ -76,7 +83,7 @@ struct CalendarView: View {
                                         .foregroundStyle( day.formattedDate == viewModelCalendar.mostFrequencyDate(dates: dates) ? .white : .black)
                                         .background(
                                             RoundedRectangle(cornerRadius: 10)
-                                                .foregroundStyle(Color(hue: 0.9, saturation: viewModelCalendar.opacity(for: day, dates: dates), brightness: 1))
+                                                .foregroundStyle(Color(hue: 0.669, saturation: viewModelCalendar.opacity(for: day, dates: dates) * 0.93, brightness: 1 - (0.40 * viewModelCalendar.opacity(for: day, dates: dates))))
                                                 .frame(width: 40, height: 40)
                                         )
                                 }
@@ -99,7 +106,7 @@ struct CalendarView: View {
             .overlay(alignment: .bottom){
                 AnimationCalendarIndexView(numberOfPages: months.count, currentIndex: currentMonthIndex)
             }
-            .frame(height: 460)
+            .frame(height: 460, alignment: .top)
         }
     }
     

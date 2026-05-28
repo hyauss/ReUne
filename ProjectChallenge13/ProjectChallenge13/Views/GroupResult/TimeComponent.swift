@@ -19,16 +19,17 @@ struct TimeComponent: View {
                 .padding()
 //                .font(.system(size: 30, weight: .semibold))
                 .font(.largeTitle)
-                .foregroundStyle(.gray)
+                .foregroundStyle(.black)
+                .fontWeight(.semibold)
                 .frame(width: 140, alignment: .center)
             Spacer()
             ZStack{
                 Capsule()
-                    .foregroundStyle(Color(hue: 0.9, saturation: opacity2, brightness: 1))
+                    .foregroundStyle(Color(hue: 0.669, saturation: opacity2 * 0.93, brightness: 1 - (0.40 * opacity2)))
                     .frame(maxWidth: 218, maxHeight: 50)
                 HStack{
                     Capsule()
-                        .foregroundStyle(Color(hue: 0.9, saturation: opacity1, brightness: 1))
+                        .foregroundStyle(Color(hue: 0.669, saturation: opacity1 * 0.93, brightness: 1 - (0.40 * opacity1)))
                         .frame(maxWidth: 108, maxHeight: 50)
                     Spacer()
                 }
@@ -36,7 +37,7 @@ struct TimeComponent: View {
         }
         .background(
             UnevenRoundedRectangle(cornerRadii: .init(bottomTrailing: 50, topTrailing: 50))
-                .foregroundStyle(Color(hue: 0.9, saturation: 0.1, brightness: 1))
+                .foregroundStyle(Color(hue: 0.669, saturation: 0.093, brightness: 0.97))
                 .frame(maxWidth: 360, maxHeight: 50)
         )
     }
