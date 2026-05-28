@@ -66,5 +66,17 @@ struct ProjectChallenge13Tests {
         let expect = 0.2
         #expect(result==expect)
     }
-
+    
+    @Test func removeCategoryFromNewGroup() {
+        let vm = NewGroupViewModel()
+        vm.addCategory(category: CategoryModel(name: "Criatividade"))
+        vm.removeCategory(category: CategoryModel(name: "Criatividade"))
+        #expect(vm.selectedCategory.isEmpty == true)
+    }
+    
+    @Test func addCategoryFromNewGroup() {
+        let vm = NewGroupViewModel()
+        vm.addCategory(category: CategoryModel(name: "Criatividade"))
+        #expect(!vm.selectedCategory.isEmpty == true)
+    }
 }
