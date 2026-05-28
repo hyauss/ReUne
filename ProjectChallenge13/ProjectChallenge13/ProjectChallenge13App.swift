@@ -70,5 +70,4 @@ struct ProjectChallenge13App: App {
             }
         }
     }
-    
 }

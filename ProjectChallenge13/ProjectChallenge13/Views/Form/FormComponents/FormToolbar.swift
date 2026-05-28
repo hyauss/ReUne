@@ -14,7 +14,6 @@ struct FormToolbar: View {
     @Environment(FormViewModel.self) var formVM
     
     @State var group: EventGroup
-    @State var showingAlert: Bool = false
     @State var showingCreateAlert: Bool = false
     
     @Binding var newActivityCreated: Bool
@@ -62,9 +61,6 @@ struct FormToolbar: View {
                                     Image(systemName: "checkmark")
                                 }
                                 .buttonStyle(.borderedProminent)
-//                                .alert("Preencha todos os campos para prosseguir", isPresented: $showingAlert) {
-//                                    Button("OK", role: .close) { }
-//                                }
                                 .alert("Atividade inserida com sucesso!", isPresented: $showingCreateAlert) {
                                     Button {
                                         newActivityCreated.toggle()
