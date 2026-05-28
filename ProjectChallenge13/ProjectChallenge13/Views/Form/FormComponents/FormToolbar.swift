@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import CloudKit
+import Aptabase
 
 struct FormToolbar: View {
     @StateObject private var vm =  GroupViewModel.shared
@@ -55,6 +56,7 @@ struct FormToolbar: View {
                                             print(error.localizedDescription)
                                         }
                                     }
+                                    Aptabase.shared.trackEvent("new_event")
                                     showingCreateAlert = true
                                     
                                 } label: {
