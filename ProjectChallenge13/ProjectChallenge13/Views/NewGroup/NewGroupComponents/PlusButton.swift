@@ -11,12 +11,13 @@ struct PlusButton: View {
     var body: some View {
         ZStack {
             Circle()
-                .frame(width: 32)
-                .foregroundStyle(.gray)
+                .frame(width: 32, height: 32)
+                .foregroundStyle(.formPlusBack)
                 .opacity(0.3)
             Image(systemName: "plus")
                 .font(.body)
-                .foregroundStyle(.black)
+                .foregroundStyle(.formPlusText)
+                .fontWeight(.semibold)
         }
     }
 }
