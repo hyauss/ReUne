@@ -33,7 +33,7 @@ struct ProjectChallenge13App: App {
                         EntryView()
                     }
                     .onOpenURL { url in
-                        print(url)
+                        print("opened:", url.absoluteString)
                         guard let recordID = url.host else {
                             return
                         }
@@ -70,5 +70,4 @@ struct ProjectChallenge13App: App {
             }
         }
     }
-    
 }
