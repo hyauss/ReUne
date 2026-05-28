@@ -67,6 +67,11 @@ struct ProjectChallenge13App: App {
                             FormView(newActivityCreated: $newActivityCreated, groupCKRecord: $formRecord, group: groupInvitation)
                         }
                     }
+                    .navigationDestination(isPresented: $newActivityCreated) {
+                        if newActivityCreated == true  {
+                            GroupResultView(group: ItemViewModel(itemListing: EventGroup.fromRecord(formRecord)!))
+                        }
+                    }
             }
         }
     }
