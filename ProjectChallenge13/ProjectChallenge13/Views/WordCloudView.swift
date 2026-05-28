@@ -22,10 +22,6 @@ struct WordCloudView: View {
  
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Melhor Atividade")
-                .font(.headline)
-                .padding(.leading, 8)
- 
             if viewModel.words.isEmpty {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(Color.white)
