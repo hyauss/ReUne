@@ -31,15 +31,15 @@ struct ContentView2: View {
         
         Spacer()
         
-        Button("subscription") {
-            vmNotification.subscribeToNotification()
-        }
+//        Button("subscription") {
+//            vmNotification.subscribeToNotification()
+//        }
         
         Spacer()
         
-        Button("unsubscription") {
-            vmNotification.unsubscribeToNotification()
-        }
+//        Button("unsubscription") {
+//            vmNotification.unsubscribeToNotification()
+//        }
         
         Spacer()
         

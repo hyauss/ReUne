@@ -35,50 +35,44 @@ class PushNotificationViewModel: ObservableObject{
         }
     }
     
-    func subscribeToNotification() {
-        let groupIDs = vm.records
+    func subscribeToNotification(groupID: String) {
+        let recordID = CKRecord.ID(recordName: groupID)
+        let predicate = NSPredicate(format: "self == %@", recordID)
+        let subscriptionID = "group_update_\(groupID)"
         
-        for groupID in groupIDs {
-            
-            let predicate = NSPredicate(format: "groupID == %@", groupID)
-            let subscription = CKQuerySubscription(recordType: "ItemListing", predicate: predicate, subscriptionID: "subID-\(groupID)", options: .firesOnRecordCreation)
-            
-            let notification = CKSubscription.NotificationInfo()
-            notification.title = "Atualização no grupo"
-            notification.alertBody = "Houver uma atualização no grupo \(groupID)"
-            notification.soundName = "default"
-            
-            notification.threadIdentifier = groupID
-            
-            subscription.notificationInfo = notification
-            
-            CKContainer.default().publicCloudDatabase.save(subscription) { returnedSubscription, returnedError in
-                if let error = returnedError {
+        let subscription = CKQuerySubscription(recordType: RecordType.itemListing.rawValue, predicate: predicate, subscriptionID: subscriptionID, options: .firesOnRecordCreation)
+        
+        let notification = CKSubscription.NotificationInfo()
+        notification.title = "Atualização no grupo"
+        notification.alertBody = "Houver uma atualização no grupo \(groupID)"
+        notification.soundName = "default"
+        
+        
+        subscription.notificationInfo = notification
+        
+        CKContainer.default().publicCloudDatabase.save(subscription) { returnedSubscription, returnedError in
+            if let error = returnedError {
+                if let ckError = returnedError as? CKError, ckError.code == .serverRejectedRequest {
+                    print("Subscription already exists: \(groupID)")
+                } else {
                     print(error)
                 }
-                else{
-                    print("Sucess subscribe")
-                }
+            }
+            else{
+                print("Sucess subscribe to group: \(groupID)")
             }
         }
-        
-//        let predicate = NSPredicate(value: true)
-//        let subscription = CKQuerySubscription(recordType: "ItemListing", predicate: predicate, subscriptionID: "listing_added_to_database", options: .firesOnRecordCreation)
-        
-//        let notification = CKSubscription.NotificationInfo()
-//        notification.title = "New Item"
-//        notification.alertBody = "Open the app to check"
-//        notification.soundName = "default"
-        
     }
     
-    func unsubscribeToNotification() {
-        CKContainer.default().publicCloudDatabase.delete(withSubscriptionID: "listing_added_to_database") { returnedID, returnedError in
+    func unsubscribeToNotification(groupID: String) {
+        let subscriptionID = "group_update_\(groupID)"
+        
+        CKContainer.default().publicCloudDatabase.delete(withSubscriptionID: subscriptionID) { returnedID, returnedError in
             if let error = returnedError {
                 print (error)
             }
             else{
-                print("unsubscribe sucess")
+                print("Unsubscribed: \(groupID)")
             }
         }
     }

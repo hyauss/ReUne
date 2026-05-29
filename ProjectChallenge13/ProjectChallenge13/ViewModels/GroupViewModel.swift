@@ -16,7 +16,7 @@ enum RecordType: String{
 
 
 class GroupViewModel: ObservableObject {
-    
+
     var ckViewModel = LoginViewModel.shared
     static let shared = GroupViewModel()
     private var database: CKDatabase
@@ -79,6 +79,7 @@ class GroupViewModel: ObservableObject {
                             if let itemListing  = EventGroup.fromRecord(record){
                                 items.append(itemListing)
                                 records.append(record)
+                                
                             }
                         case .failure(let error):
                             print(error)
@@ -91,6 +92,7 @@ class GroupViewModel: ObservableObject {
                         ($0.creationDate ?? .distantPast) > ($1.creationDate ?? .distantPast)
                     }
                 }
+                
             case .failure(let error):
                 print(error)
             }
