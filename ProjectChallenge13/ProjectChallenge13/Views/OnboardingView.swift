@@ -17,33 +17,35 @@ struct OnboardingView: View {
     var body: some View {
         GeometryReader { g in
             NavigationStack {
-                VStack {
-                    Text("Como você gostaria de ser chamado?")
-                        .font(.title3)
+                ZStack {
+                    Color.formBackgroud.ignoresSafeArea()
+                    VStack {
+                        Text("Como você gostaria de ser chamado?")
+                            .font(.title3)
+                            .foregroundStyle(.black)
+                            .bold()
+                     
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 16)
+                                .frame(width: g.size.width * 0.90, height: 56)
+                                .foregroundStyle(.formCardBack)
+                                .overlay(
+                                    TextField("Nome..", text: $name)
+                                        .padding(.leading, 16)
+                                        .foregroundStyle(.nightBlue)
+                                )
+                        }
+                        .padding()
                         
-                        .bold()
-                        .padding(.top, 50)
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 16)
-                            .frame(width: g.size.width * 0.90, height: 56)
-                            .foregroundStyle(.formCardBack)
-                            .overlay(
-                                TextField("Nome..", text: $name)
-                                    .padding(.leading, 16)
-                                    .tint(.purple)
-                                    .foregroundStyle(.nightBlue)
-                            )
+                        Spacer()
                     }
-                    .padding()
-                    
-                    Spacer()
-                }
-                .toolbar {
-                    ToolbarItem(placement: .principal) {
-                        Text("Cadastro")
-                    }
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
+                    .toolbar {
+                        ToolbarItem(placement: .principal) {
+                            Text("Cadastro")
+                                .foregroundStyle(.black)
+                        }
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button {
                                 if name != "" {
                                     ckViewModel.createPreference(name: name)
                                     state = 1
@@ -54,7 +56,9 @@ struct OnboardingView: View {
                                     isLoading = true
                                 }
                             } label: {
-                            Text("Salvar")
+                                Text("Salvar")
+                                    .foregroundStyle(.black)
+                            }
                         }
                     }
                 }
