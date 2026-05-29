@@ -60,8 +60,11 @@ struct EntryView: View {
                                     }
                                 } label: {
                                     Text("Já tenho")
+                                        .foregroundStyle(.nightBlue)
                                 }
-                                .buttonStyle(.bordered)
+                                .buttonStyle(.borderedProminent)
+                                .tint(.formCardBack)
+                                //.foregroundStyle(.formCardBack)
                                 .alert("Ainda não possui conta :(", isPresented: $showingAlert1) {
                                     Button("OK", role: .confirm) {}
                                 } message: {
@@ -78,12 +81,15 @@ struct EntryView: View {
                                     }
                                 } label: {
                                     Text("Ainda não tenho")
+                                        .foregroundStyle(.nightBlue)
                                 }
-                                .buttonStyle(.bordered)
+                                .buttonStyle(.borderedProminent)
+                                .tint(.formCardBack)
                                 .alert("Já possui conta", isPresented: $showingAlert2) {
                                     Button("OK", role: .confirm) {}
                                 } message: {
-                                    Text("Você não está conectado no iCloud ou já possui uma conta!")
+                                    Text("Você não está conectado no iCloud")
+                                    Text("ou já possui uma conta!")
                                 }
                             }
                         }
