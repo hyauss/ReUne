@@ -25,12 +25,16 @@ struct OnboardingView: View {
                         .padding(.top, 50)
                     ZStack {
                         RoundedRectangle(cornerRadius: 16)
-                            .frame(width: g.size.width * 0.95, height: 56)
+                            .frame(width: g.size.width * 0.90, height: 56)
+                            .foregroundStyle(.formCardBack)
                             .overlay(
                                 TextField("Nome..", text: $name)
                                     .padding(.leading, 16)
+                                    .tint(.purple)
+                                    .foregroundStyle(.nightBlue)
                             )
                     }
+                    .padding()
                     
                     Spacer()
                 }
