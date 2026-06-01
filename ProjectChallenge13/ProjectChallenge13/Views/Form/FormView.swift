@@ -35,6 +35,7 @@ struct FormView: View {
                             .fontWeight(.semibold)
                             .padding(.bottom, 26)
                             .foregroundStyle(.formMainText)
+                            .padding(.top)
                         
                         Text("Data e Horário")
                             .font(.body)
