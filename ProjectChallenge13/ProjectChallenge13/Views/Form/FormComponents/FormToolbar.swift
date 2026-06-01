@@ -28,7 +28,6 @@ struct FormToolbar: View {
                         Spacer()
                     }
                     ToolbarItem(placement: .bottomBar) {
-                        HStack {
                             if !formVM.dateList.isEmpty && !formVM.selectedActivities.isEmpty {
                                 Button {
                                     Task {
@@ -75,7 +74,7 @@ struct FormToolbar: View {
                                         Text("Ver Resultados")
                                     }
                                 }
-                            }
+                            
                         }
                     }
                 }

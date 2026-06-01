@@ -98,6 +98,7 @@ struct FormView: View {
                     FormToolbar(group: group!, newActivityCreated: $newActivityCreated, groupCKRecord: $groupCKRecord)
                         .environment(formVM)
                 }
+                .navigationBarBackButtonHidden(true)
             }
         }
         .background(.formBackgroud)

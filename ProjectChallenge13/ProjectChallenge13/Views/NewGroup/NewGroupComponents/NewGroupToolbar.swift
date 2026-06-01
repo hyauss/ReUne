@@ -30,13 +30,8 @@ struct NewGroupToolbar: View {
                             .frame(width: 20, height: 20)
                             .circularProgressButton {
                                 users.insert(ckViewModel.preference!.userID)
-                                newGroupVM.record = vm.saveItem(
-                                    categories: Array(newGroupVM.selectedCategory),
-                                    activities: [],
-                                    dates: [],
-                                    users: users,
-                                    owner: ckViewModel.preference!.userID
-                                )
+                                newGroupVM.record = vm.saveItem(categories: Array(newGroupVM.selectedCategory), activities: [ActivitiesModel(name: "", votos: 0)], dates: [], users: users, owner: ckViewModel.preference!.userID)
+                                
                                 if !contactsVM.selectedContacts.isEmpty {
                                     showMessage = true
                                 } else {

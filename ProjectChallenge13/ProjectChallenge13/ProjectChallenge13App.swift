@@ -19,7 +19,6 @@ struct ProjectChallenge13App: App {
     @State var newActivityCreated: Bool = false
     @State var formRecord: CKRecord = CKRecord(recordType: "SeuTipo")
     
-    
     init() {
         Aptabase.shared.initialize(appKey: "A-US-8107330164") // 👈 this is where you enter your App Key
     }
@@ -27,17 +26,12 @@ struct ProjectChallenge13App: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                //            AptabaseTesteView()
                 ContentView()
-                    .sheet(isPresented: $showLogin) {
-                        EntryView()
-                    }
                     .onOpenURL { url in
                         print("opened:", url.absoluteString)
                         guard let recordID = url.host else {
                             return
                         }
-                        
                         print(recordID)
                         Task{
                             do {
@@ -63,12 +57,12 @@ struct ProjectChallenge13App: App {
                         openForm.toggle()
                     }
                     .navigationDestination(isPresented: $openForm) {
-                        if ckViewModel.isLogged && groupInvitation != nil{
+                        if ckViewModel.isLogged && groupInvitation != nil {
                             FormView(newActivityCreated: $newActivityCreated, groupCKRecord: $formRecord, group: groupInvitation)
                         }
                     }
                     .navigationDestination(isPresented: $newActivityCreated) {
-                        if newActivityCreated == true  {
+                        if newActivityCreated == true {
                             GroupResultView(group: ItemViewModel(itemListing: EventGroup.fromRecord(formRecord)!))
                         }
                     }
