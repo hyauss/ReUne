@@ -68,7 +68,9 @@ struct NewGroupSheetView: View {
                         isDismiss.toggle()
                     }) {
                         let url = URL(string: "ReUne://\(newGroupVM.record!.recordID.recordName)")
-                        MessageView(recipients: phoneNumbers, body: "Confira esse link: \(String(describing: url?.absoluteString))")
+                        if let url = url {
+                            MessageView(recipients: phoneNumbers, body: "Confira esse link: \(url.absoluteString)")
+                        }
                     }
             }
             .onChange(of: isDismiss) {
