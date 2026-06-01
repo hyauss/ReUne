@@ -63,7 +63,7 @@ class CalendarViewModel {
             
         }.map { $0.key }
         
-        return newArray[0]
+        return newArray.first ?? ""
     }
     
     func secondFrequencyDate (dates: [Date]) -> String{
@@ -86,7 +86,7 @@ class CalendarViewModel {
             return newArray[1]
         }
         else{
-            return newArray[0]
+            return newArray.first ?? ""
         }
     }
     
