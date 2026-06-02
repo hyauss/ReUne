@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Aptabase
 
 struct CategoriesMenu: View {
     @Environment(NewGroupViewModel.self) var newGroupVM
@@ -20,6 +21,7 @@ struct CategoriesMenu: View {
                         }
                         else {
                             newGroupVM.addCategory(category: CategoryModel(name: category.name))
+                            Aptabase.shared.trackEvent("category_selected", with: [ "category_name": category.name]) // most frequent category
                         }
                     } label: {
                         Text(category.name)

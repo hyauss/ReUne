@@ -6,6 +6,7 @@
 
 import SwiftUI
 import ContactsUI
+import Aptabase
 
 struct ContactsView: View {
     @State private var showPicker = false
@@ -13,6 +14,7 @@ struct ContactsView: View {
     var body: some View {
         VStack {
             Button {
+                Aptabase.shared.trackEvent("participant_add_tapped") //Avarage of people per group
                 showPicker = true
             } label: {
                 PlusButton()

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Aptabase
 
 struct NewGroupToolbar: View {
     @Environment(ContactsViewModel.self) private var contactsVM
@@ -31,6 +32,13 @@ struct NewGroupToolbar: View {
                             .circularProgressButton {
                                 users.insert(ckViewModel.preference!.userID)
                                 newGroupVM.record = vm.saveItem(categories: Array(newGroupVM.selectedCategory), activities: [ActivitiesModel(name: "", votos: 0)], dates: [], users: users, owner: ckViewModel.preference!.userID)
+                                
+                                // final action to create a group + avarege of participants
+                                Aptabase.shared.trackEvent("group_created", with: [
+                                    "participants_count": contactsVM.selectedContacts.count,
+                                    "categories_count": newGroupVM.selectedCategory.count,
+                                    "categories": Array(newGroupVM.selectedCategory).map { $0.name }.joined(separator: ", ")
+                                ])
                                 
                                 if !contactsVM.selectedContacts.isEmpty {
                                     showMessage = true

@@ -61,7 +61,7 @@ struct FormToolbar: View {
                                             print(error.localizedDescription)
                                         }
                                     }
-                                    Aptabase.shared.trackEvent("new_event")
+                                    Aptabase.shared.trackEvent("new_groupAnswer")
                                     showingCreateAlert = true
                                 } label: {
                                     Image(systemName: "checkmark")

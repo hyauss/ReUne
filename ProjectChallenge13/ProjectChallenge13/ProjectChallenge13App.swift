@@ -20,7 +20,7 @@ struct ProjectChallenge13App: App {
     @State var formRecord: CKRecord = CKRecord(recordType: "SeuTipo")
     
     init() {
-        Aptabase.shared.initialize(appKey: "A-US-8107330164") // 👈 this is where you enter your App Key
+        Aptabase.shared.initialize(appKey: "A-US-4076296983") // 👈 this is where you enter your App Key
     }
     
     var body: some Scene {
