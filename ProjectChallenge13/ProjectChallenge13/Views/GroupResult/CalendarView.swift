@@ -16,7 +16,7 @@ import SwiftUI
 struct CalendarView: View {
     @State private var currentMonthIndex = Calendar.current.component(.month, from: Date.now) - 1
     @State private var animatedIndex = Calendar.current.component(.month, from: Date.now) - 1
-
+    
     @State private var days: [Date] = []
     
     let viewModelCalendar =  CalendarViewModel()
@@ -35,6 +35,7 @@ struct CalendarView: View {
     }
     
     var body: some View {
+        
         VStack{
             TabView(selection: $currentMonthIndex){
                 

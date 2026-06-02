@@ -12,47 +12,58 @@ import Combine
 /// a small list of `WordElement` suitable for rendering in a word cloud.
 final class WordCloudViewModel: ObservableObject {
     @Published private(set) var words: [WordElement] = []
-
-    /// Create a view model from an `ItemViewModel` and build the top words.
+ 
     init(item: ItemViewModel) {
         buildWords(from: item)
     }
-
-    /// Rebuilds the words from the provided item.
-    func buildWords(from item: ItemViewModel, maxWords: Int = 10, minFont: CGFloat = 14, maxFont: CGFloat = 48) {
-        let activities = item.actitivies
-
-        // Aggregate activities by name (in case there are duplicates), summing votos.
+ 
+    func buildWords(
+        from item: ItemViewModel,
+        maxWords: Int = 10,
+        minFont:  CGFloat = 14,
+        maxFont:  CGFloat = 48
+    ) {
+        // 1. Aggregate votes by name.
         var agg: [String: Int] = [:]
-        for a in activities {
+        for a in item.actitivies {
             agg[a.name, default: 0] += a.votos
         }
-
-        // Keep only activities with votos > 0
+ 
+        // 2. Only keep activities with at least 1 vote.
         let filtered = agg.filter { $0.value > 0 }
-
         guard !filtered.isEmpty else {
-            DispatchQueue.main.async {
-                self.words = []
-            }
+            DispatchQueue.main.async { self.words = [] }
             return
         }
-
-        // Sort by votos desc and take top `maxWords`
-        let top = filtered.sorted { $0.value > $1.value }.prefix(maxWords)
-
-        let votosArray = top.map { $0.value }
-        let minVotes = votosArray.min() ?? 0
-        let maxVotes = votosArray.max() ?? 0
-
-        let elements: [WordElement] = top.map { (name, votos) in
-            // use power scaling to emphasize the top-voted activity
-            let font = WordElement.fontSize(for: votos, minVotes: minVotes, maxVotes: maxVotes, minFont: minFont, maxFont: maxFont, exponent: 1.25)
-            return WordElement(text: name, votos: votos, fontSize: font)
+ 
+        // 3. Sort: descending votes, then alphabetically for a stable tie-break.
+        let sorted = filtered.sorted {
+            $0.value != $1.value ? $0.value > $1.value : $0.key < $1.key
         }
-
-        DispatchQueue.main.async {
-            self.words = elements
+        let top = Array(sorted.prefix(maxWords))
+ 
+        let maxVotes = top.first?.value ?? 1
+        let minVotes = top.last?.value  ?? 1
+ 
+        // 4. Build elements.
+        //    When all votes are equal every word gets minFont so they're all
+        //    the same small size
+        let elements: [WordElement] = top.map { name, votos in
+            let font: CGFloat
+            if maxVotes == minVotes {
+                font = minFont
+            } else {
+                let t = CGFloat(votos - minVotes) / CGFloat(maxVotes - minVotes)
+                font = minFont + t * (maxFont - minFont)
+            }
+            return WordElement(
+                text:     name,
+                votos:    votos,
+                fontSize: font,
+                isWinner: votos == maxVotes
+            )
         }
+ 
+        DispatchQueue.main.async { self.words = elements }
     }
 }

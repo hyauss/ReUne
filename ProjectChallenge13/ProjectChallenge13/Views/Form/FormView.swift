@@ -35,6 +35,7 @@ struct FormView: View {
                             .fontWeight(.semibold)
                             .padding(.bottom, 26)
                             .foregroundStyle(.formMainText)
+                            .padding(.top)
                         
                         Text("Data e Horário")
                             .font(.body)
@@ -98,6 +99,7 @@ struct FormView: View {
                     FormToolbar(group: group!, newActivityCreated: $newActivityCreated, groupCKRecord: $groupCKRecord)
                         .environment(formVM)
                 }
+                .navigationBarBackButtonHidden(true)
             }
         }
         .background(.formBackgroud)

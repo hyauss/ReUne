@@ -8,10 +8,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>share</string>
+			<string>ReUne</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>challenge13</string>
+				<string>ReUne</string>
 			</array>
 		</dict>
 	</array>
