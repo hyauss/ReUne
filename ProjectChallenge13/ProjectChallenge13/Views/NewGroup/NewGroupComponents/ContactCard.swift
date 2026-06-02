@@ -8,9 +8,12 @@
 import SwiftUI
 import ContactsUI
 
+/// A card that displays a contact's photo or initials, with a remove button.
 struct ContactCard: View {
+    /// The view model used to remove the contact.
     @Environment(ContactsViewModel.self) private var contactsVM
-
+    
+    /// The contact to display.
     var contact: CNContact
     
     var body: some View {

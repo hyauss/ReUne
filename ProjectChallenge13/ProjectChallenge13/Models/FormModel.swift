@@ -7,6 +7,8 @@
 
 import Foundation
 
+/// Model for the new activities on form
+///  - Parameter meetingActivities: Array of ActivitiesListModel of possible group activities
 struct FormModel {
     let meetingActivities: [ActivitiesListModel] = [
         // Ao ar livre
@@ -216,6 +218,10 @@ struct FormModel {
     ]
 }
 
+/// Struct of the possibles group activities
+/// - Parameter name: Name of the activity
+/// - Parameter votos: Votes for that activity
+/// - Parameter category: Category that the activity belongs to
 struct ActivitiesListModel: Hashable {
     var name: String
     var votos: Int

@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// A circular plus button used in forms to indicate an add action.
 struct PlusButton: View {
     var body: some View {
         ZStack {

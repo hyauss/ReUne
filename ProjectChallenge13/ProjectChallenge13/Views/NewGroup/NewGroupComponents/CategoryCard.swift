@@ -7,7 +7,9 @@
 
 import SwiftUI
 
+/// A card that displays a category name with a rounded pill shape.
 struct CategoryCard: View {
+    /// The category to display.
     var category: CategoryModel
     
     var body: some View {

@@ -7,7 +7,9 @@
 
 import SwiftUI
 
+/// A menu that displays available categories for the user to select or deselect.
 struct CategoriesMenu: View {
+    /// The view model that manages the selected categories.
     @Environment(NewGroupViewModel.self) var newGroupVM
 
     var body: some View {
