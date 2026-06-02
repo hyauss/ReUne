@@ -10,7 +10,7 @@ import CloudKit
 
 struct GroupResultView: View {
     @StateObject private var vm = GroupViewModel.shared
-    
+    @State var ckViewModel = LoginViewModel.shared
     let viewModelCalendar = CalendarViewModel()
     let ckViewModel = LoginViewModel.shared
 
@@ -85,6 +85,12 @@ struct GroupResultView: View {
                         WordCloudView(group: group)
                     }
                     .padding(.top, 36)
+                    
+                    Button{
+                        ckViewModel.fetchAndDeletePreference()
+                    }label: {
+                        Text("deletar conta")
+                    }
                     
                 }
             }

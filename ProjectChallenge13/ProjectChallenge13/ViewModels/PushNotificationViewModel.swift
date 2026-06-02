@@ -40,7 +40,7 @@ class PushNotificationViewModel: ObservableObject{
         let predicate = NSPredicate(format: "self == %@", recordID)
         let subscriptionID = "group_update_\(groupID)"
         
-        let subscription = CKQuerySubscription(recordType: RecordType.itemListing.rawValue, predicate: predicate, subscriptionID: subscriptionID, options: .firesOnRecordCreation)
+        let subscription = CKQuerySubscription(recordType: "ItemListing", predicate: predicate, subscriptionID: subscriptionID, options: .firesOnRecordCreation)
         
         let notification = CKSubscription.NotificationInfo()
         notification.title = "Atualização no grupo"

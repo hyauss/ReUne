@@ -12,7 +12,7 @@ struct EntryView: View {
     @Environment(\.dismiss) var dismiss
     
     @State var ckViewModel = LoginViewModel.shared
-    
+    @StateObject private var vmNotification = PushNotificationViewModel()
     @StateObject var viewModel = EntryViewModel()
     
     @State private var isLoading: Bool = true
@@ -76,6 +76,7 @@ struct EntryView: View {
                                         showingAlert2 = true
                                     }
                                     else {
+                                        vmNotification.requestNotificationPermission()
                                         state = 2
                                         isLoading = true
                                     }
