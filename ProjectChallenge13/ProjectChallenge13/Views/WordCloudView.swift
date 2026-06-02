@@ -11,10 +11,8 @@ import UIKit
 struct WordCloudView: View {
     @StateObject private var viewModel: WordCloudViewModel
  
-    // Available width captured once by a hidden GeometryReader.
     @State private var availableWidth: CGFloat = 0
-    // Layout result computed from words + availableWidth.
-    @State private var layout: LayoutResult = LayoutResult(positions: [], requiredHeight: 140)
+    @State private var layout: CloudLayout = .empty
  
     init(group: ItemViewModel) {
         _viewModel = StateObject(wrappedValue: WordCloudViewModel(item: group))
@@ -23,220 +21,283 @@ struct WordCloudView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             if viewModel.words.isEmpty {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.white)
-                    .frame(height: 140)
-                    .shadow(color: .black.opacity(0.16), radius: 6, x: 0, y: 6)
-                    .overlay(
-                        Text("Nenhuma atividade com votos ainda")
-                            .foregroundColor(Color.ultramarineBlue)
-                    )
-                    .padding(.horizontal)
+                emptyState
             } else {
-                ZStack(alignment: .topLeading) {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.white)
-                        .shadow(color: .black.opacity(0.16), radius: 6, x: 0, y: 6)
- 
-                    ForEach(Array(zip(viewModel.words, layout.positions)), id: \.0.id) { word, pos in
-                        Text(word.text)
-                            .font(.system(size: word.fontSize, weight: .semibold))
-                            .foregroundColor(
-                                word.id == viewModel.words.first?.id ? Color.nightBlue : Color.ultramarineBlue
-                            )
-                            .fixedSize()
-                            .position(pos)
-                            .accessibilityLabel("\(word.text), \(word.votos) votes")
-                    }
-                }
-                .frame(height: layout.requiredHeight)
-                .padding(.horizontal)
-                .background(
-                    GeometryReader { geo in
-                        Color.clear
-                            .onAppear {
-                                availableWidth = geo.size.width
-                                recalculate()
-                            }
-                            .onChange(of: geo.size.width) { newWidth in
-                                availableWidth = newWidth
-                                recalculate()
-                            }
-                    }
-                )
+                cloud
             }
         }
-        .onChange(of: viewModel.words) { _ in
-            recalculate()
+        .onChange(of: viewModel.words) { _ in recalculate() }
+    }
+ 
+    private var emptyState: some View {
+        RoundedRectangle(cornerRadius: 12)
+            .fill(Color.white)
+            .frame(height: 140)
+            .shadow(color: .black.opacity(0.16), radius: 6, x: 0, y: 6)
+            .overlay(Text("Nenhuma atividade possui votos").foregroundColor(Color.ultramarineBlue))
+            .padding(.horizontal)
+    }
+ 
+    private var cloud: some View {
+        ZStack(alignment: .topLeading) {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white)
+                .shadow(color: .black.opacity(0.16), radius: 6, x: 0, y: 6)
+ 
+            ForEach(Array(viewModel.words.enumerated()), id: \.element.id) { idx, word in
+                if idx < layout.items.count {
+                    let item = layout.items[idx]
+                    Text(word.text)
+                        .font(.system(size: word.fontSize, weight: .semibold))
+                        .foregroundColor(word.isWinner ? .nightBlue : .ultramarineBlue)
+                        .multilineTextAlignment(.center)
+                        .frame(width: item.frameWidth)
+                        .position(item.position)
+                }
+            }
         }
+        .frame(height: layout.totalHeight)
+        .padding(.horizontal)
+        .background(
+            GeometryReader { geo in
+                Color.clear
+                    .onAppear {
+                        availableWidth = geo.size.width
+                        recalculate()
+                    }
+                    .onChange(of: geo.size.width) { w in
+                        availableWidth = w
+                        recalculate()
+                    }
+            }
+        )
     }
  
     private func recalculate() {
-        guard availableWidth > 0 else { return }
-        layout = computeLayout(for: viewModel.words, width: availableWidth)
+        guard availableWidth > 0, !viewModel.words.isEmpty else { return }
+        layout = CloudLayout.compute(words: viewModel.words, canvasWidth: availableWidth)
+    }
+}
+ 
+
+ 
+struct CloudLayout {
+ 
+    struct Item {
+        let position:   CGPoint
+        let frameWidth: CGFloat
     }
  
-    // MARK: - Layout
+    let items:       [Item]
+    let totalHeight: CGFloat
  
-    struct LayoutResult: Equatable {
-        let positions: [CGPoint]
-        let requiredHeight: CGFloat
-    }
+    static let empty = CloudLayout(items: [], totalHeight: 140)
+  
+    // Gap between the word bounding box and the rectangle border.
+    private static let edgePadding: CGFloat = 20
+    private static let wordGap: CGFloat = 8
+    private static let maxWidthRatio: CGFloat = 0.65
+    private static let minHeight: CGFloat = 140
  
-    /// Measures each word, then places them using an Archimedean spiral.
-    /// The canvas grows vertically until every word fits, so `requiredHeight`
-    /// always reflects the true space needed
-    func computeLayout(for words: [WordElement], width: CGFloat) -> LayoutResult {
-        guard !words.isEmpty, width > 0 else {
-            return LayoutResult(positions: [], requiredHeight: 140)
-        }
+    static func compute(words: [WordElement], canvasWidth: CGFloat) -> CloudLayout {
+        let innerWidth   = canvasWidth - edgePadding * 2
+        let maxWordWidth = innerWidth * maxWidthRatio
  
-        let padding: CGFloat = 2
-        let edgePadding: CGFloat = 24
-        let minHeight: CGFloat = 140
+        let measurements = words.map { measure($0, maxWidth: maxWordWidth) }
+        let sizes        = measurements.map { $0.size }
+        let frameWidths  = measurements.map { $0.frameWidth }
  
-        // Measure all words up-front with UIKit for accurate bounding boxes.
-        let sizes: [CGSize] = words.map { word in
-            let font = UIFont.systemFont(ofSize: word.fontSize, weight: .semibold)
-            let size = (word.text as NSString).size(withAttributes: [.font: font])
-            return CGSize(width: ceil(size.width) + 4, height: ceil(size.height))
-        }
+        let stackedHeight = sizes.reduce(CGFloat(0)) { $0 + $1.height + wordGap }
+        let startHeight   = max(minHeight, stackedHeight * 0.7)
+        var canvasHeight  = startHeight
  
-        // Start with a canvas tall enough to hold the tallest word twice,
-        // then grow until every word is placed without overlap.
-        var canvasHeight = max(minHeight, (sizes.map(\.height).max() ?? 0) * 2)
- 
-        for _ in 0..<12 {
-            let result = place(
-                words: words,
-                sizes: sizes,
-                canvasWidth: width,
-                canvasHeight: canvasHeight,
-                padding: padding,
-                edgePadding: edgePadding
-            )
- 
-            guard result.allPlaced else {
-                canvasHeight *= 1.4
-                continue
+        for _ in 0..<30 {
+            if let positions = spiral(
+                sizes: sizes, frameWidths: frameWidths, words: words,
+                canvasWidth: canvasWidth, canvasHeight: canvasHeight
+            ) {
+                return finalize(
+                    positions: positions, sizes: sizes,
+                    frameWidths: frameWidths, canvasWidth: canvasWidth
+                )
             }
- 
-            // Compute the real bounding box of placed words (both axes).
-            let topEdge = result.positions
-                .enumerated()
-                .map { idx, pos in pos.y - sizes[idx].height / 2 - padding }
-                .min() ?? 0
- 
-            let bottomEdge = result.positions
-                .enumerated()
-                .map { idx, pos in pos.y + sizes[idx].height / 2 + padding }
-                .max() ?? canvasHeight
- 
-            let leftEdge = result.positions
-                .enumerated()
-                .map { idx, pos in pos.x - sizes[idx].width / 2 - padding }
-                .min() ?? 0
- 
-            let rightEdge = result.positions
-                .enumerated()
-                .map { idx, pos in pos.x + sizes[idx].width / 2 + padding }
-                .max() ?? width
- 
-            // Shift positions so content is centred both vertically and
-            // horizontally inside the rectangle, respecting edgePadding on all sides.
-            let contentHeight = bottomEdge - topEdge
-            let contentWidth  = rightEdge - leftEdge
- 
-            let finalHeight = max(minHeight, contentHeight + edgePadding * 2)
- 
-            let verticalShift   = edgePadding - topEdge
-            let horizontalShift = (width - contentWidth) / 2 - leftEdge
- 
-            let centeredPositions = result.positions.map {
-                CGPoint(x: $0.x + horizontalShift, y: $0.y + verticalShift)
-            }
- 
-            return LayoutResult(positions: centeredPositions, requiredHeight: finalHeight)
+            canvasHeight += stackedHeight * 0.1
         }
  
-        // Fallback: centre everything if all attempts failed.
-        return LayoutResult(
-            positions: words.map { _ in CGPoint(x: width / 2, y: canvasHeight / 2) },
-            requiredHeight: canvasHeight
-        )
+        return rowLayout(sizes: sizes, frameWidths: frameWidths, canvasWidth: canvasWidth)
     }
  
-    // MARK: - Placement
+    // MARK: - Measurement
  
-    private struct PlacementResult {
-        let positions: [CGPoint]
-        let allPlaced: Bool
+    private struct Measurement {
+        let size:       CGSize
+        let frameWidth: CGFloat
     }
  
-    private func place(
-        words: [WordElement],
-        sizes: [CGSize],
-        canvasWidth: CGFloat,
-        canvasHeight: CGFloat,
-        padding: CGFloat,
-        edgePadding: CGFloat
-    ) -> PlacementResult {
+    /// Breaks text at word boundaries only.
+    private static func measure(_ word: WordElement, maxWidth: CGFloat) -> Measurement {
+        let font   = UIFont.systemFont(ofSize: word.fontSize, weight: .semibold)
+        let attrs: [NSAttributedString.Key: Any] = [.font: font]
+        let spaceW = (" " as NSString).size(withAttributes: attrs).width
  
-        var placedRects: [CGRect] = []
-        var positions: [CGPoint] = []
-        var allPlaced = true
+        let tokens = word.text.components(separatedBy: " ")
+        var lines: [[String]] = []
+        var currentLine: [String] = []
+        var currentW: CGFloat = 0
  
-        let center = CGPoint(x: canvasWidth / 2, y: canvasHeight / 2)
-        let bounds = CGRect(
-            x: edgePadding,
-            y: edgePadding,
-            width: canvasWidth - edgePadding * 2,
-            height: canvasHeight - edgePadding * 2
+        for token in tokens {
+            let tokenW = (token as NSString).size(withAttributes: attrs).width
+            let needed = currentLine.isEmpty ? tokenW : currentW + spaceW + tokenW
+            if currentLine.isEmpty || needed <= maxWidth {
+                currentLine.append(token)
+                currentW = needed
+            } else {
+                lines.append(currentLine)
+                currentLine = [token]
+                currentW    = tokenW
+            }
+        }
+        if !currentLine.isEmpty { lines.append(currentLine) }
+ 
+        let widestW = lines.map { ($0.joined(separator: " ") as NSString).size(withAttributes: attrs).width }.max() ?? 0
+        let totalH  = font.lineHeight * CGFloat(lines.count) + font.leading * CGFloat(Swift.max(lines.count - 1, 0))
+ 
+        let size = CGSize(width: ceil(widestW) + 4, height: ceil(totalH) + 2)
+        let frameWidth: CGFloat = lines.count == 1 ? size.width : maxWidth
+ 
+        return Measurement(size: size, frameWidth: frameWidth)
+    }
+ 
+    // MARK: - Spiral
+ 
+    private static func spiral(
+        sizes:        [CGSize],
+        frameWidths:  [CGFloat],
+        words:        [WordElement],
+        canvasWidth:  CGFloat,
+        canvasHeight: CGFloat
+    ) -> [CGPoint]? {
+ 
+        var placed: [CGRect]  = []
+        var result: [CGPoint] = []
+ 
+        // The usable area for word centres.
+        let safeEdge = edgePadding + 4
+        let usable = CGRect(
+            x: safeEdge,
+            y: safeEdge,
+            width:  canvasWidth  - safeEdge * 2,
+            height: canvasHeight - safeEdge * 2
         )
+ 
+        // Start from the upper-centre so words cluster toward the top.
+        // After finalize() trims bottom whitespace the result looks compact.
+        let startX = canvasWidth / 2
+        let startY = edgePadding + usable.height * 0.35
  
         for (idx, word) in words.enumerated() {
-            let size = sizes[idx]
-            let halfW = size.width / 2 + padding
-            let halfH = size.height / 2 + padding
+            let size  = sizes[idx]
+            let renderW = Swift.max(size.width, frameWidths[idx])
+            let halfW = renderW   / 2 + wordGap / 2
+            let halfH = size.height / 2 + wordGap / 2
  
-            var placed = false
- 
-            let angleStep: CGFloat = 0.25
+            let diagonal    = sqrt(renderW * renderW + size.height * size.height)
             let radiusStep: CGFloat = 1.5
-            let maxSteps = 2000
+            let angleStep: CGFloat  = Swift.max(0.15, Swift.min(0.45, 8.0 / diagonal))
             let startAngle = CGFloat(abs(word.seed) % 628) / 100.0
  
-            for step in 0..<maxSteps {
-                let t = CGFloat(step)
-                let angle = startAngle + t * angleStep
+            var found = false
+            for step in 0..<8000 {
+                let t      = CGFloat(step)
+                let angle  = startAngle + t * angleStep
                 let radius = t * radiusStep
  
-                let cx = center.x + cos(angle) * radius
-                let cy = center.y + sin(angle) * radius
+                let cx = startX + cos(angle) * radius
+                let cy = startY + sin(angle) * radius
  
                 let rect = CGRect(
-                    x: cx - halfW,
-                    y: cy - halfH,
-                    width: halfW * 2,
-                    height: halfH * 2
+                    x: cx - halfW, y: cy - halfH,
+                    width: halfW * 2, height: halfH * 2
                 )
  
-                guard bounds.contains(rect) else { continue }
+                guard usable.contains(rect) else { continue }
+                guard placed.allSatisfy({ !$0.intersects(rect) }) else { continue }
  
-                if placedRects.allSatisfy({ !$0.intersects(rect) }) {
-                    placedRects.append(rect)
-                    positions.append(CGPoint(x: cx, y: cy))
-                    placed = true
-                    break
-                }
+                placed.append(rect)
+                result.append(CGPoint(x: cx, y: cy))
+                found = true
+                break
             }
  
-            if !placed {
-                allPlaced = false
-                positions.append(center)
-            }
+            if !found { return nil }
         }
  
-        return PlacementResult(positions: positions, allPlaced: allPlaced)
+        return result
+    }
+ 
+    // MARK: - Finalize
+ 
+    /// Trims vertical whitespace and shifts everything so the top word
+    /// sits exactly at edgePadding from the top of the rectangle.
+    private static func finalize(
+        positions:   [CGPoint],
+        sizes:       [CGSize],
+        frameWidths: [CGFloat],
+        canvasWidth: CGFloat
+    ) -> CloudLayout {
+ 
+        let topEdge = positions.enumerated()
+            .map { i, p in p.y - sizes[i].height / 2 }
+            .min() ?? edgePadding
+ 
+        let bottomEdge = positions.enumerated()
+            .map { i, p in p.y + sizes[i].height / 2 }
+            .max() ?? minHeight
+ 
+        let dy      = edgePadding - topEdge
+        let finalH  = max(minHeight, (bottomEdge - topEdge) + edgePadding * 2)
+ 
+        let items = positions.enumerated().map { i, p -> Item in
+            let renderW = Swift.max(sizes[i].width, frameWidths[i])
+            let minX    = edgePadding + renderW / 2
+            let maxX    = canvasWidth - edgePadding - renderW / 2
+            let clampedX = Swift.min(Swift.max(p.x, minX), maxX)
+            return Item(
+                position:   CGPoint(x: clampedX, y: p.y + dy),
+                frameWidth: frameWidths[i]
+            )
+        }
+ 
+        return CloudLayout(items: items, totalHeight: finalH)
+    }
+ 
+    // MARK: - Row fallback
+ 
+    private static func rowLayout(
+        sizes:       [CGSize],
+        frameWidths: [CGFloat],
+        canvasWidth: CGFloat
+    ) -> CloudLayout {
+        var items: [Item] = []
+        var x = edgePadding
+        var y = edgePadding
+        var rowH: CGFloat = 0
+ 
+        for i in sizes.indices {
+            let s = sizes[i]
+            if x + s.width + edgePadding > canvasWidth, x > edgePadding {
+                x    = edgePadding
+                y   += rowH + wordGap
+                rowH = 0
+            }
+            items.append(Item(
+                position:   CGPoint(x: x + s.width / 2, y: y + s.height / 2),
+                frameWidth: frameWidths[i]
+            ))
+            x    += s.width + wordGap
+            rowH  = Swift.max(rowH, s.height)
+        }
+ 
+        return CloudLayout(items: items, totalHeight: Swift.max(minHeight, y + rowH + edgePadding))
     }
 }

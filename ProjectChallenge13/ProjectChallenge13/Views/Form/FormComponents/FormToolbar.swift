@@ -34,11 +34,25 @@ struct FormToolbar: View {
                                         do {
                                             let groupRecord = try await vm.fetchGroupsWithId(groupID: group.recordId!.recordName)
                                             
-                                            // Merge datas
                                             var existingDates = groupRecord["dates"] as? [Date] ?? []
-                                            existingDates.append(contentsOf: formVM.dateList)
+
+                                            let calendar = Calendar.current
+                                            let normalize: (Date) -> Date = { date in
+                                                let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date)
+                                                return calendar.date(from: components) ?? date
+                                            }
+
+                                            let uniqueNewDates = formVM.dateList
+                                                .map { normalize($0) }
+                                                .reduce(into: [Date]()) { result, date in
+                                                    if !result.contains(date) {
+                                                        result.append(date)
+                                                    }
+                                                }
+
+                                            existingDates.append(contentsOf: uniqueNewDates)
+                                            groupRecord["dates"] = existingDates as CKRecordValue
                                             
-                                            // Merge activities
                                             if let existingActivitiesData = groupRecord["activities"] as? Data,
                                                var existingActivities = try? JSONDecoder().decode([ActivitiesModel].self, from: existingActivitiesData) {
                                                 for selectedActivity in formVM.selectedActivities {

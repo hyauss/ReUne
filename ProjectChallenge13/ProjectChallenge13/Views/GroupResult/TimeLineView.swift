@@ -22,6 +22,9 @@ struct TimeLineView: View {
                 Text(" ")
                     .font(.system(size: 14, weight: .medium))
                     .frame(maxWidth: .infinity)
+                Text(" ")
+                    .font(.system(size: 14, weight: .medium))
+                    .frame(maxWidth: .infinity)
                 MostVoteHourComponent(date: mostFrequncyDate, color: .ultramarineBlue)
                     .frame(maxWidth: .infinity)
                 
@@ -34,6 +37,7 @@ struct TimeLineView: View {
                         .frame(maxWidth: .infinity)
                 }
             }
+            .padding(.horizontal)
             
             ScrollView{
                 VStack(spacing: -10){
@@ -43,7 +47,30 @@ struct TimeLineView: View {
                     }
                 }
             }
+            .frame(height: 500)
+            .overlay {
+                VStack {
+                    LinearGradient(
+                        colors: [.white, .clear],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .frame(height: 80)
+                    
+                    Spacer()
+                    
+                    LinearGradient(
+                        colors: [.clear, .white],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .frame(height: 80)
+                }
+                .allowsHitTesting(false)
+            }
+            .padding(.vertical)
         }
+        .frame(width: 345)
         
     }
 }

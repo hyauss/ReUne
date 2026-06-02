@@ -16,54 +16,81 @@ struct HomeView: View {
     @State var newActivityCreated: Bool = false
     @State var formRecord: CKRecord = CKRecord(recordType: "SeuTipo")
     @State private var initialLoadDone: Bool = false
-
+    
     // IDs that should show the shimmer
     @State private var shimmerIDs: Set<CKRecord.ID> = []
     @State private var knownIDs: Set<CKRecord.ID> = []
     @State private var isLogged: Bool = false
-
+    @State private var isActive: Bool = false
+    
     var body: some View {
         NavigationStack {
             if !isLogged {
                 VStack {
-                    ScrollView {
-                        LazyVStack(spacing: 24) {
-                            ForEach(Array(vm.records.enumerated()), id: \.element.recordID) { index, item in
-                                let total = vm.records.count
-                                let groupNumber = max(1, total - index)
-                                let eventGroup = EventGroup.fromRecord(item) ?? EventGroup(
-                                    recordId: item.recordID, users: Set<String>(),
-                                    categories: [], activities: [], dates: [], owner: ""
-                                )
-                                let itemVM = ItemViewModel(itemListing: eventGroup)
-                                let isNew = shimmerIDs.contains(item.recordID)
-                                
-                                NavigationLink {
-                                    GroupResultView(group: itemVM)
-                                } label: {
-                                    GroupCardComponent(groupNumber: groupNumber, item: itemVM)
-                                        .shimmerBorder(animate: isNew)
-                                }
-                                // Count of how many times clicked to see the graphs before the event
-                                .simultaneousGesture(TapGesture().onEnded {
-                                    Aptabase.shared.trackEvent("group_result_viewed", with: [
-                                        "group_index": groupNumber,
-                                        "participants_count": itemVM.users.count,
-                                        "has_dates": !itemVM.dates.isEmpty,
-                                        "categories": itemVM.categories.map { $0.name }.joined(separator: ", ")
-                                    ])
-                                })
-                                .onAppear {
-                                    // Remove o ID do set após a animação terminar
-                                    if isNew {
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.3) {
-                                            shimmerIDs.remove(item.recordID)
+                    ScrollViewReader { proxy in
+                        ScrollView {
+                            LazyVStack(spacing: 24) {
+                                ForEach(Array(vm.records.enumerated()), id: \.element.recordID) { index, item in
+                                    let total = vm.records.count
+                                    let groupNumber = max(1, total - index)
+                                    let eventGroup = EventGroup.fromRecord(item) ?? EventGroup(
+                                        recordId: item.recordID, users: Set<String>(),
+                                        categories: [], activities: [], dates: [], owner: ""
+                                    )
+                                    let itemVM = ItemViewModel(itemListing: eventGroup)
+                                    let isNew = shimmerIDs.contains(item.recordID)
+                                    
+                                    NavigationLink {
+                                        GroupResultView(group: itemVM)
+                                    } label: {
+                                        GroupCardComponent(groupNumber: groupNumber, item: itemVM)
+                                            .shimmerBorder(animate: isNew)
+                                    }
+                                    // Count of how many times clicked to see the graphs before the event
+                                    .simultaneousGesture(TapGesture().onEnded {
+                                        Aptabase.shared.trackEvent("group_result_viewed", with: [
+                                            "group_index": groupNumber,
+                                            "participants_count": itemVM.users.count,
+                                            "has_dates": !itemVM.dates.isEmpty,
+                                            "categories": itemVM.categories.map { $0.name }.joined(separator: ", ")
+                                        ])
+                                    })
+                                    .id(item.recordID)
+                                    .onAppear {
+                                        if isNew {
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.3) {
+                                                shimmerIDs.remove(item.recordID)
+                                            }
                                         }
                                     }
                                 }
                             }
+                            .padding(.vertical, 12)
                         }
-                        .padding(.vertical, 12)
+                        .onAppear {
+                            isActive = true
+                            vm.fetchGroupsWithUserId()
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+                                if let first = vm.records.first {
+                                    withAnimation {
+                                        proxy.scrollTo(first.recordID, anchor: .top)
+                                    }
+                                }
+                            }
+                        }
+                        .onDisappear {
+                            isActive = false
+                        }
+                        .onChange(of: vm.records) { newRecords in
+                            if isActive, let first = newRecords.first {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                                    withAnimation {
+                                        proxy.scrollTo(first.recordID, anchor: .top)
+                                    }
+                                }
+                            }
+                        }
                     }
                     .refreshable {
                         vm.fetchGroupsWithUserId()
@@ -95,6 +122,13 @@ struct HomeView: View {
                         shimmerIDs.formUnion(addedIDs)
                     }
                     knownIDs = newIDs
+                    
+                    if isActive, let first = newRecords.first {
+                        shimmerIDs.insert(first.recordID)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) {
+                            shimmerIDs.remove(first.recordID)
+                        }
+                    }
                 }
                 .onChange(of: vm.needFetch) {
                     Task {
@@ -121,11 +155,15 @@ struct HomeView: View {
             }
         }
         .onAppear {
+            isActive = true
             vm.fetchGroupsWithUserId()
             if !ckViewModel.isLogged {
                 isLogged.toggle()
             }
         }
-            
+        .onDisappear {
+            isActive = false
+        }
+        
     }
 }
