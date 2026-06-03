@@ -12,7 +12,6 @@ struct GroupResultView: View {
     @StateObject private var vm = GroupViewModel.shared
     @State var ckViewModel = LoginViewModel.shared
     let viewModelCalendar = CalendarViewModel()
-    let ckViewModel = LoginViewModel.shared
 
     var group: ItemViewModel
     

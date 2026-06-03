@@ -37,15 +37,16 @@ class PushNotificationViewModel: ObservableObject{
     
     func subscribeToNotification(groupID: String) {
         let recordID = CKRecord.ID(recordName: groupID)
-        let predicate = NSPredicate(format: "self == %@", recordID)
+        let predicate = NSPredicate(format: "recordID == %@", recordID)
         let subscriptionID = "group_update_\(groupID)"
         
-        let subscription = CKQuerySubscription(recordType: "ItemListing", predicate: predicate, subscriptionID: subscriptionID, options: .firesOnRecordCreation)
+        let subscription = CKQuerySubscription(recordType: "ItemListing", predicate: predicate, subscriptionID: subscriptionID, options: [.firesOnRecordCreation, .firesOnRecordUpdate, .firesOnRecordDeletion])
         
         let notification = CKSubscription.NotificationInfo()
         notification.title = "Atualização no grupo"
         notification.alertBody = "Houver uma atualização no grupo \(groupID)"
         notification.soundName = "default"
+        notification.shouldSendContentAvailable = true
         
         
         subscription.notificationInfo = notification
@@ -55,6 +56,7 @@ class PushNotificationViewModel: ObservableObject{
                 if let ckError = returnedError as? CKError, ckError.code == .serverRejectedRequest {
                     print("Subscription already exists: \(groupID)")
                 } else {
+                    print("Noti funcao caiu no erro: \(groupID) " )
                     print(error)
                 }
             }
@@ -62,6 +64,8 @@ class PushNotificationViewModel: ObservableObject{
                 print("Sucess subscribe to group: \(groupID)")
             }
         }
+        
+        print("Noti funcao: \(groupID) " )
     }
     
     func unsubscribeToNotification(groupID: String) {

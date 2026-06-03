@@ -73,7 +73,7 @@ struct FormToolbar: View {
                                             await vm.save(groupRecord: groupRecord)
                                             groupCKRecord = groupRecord
                                             
-                                            let groupID = group.recordId!.recordName
+                                            let groupID = groupCKRecord.recordID.recordName
                                             pushVM.subscribeToNotification(groupID: groupID)
                                             newActivityCreated.toggle()
                                         }
