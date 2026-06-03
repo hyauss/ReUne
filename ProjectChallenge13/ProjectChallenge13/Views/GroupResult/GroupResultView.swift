@@ -87,11 +87,6 @@ struct GroupResultView: View {
                     }
                     .padding(.top, 36)
                     
-                    Button{
-                        ckViewModel.fetchAndDeletePreference()
-                    }label: {
-                        Text("deletar conta")
-                    }
                     
                 }
             }

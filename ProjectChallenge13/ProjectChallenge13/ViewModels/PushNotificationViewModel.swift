@@ -43,8 +43,8 @@ class PushNotificationViewModel: ObservableObject{
         let subscription = CKQuerySubscription(recordType: "ItemListing", predicate: predicate, subscriptionID: subscriptionID, options: [.firesOnRecordCreation, .firesOnRecordUpdate, .firesOnRecordDeletion])
         
         let notification = CKSubscription.NotificationInfo()
-        notification.title = "Atualização no grupo"
-        notification.alertBody = "Houver uma atualização no grupo \(groupID)"
+        notification.title = "Atualização"
+        notification.alertBody = "Houve uma atualização no grupo"
         notification.soundName = "default"
         notification.shouldSendContentAvailable = true
         
