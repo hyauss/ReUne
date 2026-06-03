@@ -11,6 +11,7 @@ import Aptabase
 
 struct GroupResultView: View {
     @StateObject private var vm = GroupViewModel.shared
+    @State var ckViewModel = LoginViewModel.shared
     @State private var showDeleteAlert = false
     @State var recordGroup: CKRecord?
     @State private var linkCopied = false
@@ -18,8 +19,6 @@ struct GroupResultView: View {
     @Environment(\.dismiss) var dismiss
     
     let viewModelCalendar = CalendarViewModel()
-    let ckViewModel = LoginViewModel.shared
-    
     var group: ItemViewModel
         
     var body: some View {
@@ -91,6 +90,7 @@ struct GroupResultView: View {
                         WordCloudView(group: group)
                     }
                     .padding(.top, 36)
+                    
                     
                 }
             }

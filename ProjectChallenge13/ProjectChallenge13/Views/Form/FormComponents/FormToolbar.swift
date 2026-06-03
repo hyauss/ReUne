@@ -28,6 +28,9 @@ struct FormToolbar: View {
     /// The CloudKit record of the current group, updated after saving.
     @Binding var groupCKRecord: CKRecord
     
+    let pushVM = PushNotificationViewModel.shared
+    
+    
     var body: some View {
         NavigationStack {
             Text("")
@@ -81,6 +84,12 @@ struct FormToolbar: View {
                                         groupRecord["dates"] = existingDates as CKRecordValue
                                         await vm.save(groupRecord: groupRecord)
                                         groupCKRecord = groupRecord
+                                        let groupID = groupCKRecord.recordID.recordName
+                                        if pushVM.permitionState == true{
+                                            pushVM.subscribeToNotification(groupID: groupID)
+                                        }
+                                        
+    
                                         newActivityCreated.toggle()
                                     }
                                     catch {
