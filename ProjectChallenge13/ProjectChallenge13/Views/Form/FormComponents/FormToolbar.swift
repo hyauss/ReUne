@@ -28,6 +28,9 @@ struct FormToolbar: View {
     /// The CloudKit record of the current group, updated after saving.
     @Binding var groupCKRecord: CKRecord
     
+    let pushVM = PushNotificationViewModel.shared
+    
+    
     var body: some View {
         NavigationStack {
             Text("")
@@ -60,7 +63,7 @@ struct FormToolbar: View {
                                                     result.append(date)
                                                 }
                                             }
-                                        
+            
                                         existingDates.append(contentsOf: uniqueNewDates)
                                         groupRecord["dates"] = existingDates as CKRecordValue
                                         
@@ -81,13 +84,19 @@ struct FormToolbar: View {
                                         groupRecord["dates"] = existingDates as CKRecordValue
                                         await vm.save(groupRecord: groupRecord)
                                         groupCKRecord = groupRecord
+                                        let groupID = groupCKRecord.recordID.recordName
+                                        if pushVM.permitionState == true{
+                                            pushVM.subscribeToNotification(groupID: groupID)
+                                        }
+                                        
+    
                                         newActivityCreated.toggle()
                                     }
                                     catch {
                                         print(error.localizedDescription)
                                     }
                                 }
-                                Aptabase.shared.trackEvent("new_event")
+                                Aptabase.shared.trackEvent("new_groupAnswer")
                                 showingCreateAlert = true
                             } label: {
                                 Image(systemName: "checkmark")
@@ -106,3 +115,4 @@ struct FormToolbar: View {
         }
     }
 }
+

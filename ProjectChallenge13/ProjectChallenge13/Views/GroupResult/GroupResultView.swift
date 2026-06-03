@@ -7,9 +7,11 @@
 
 import SwiftUI
 import CloudKit
+import Aptabase
 
 struct GroupResultView: View {
     @StateObject private var vm = GroupViewModel.shared
+    @State var ckViewModel = LoginViewModel.shared
     @State private var showDeleteAlert = false
     @State var recordGroup: CKRecord?
     @State private var linkCopied = false
@@ -17,8 +19,6 @@ struct GroupResultView: View {
     @Environment(\.dismiss) var dismiss
     
     let viewModelCalendar = CalendarViewModel()
-    let ckViewModel = LoginViewModel.shared
-    
     var group: ItemViewModel
         
     var body: some View {
@@ -91,10 +91,44 @@ struct GroupResultView: View {
                     }
                     .padding(.top, 36)
                     
+                    
                 }
             }
         }
         .navigationTitle("Resultados do Grupo")
+        .onAppear {
+            if !group.dates.isEmpty {
+                //let mostFreqDay = viewModelCalendar.mostFrequencyDate(dates: group.dates)
+                //let mostFreqHour = viewModelCalendar.mostFrequencyDate(dates: group.dates)
+
+                // count votes per day of the week
+                var weekdayCounts: [String: Int] = [:]
+                var hourCounts: [String: Int] = [:]
+                let cal = Calendar.current
+                let dayFormatter = DateFormatter()
+                dayFormatter.locale = Locale(identifier: "pt_BR")
+                dayFormatter.dateFormat = "EEEE"
+                let hourFormatter = DateFormatter()
+                hourFormatter.dateFormat = "HH:00"
+                
+                for date in group.dates {
+                    let day = dayFormatter.string(from: date)
+                    let hour = hourFormatter.string(from: date)
+                    weekdayCounts[day, default: 0] += 1
+                    hourCounts[hour, default: 0] += 1
+                }
+                
+                let topDay = weekdayCounts.max(by: { $0.value < $1.value })?.key ?? "N/A"
+                let topHour = hourCounts.max(by: { $0.value < $1.value })?.key ?? "N/A"
+                
+                Aptabase.shared.trackEvent("group_result_opened", with: [
+                    "most_popular_weekday": topDay,
+                    "most_popular_hour": topHour,
+                    "total_dates": group.dates.count,
+                    "participants_count": group.users.count
+                ])
+            }
+        }
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {

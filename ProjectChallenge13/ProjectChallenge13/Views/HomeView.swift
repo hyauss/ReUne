@@ -7,11 +7,12 @@
 
 import SwiftUI
 import CloudKit
+import Aptabase
 
 struct HomeView: View {
     @StateObject private var vm = GroupViewModel.shared
     @State var ckViewModel = LoginViewModel.shared
-    //@State var notificationVM = PushNotificationViewModel.shared
+    @State var notificationVM = PushNotificationViewModel.shared
     
     @State var newGroupCreated: Bool = false
     @State var newActivityCreated: Bool = false
@@ -48,6 +49,15 @@ struct HomeView: View {
                                         GroupCardComponent(groupNumber: groupNumber, item: itemVM)
                                             .shimmerBorder(animate: isNew)
                                     }
+                                    // Count of how many times clicked to see the graphs before the event
+                                    .simultaneousGesture(TapGesture().onEnded {
+                                        Aptabase.shared.trackEvent("group_result_viewed", with: [
+                                            "group_index": groupNumber,
+                                            "participants_count": itemVM.users.count,
+                                            "has_dates": !itemVM.dates.isEmpty,
+                                            "categories": itemVM.categories.map { $0.name }.joined(separator: ", ")
+                                        ])
+                                    })
                                     .id(item.recordID)
                                     .onAppear {
                                         if isNew {
@@ -104,14 +114,24 @@ struct HomeView: View {
                                 }
                                 
                                 Button {
-                                    for i in vm.records {
-                                        //notificationVM.unsubscribeToNotification(groupID: i)
+                                    if notificationVM.permitionState {
+                                        for i in vm.records {
+                                            notificationVM.unsubscribeToNotification(groupID: i.recordID.recordName)
+                                        }
                                     }
+                                    else {
+                                        for i in vm.records {
+                                            notificationVM.subscribeToNotification(groupID: i.recordID.recordName
+                                            )
+                                        }
+                                    }
+                                    notificationVM.permitionState.toggle()
                                 } label: {
                                     HStack {
-                                        Image(systemName: "bell.slash")
-                                        Text("Desativar Notificações")
+                                        Image(systemName: notificationVM.permitionState ? "bell.slash" : "bell")
+                                        Text(notificationVM.permitionState ? "Notificações Desativadas" : "Notificações Ativadas")
                                     }
+                                    .contentTransition(.symbolEffect(.replace.magic(fallback: .replace)))
                                 }
                             }
                         } label: {

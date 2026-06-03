@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Aptabase
 
 /// A menu that displays available categories for the user to select or deselect.
 struct CategoriesMenu: View {
@@ -22,6 +23,7 @@ struct CategoriesMenu: View {
                         }
                         else {
                             newGroupVM.addCategory(category: CategoryModel(name: category.name))
+                            Aptabase.shared.trackEvent("category_selected", with: [ "category_name": category.name]) // most frequent category
                         }
                     } label: {
                         Text(category.name)
