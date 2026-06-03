@@ -9,20 +9,63 @@ import SwiftUI
 import CloudKit
 
 struct EntryView: View {
-    @Environment(\.dismiss) var dismiss
-    
-    @State var ckViewModel = LoginViewModel.shared
-    @StateObject private var vmNotification = PushNotificationViewModel.shared
     @StateObject var viewModel = EntryViewModel()
+
+    @State var ckViewModel = LoginViewModel.shared
+    @State var notificationVM = PushNotificationViewModel.shared
+        
+    @State var cloudKitAlert: Bool = false
+    @State var notificationAlert: Bool = false
     
     @State private var isLoading: Bool = true
-    @State private var wasClicked: Bool = false
-    @State private var showingAlert1: Bool = false
-    @State private var showingAlert2: Bool = false
-    @State private var isLoadingLocal: Bool = false
-
     
-    @State private var state: Int = 0
+    var body: some View {
+        if isLoading {
+            loadingView()
+        } else if ckViewModel.isLogged{
+            HomeView()
+        }
+        else {
+            if !ckViewModel.isLogged {
+                NavigationStack {
+                    Text("")
+                        .onAppear() {
+                            cloudKitAlert.toggle()
+                            notificationAlert.toggle()
+                        }
+                        .alert("Permitir utilizar seu iCloud para identificação?", isPresented: $cloudKitAlert) {
+                            Button {
+                                ckViewModel.createPreference(name: "")
+                            } label: {
+                                Text("Permitir")
+                            }
+                            Button(role: .cancel) {
+                                
+                            } label: {
+                                Text("Não Permitir")
+                            }
+                        } message: {
+                            Text("Usaremos suas informações do iCloud para identificar sua conta em nosso app.")
+                        }
+                        .alert("Permitir o ReUne enviar notificações?", isPresented: $notificationAlert) {
+                            Button {
+                                notificationVM.requestNotificationPermission()
+                                notificationVM.permitionState = true
+                            } label: {
+                                Text("Permitir")
+                            }
+                            Button(role: .cancel) {
+                                notificationVM.permitionState = false
+                            } label: {
+                                Text("Não Permitir")
+                            }
+                        } message: {
+                            Text("Enviaremos notificações a respeito dos grupos criados e resultados de votação.")
+                        }
+                }
+            }
+        }
+    }
     
     @ViewBuilder func loadingView() -> some View {
         ProgressView()
@@ -33,94 +76,6 @@ struct EntryView: View {
                     isLoading = false
                 }
             }
-    }
-    
-    var body: some View {
-        if isLoading {
-            loadingView()
-        } else if ckViewModel.isLogged{
-            HomeView()
-        }
-        else {
-            if state == 0 {
-                if !ckViewModel.isLogged {
-                    NavigationStack {
-                        VStack {
-                            Text("Já tem uma conta ou deseja criar uma?")
-                                .font(.title2)
-                            
-                            HStack {
-                                Button {
-                                    if !ckViewModel.isLogged {
-                                        showingAlert1 = true
-                                    }
-                                    else {
-                                        state = 1
-                                        isLoading = true
-                                    }
-                                } label: {
-                                    Text("Já tenho")
-                                        .foregroundStyle(.nightBlue)
-                                }
-                                .buttonStyle(.borderedProminent)
-                                .tint(.formCardBack)
-                                //.foregroundStyle(.formCardBack)
-                                .alert("Ainda não possui conta :(", isPresented: $showingAlert1) {
-                                    Button("OK", role: .confirm) {}
-                                } message: {
-                                    Text("Você não possui uma conta ou não está conectado ao iCloud")
-                                }
-                                
-                                Button {
-                                    if !viewModel.isSignedInToiCloud || ckViewModel.isLogged {
-                                        showingAlert2 = true
-                                    }
-                                    else {
-                                        vmNotification.requestNotificationPermission()
-                                        state = 2
-                                        isLoading = true
-                                    }
-                                } label: {
-                                    Text("Ainda não tenho")
-                                        .foregroundStyle(.nightBlue)
-                                }
-                                .buttonStyle(.borderedProminent)
-                                .tint(.formCardBack)
-                                .alert("Já possui conta", isPresented: $showingAlert2) {
-                                    Button("OK", role: .confirm) {}
-                                } message: {
-                                    Text("Você não está conectado no iCloud")
-                                    Text("ou já possui uma conta!")
-                                }
-                            }
-                        }
-                        .navigationTitle("Boas vindas")
-                    }
-                }
-//                Button{
-//                    ckViewModel.fetchAndDeletePreference()
-//                }label: {
-//                    Text("deletar conta")
-//                }
-            }
-            else {
-                if isLoading {
-                    loadingView()
-                }
-                else {
-                    if state == 1 {
-                        
-                    }
-                    else if state == 2 {
-                        OnboardingView(state: $state, isLoading: $isLoading)
-                            .environment(ckViewModel)
-                    }
-                }
-                
-            }
-            
-            
-        }
     }
 }
 
