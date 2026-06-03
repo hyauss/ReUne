@@ -11,6 +11,8 @@ import Aptabase
 
 struct GroupResultView: View {
     @StateObject private var vm = GroupViewModel.shared
+    @State private var showDeleteAlert = false
+    @Environment(\.dismiss) var dismiss
     
     let viewModelCalendar = CalendarViewModel()
     let ckViewModel = LoginViewModel.shared
@@ -93,8 +95,8 @@ struct GroupResultView: View {
         .navigationTitle("Resultados do Grupo")
         .onAppear {
             if !group.dates.isEmpty {
-                let mostFreqDay = viewModelCalendar.mostFrequencyDate(dates: group.dates)
-                let mostFreqHour = viewModelCalendar.mostFrequencyDate(dates: group.dates)
+                //let mostFreqDay = viewModelCalendar.mostFrequencyDate(dates: group.dates)
+                //let mostFreqHour = viewModelCalendar.mostFrequencyDate(dates: group.dates)
 
                 // count votes per day of the week
                 var weekdayCounts: [String: Int] = [:]
@@ -124,6 +126,30 @@ struct GroupResultView: View {
                 ])
             }
         }
+        .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button {
+                            showDeleteAlert = true
+                        } label: {
+                            Image(systemName: "trash")
+                        }
+                    }
+                }
+                .alert("Deseja deletar o grupo?", isPresented: $showDeleteAlert) {
+                    Button("Apagar", role: .destructive) {
+                        guard let record = vm.records.first(where: {
+                            $0.recordID == group.recordId
+                        }) else { return }
+
+                        Task {
+                            await vm.deleteGroup(record: record)
+                            dismiss()
+                        }
+                    }
+                    Button("Cancelar", role: .cancel) {}
+                } message: {
+                    Text("Os dados do seu grupo serão apagados.\nEssa ação não poderá ser desfeita.")
+                }
     }
 }
 
