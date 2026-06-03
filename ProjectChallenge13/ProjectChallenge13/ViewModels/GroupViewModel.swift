@@ -105,6 +105,27 @@ class GroupViewModel: ObservableObject {
 
         return try await database.record(for: recordID)
     }
+    
+    func deleteGroup(record: CKRecord) async {
+        guard let userID = ckViewModel.preference?.userID else { return }
+
+        var users = record["users"] as? [String] ?? []
+        users.removeAll { $0 == userID }
+
+        do {
+            if users.isEmpty {
+                try await database.deleteRecord(withID: record.recordID)
+            } else {
+                record["users"] = users as CKRecordValue
+                try await database.save(record)
+            }
+            DispatchQueue.main.async {
+                self.needFetch = true
+            }
+        } catch {
+            print("Erro ao sair/deletar grupo: \(error.localizedDescription)")
+        }
+    }
 }
 
 struct ItemViewModel{
