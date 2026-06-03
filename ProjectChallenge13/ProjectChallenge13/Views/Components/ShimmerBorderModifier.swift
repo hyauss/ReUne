@@ -43,11 +43,11 @@ struct ShimmerBorderModifier: ViewModifier {
                     .allowsHitTesting(false)
                     .clipShape(RoundedRectangle(cornerRadius: 20))
             )
-            .onChange(of: animate) { shouldAnimate in
-                guard shouldAnimate else { return }
+            .onChange(of: animate) { previous, current in
+                guard current else { return }
                 startDate   = .now
                 isAnimating = true
-                
+
                 DispatchQueue.main.asyncAfter(deadline: .now() + duration + 0.05) {
                     isAnimating = false
                 }
