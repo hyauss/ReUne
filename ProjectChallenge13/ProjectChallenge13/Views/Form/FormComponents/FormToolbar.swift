@@ -60,7 +60,7 @@ struct FormToolbar: View {
                                                     result.append(date)
                                                 }
                                             }
-                                        
+            
                                         existingDates.append(contentsOf: uniqueNewDates)
                                         groupRecord["dates"] = existingDates as CKRecordValue
                                         
@@ -87,7 +87,7 @@ struct FormToolbar: View {
                                         print(error.localizedDescription)
                                     }
                                 }
-                                Aptabase.shared.trackEvent("new_event")
+                                Aptabase.shared.trackEvent("new_groupAnswer")
                                 showingCreateAlert = true
                             } label: {
                                 Image(systemName: "checkmark")
@@ -106,3 +106,4 @@ struct FormToolbar: View {
         }
     }
 }
+

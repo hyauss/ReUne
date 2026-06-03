@@ -6,6 +6,7 @@
 
 import SwiftUI
 import ContactsUI
+import Aptabase
 
 /// A view that allows the user to add contacts via a contact picker sheet.
 struct ContactsView: View {
@@ -15,6 +16,7 @@ struct ContactsView: View {
     var body: some View {
         VStack {
             Button {
+                Aptabase.shared.trackEvent("participant_add_tapped") //Avarage of people per group
                 showPicker = true
             } label: {
                 PlusButton()
