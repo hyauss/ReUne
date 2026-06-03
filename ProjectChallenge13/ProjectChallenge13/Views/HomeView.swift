@@ -107,7 +107,6 @@ struct HomeView: View {
                                     for i in vm.records {
                                         //notificationVM.unsubscribeToNotification(groupID: i)
                                     }
-                                    //notificationVM.unsubscribeToNotification()
                                 } label: {
                                     HStack {
                                         Image(systemName: "bell.slash")
