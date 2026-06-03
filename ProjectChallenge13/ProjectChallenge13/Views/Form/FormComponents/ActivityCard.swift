@@ -7,7 +7,9 @@
 
 import SwiftUI
 
+/// A card that displays an activity name with a rounded pill shape.
 struct ActivityCard: View {
+    /// The activity to display.
     var activity: ActivitiesModel
     
     var body: some View {
@@ -17,10 +19,5 @@ struct ActivityCard: View {
             .padding(.vertical, 5)
             .background(.formCardBack)
             .clipShape(RoundedRectangle(cornerRadius: 90))
-            //.padding(.leading, 48)
     }
 }
-
-//#Preview {
-//    ActivityCard()
-//}

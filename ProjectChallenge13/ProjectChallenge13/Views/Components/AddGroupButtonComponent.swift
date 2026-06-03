@@ -15,17 +15,18 @@ struct AddGroupButtonComponent: View {
     @Binding var formRecord: CKRecord
     
     var body: some View {
-        Button{
+        Button {
             Aptabase.shared.trackEvent("new_group")
             newGroupSheet.toggle()
-        }label:{
-            Image(systemName: "plus").foregroundStyle(.black)
-                .font(.system(size: 17, weight: .medium))
-                .foregroundColor(.white)
-                .glassEffect()
-                .clipShape(Circle())
+        } label: {
+            Image(systemName: "plus")
+                .foregroundStyle(.black)
+//                .font(.system(size: 17, weight: .medium))
+//                .foregroundColor(.white)
+//                .glassEffect()
+//                .clipShape(Circle())
         }
-        .buttonStyle(.plain)
+        
         .sheet(isPresented: $newGroupSheet) {
             //......
             NewGroupSheetView(formRecord: $formRecord, newGroupCreated: $newGroupCreated)

@@ -8,7 +8,9 @@
 import ContactsUI
 import SwiftUI
 
+/// A SwiftUI wrapper for `CNContactPickerViewController` that allows the user to select contacts.
 struct ContactPickerView: UIViewControllerRepresentable {
+    /// The view model that manages the selected contacts.
     @Environment(ContactsViewModel.self) private var contactsVM
     
     func makeUIViewController(context: Context) -> CNContactPickerViewController {
@@ -24,13 +26,18 @@ struct ContactPickerView: UIViewControllerRepresentable {
         Coordinator(viewModel: contactsVM)
     }
     
+    /// Coordinator that handles contact picker delegate callbacks.
     class Coordinator: NSObject, CNContactPickerDelegate {
+        /// The view model used to store selected contacts.
         var viewModel: ContactsViewModel
         
+        /// - Parameter viewModel: The view model to update when contacts are selected.
         init(viewModel: ContactsViewModel) {
             self.viewModel = viewModel
         }
         
+        /// Called when the user finishes selecting contacts.
+        /// - Parameter contacts: The contacts selected by the user.
         func contactPicker(_ picker: CNContactPickerViewController, didSelect contacts: [CNContact]) {
             let novos = contacts.filter { novo in
                 !viewModel.selectedContacts.contains(where: { $0.identifier == novo.identifier })

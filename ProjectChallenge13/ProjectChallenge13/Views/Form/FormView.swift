@@ -8,17 +8,24 @@
 import SwiftUI
 import CloudKit
 
+/// A form where the user selects dates and activities to submit to a group event.
 struct FormView: View {
-    
+    /// The form view model that manages selected activities and dates.
     @State var formVM = FormViewModel()
+    /// Activities loaded from ``FormViewModel``, filtered by the group's categories.
     @State var activities: [ActivitiesListModel] = []
+    /// Activities converted to ``ActivitiesModel`` for display in ``ActivityMenu``.
     @State var newList: [ActivitiesModel] = []
     
+    /// Triggers a view refresh when a new activity is successfully created.
     @Binding var newActivityCreated: Bool
+    /// The CloudKit record of the current group, updated after saving.
     @Binding var groupCKRecord: CKRecord
-        
+    
+    /// The group associated with this form.
     let group: EventGroup?
     
+    /// The allowed date range for date selection, from today up to 2000 days ahead.
     let dateRange: ClosedRange<Date> = {
         let now = Date.now
         return now...Calendar.current.date(byAdding: .day, value: 2000, to: now)!

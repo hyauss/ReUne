@@ -11,10 +11,13 @@ import CloudKit
 struct HomeView: View {
     @StateObject private var vm = GroupViewModel.shared
     @State var ckViewModel = LoginViewModel.shared
+    //@State var notificationVM = PushNotificationViewModel.shared
+    
     @State var newGroupCreated: Bool = false
     @State var newActivityCreated: Bool = false
     @State var formRecord: CKRecord = CKRecord(recordType: "SeuTipo")
     @State private var initialLoadDone: Bool = false
+    @State private var deleteAlert: Bool = false
     
     // IDs that should show the shimmer
     @State private var shimmerIDs: Set<CKRecord.ID> = []
@@ -89,8 +92,50 @@ struct HomeView: View {
                 .navigationTitle("Seus Grupos")
                 .toolbar {
                     ToolbarItem(placement: .confirmationAction) {
+                        Menu {
+                            Section("configurações") {
+                                Button {
+                                    deleteAlert.toggle()
+                                } label: {
+                                    HStack {
+                                        Image(systemName: "trash")
+                                        Text("Apagar Conta")
+                                    }
+                                }
+                                
+                                Button {
+                                    for i in vm.records {
+                                        //notificationVM.unsubscribeToNotification(groupID: i)
+                                    }
+                                } label: {
+                                    HStack {
+                                        Image(systemName: "bell.slash")
+                                        Text("Desativar Notificações")
+                                    }
+                                }
+                            }
+                        } label: {
+                            Image(systemName: "line.3.horizontal.decrease")
+                        }
+                    }
+                    
+                    ToolbarItem(placement: .confirmationAction) {
                         AddGroupButtonComponent(newGroupCreated: $newGroupCreated, formRecord: $formRecord)
                     }
+                }
+                .alert("Tem certeza?", isPresented: $deleteAlert) {
+                    Button(role: .destructive) {
+                        ckViewModel.fetchAndDeletePreference()
+                    } label: {
+                        Text("Apagar")
+                    }
+                    Button(role: .cancel) {
+                        
+                    } label: {
+                        Text("Cancelar")
+                    }
+                } message: {
+                    Text("Os dados de todos os seus grupos serão apagados juntamente com sua conta. Essa ação não poderá ser desfeita.")
                 }
                 // Detecta novos records comparando com os já conhecidos
                 .onChange(of: vm.records) { newRecords in

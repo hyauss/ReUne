@@ -7,9 +7,11 @@
 
 import SwiftUI
 
+/// A menu that displays a list of activities for the user to select or deselect.
 struct ActivityMenu: View {
+    /// The form view model that manages selected activities.
     @Environment(FormViewModel.self) var formVM
-
+    /// The list of activities displayed in the menu.
     @State var activities: [ActivitiesModel]
 
     var body: some View {
@@ -38,5 +40,3 @@ struct ActivityMenu: View {
         .menuActionDismissBehavior(.disabled)
     }
 }
-
-

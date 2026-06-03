@@ -8,16 +8,24 @@
 import SwiftUI
 
 struct NewGroupToolbar: View {
+    /// The view model that manages the selected contacts.
     @Environment(ContactsViewModel.self) private var contactsVM
+    /// The view model that manages the new group data.
     @Environment(NewGroupViewModel.self) var newGroupVM
-    
-    @StateObject private var vm =  GroupViewModel.shared
-     
+
+    /// The shared group view model used to save the new group to CloudKit.
+    @StateObject private var vm = GroupViewModel.shared
+
+    /// Triggers the message sheet to share the group with selected contacts.
     @Binding var showMessage: Bool
-    //@Binding var newGroupCreated: Bool
+    /// Triggers dismissal after successfully saving the group.
     @Binding var isDismiss: Bool
+    /// Triggers dismissal without saving the group.
     @Binding var isDismissNotSave: Bool
+
+    /// The login view model used to retrieve the current user's ID.
     @State var ckViewModel = LoginViewModel.shared
+    /// The set of user IDs to be added to the group.
     @State private var users: Set<String> = []
     
     var body: some View {

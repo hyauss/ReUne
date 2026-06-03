@@ -11,13 +11,16 @@ import CloudKit
 struct GroupResultView: View {
     @StateObject private var vm = GroupViewModel.shared
     @State private var showDeleteAlert = false
+    @State var recordGroup: CKRecord?
+    @State private var linkCopied = false
+
     @Environment(\.dismiss) var dismiss
     
     let viewModelCalendar = CalendarViewModel()
     let ckViewModel = LoginViewModel.shared
-
-    var group: ItemViewModel
     
+    var group: ItemViewModel
+        
     var body: some View {
         NavigationStack{
             ScrollView{
@@ -93,29 +96,56 @@ struct GroupResultView: View {
         }
         .navigationTitle("Resultados do Grupo")
         .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button {
-                            showDeleteAlert = true
-                        } label: {
-                            Image(systemName: "trash")
-                        }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    Task {
+                        recordGroup = try await vm.fetchGroupsWithId(groupID: group.recordId!.recordName)
+                        let url = URL(string: "ReUne://\(recordGroup!.recordID.recordName)")
+                        UIPasteboard.general.url = url
+                        linkCopied = true
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                linkCopied = false
+                            }
                     }
+                } label: {
+                    Image(systemName: linkCopied ? "checkmark" : "link")
+                        .contentTransition(.symbolEffect(.replace.magic(fallback: .replace)))
                 }
-                .alert("Deseja deletar o grupo?", isPresented: $showDeleteAlert) {
-                    Button("Apagar", role: .destructive) {
-                        guard let record = vm.records.first(where: {
-                            $0.recordID == group.recordId
-                        }) else { return }
-
-                        Task {
-                            await vm.deleteGroup(record: record)
-                            dismiss()
-                        }
-                    }
-                    Button("Cancelar", role: .cancel) {}
-                } message: {
-                    Text("Os dados do seu grupo serão apagados.\nEssa ação não poderá ser desfeita.")
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    showDeleteAlert = true
+                } label: {
+                    Image(systemName: "trash")
                 }
+            }
+        }
+        .overlay(alignment: .center) {
+            if linkCopied {
+                Text("Link copiado!")
+                    .padding()
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .padding(.bottom)
+            }
+        }
+        .animation(.spring, value: linkCopied)
+        .alert("Deseja deletar o grupo?", isPresented: $showDeleteAlert) {
+            Button("Apagar", role: .destructive) {
+                guard let record = vm.records.first(where: {
+                    $0.recordID == group.recordId
+                }) else { return }
+                
+                Task {
+                    await vm.deleteGroup(record: record)
+                    dismiss()
+                }
+            }
+            Button("Cancelar", role: .cancel) {}
+        } message: {
+            Text("Os dados do seu grupo serão apagados.\nEssa ação não poderá ser desfeita.")
+        }
     }
 }
 
