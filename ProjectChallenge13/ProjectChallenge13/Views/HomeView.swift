@@ -104,6 +104,9 @@ struct HomeView: View {
                                 }
                                 
                                 Button {
+                                    for i in vm.records {
+                                        //notificationVM.unsubscribeToNotification(groupID: i)
+                                    }
                                     //notificationVM.unsubscribeToNotification()
                                 } label: {
                                     HStack {
@@ -126,6 +129,11 @@ struct HomeView: View {
                         ckViewModel.fetchAndDeletePreference()
                     } label: {
                         Text("Apagar")
+                    }
+                    Button(role: .cancel) {
+                        
+                    } label: {
+                        Text("Cancelar")
                     }
                 } message: {
                     Text("Os dados de todos os seus grupos serão apagados juntamente com sua conta. Essa ação não poderá ser desfeita.")

@@ -15,7 +15,7 @@ struct GroupResultView: View {
     
     let viewModelCalendar = CalendarViewModel()
     let ckViewModel = LoginViewModel.shared
-
+    
     var group: ItemViewModel
     
     var body: some View {
@@ -93,29 +93,29 @@ struct GroupResultView: View {
         }
         .navigationTitle("Resultados do Grupo")
         .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button {
-                            showDeleteAlert = true
-                        } label: {
-                            Image(systemName: "trash")
-                        }
-                    }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    showDeleteAlert = true
+                } label: {
+                    Image(systemName: "trash")
                 }
-                .alert("Deseja deletar o grupo?", isPresented: $showDeleteAlert) {
-                    Button("Apagar", role: .destructive) {
-                        guard let record = vm.records.first(where: {
-                            $0.recordID == group.recordId
-                        }) else { return }
-
-                        Task {
-                            await vm.deleteGroup(record: record)
-                            dismiss()
-                        }
-                    }
-                    Button("Cancelar", role: .cancel) {}
-                } message: {
-                    Text("Os dados do seu grupo serão apagados.\nEssa ação não poderá ser desfeita.")
+            }
+        }
+        .alert("Deseja deletar o grupo?", isPresented: $showDeleteAlert) {
+            Button("Apagar", role: .destructive) {
+                guard let record = vm.records.first(where: {
+                    $0.recordID == group.recordId
+                }) else { return }
+                
+                Task {
+                    await vm.deleteGroup(record: record)
+                    dismiss()
                 }
+            }
+            Button("Cancelar", role: .cancel) {}
+        } message: {
+            Text("Os dados do seu grupo serão apagados.\nEssa ação não poderá ser desfeita.")
+        }
     }
 }
 
