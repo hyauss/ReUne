@@ -11,7 +11,7 @@ import CloudKit
 struct HomeView: View {
     @StateObject private var vm = GroupViewModel.shared
     @State var ckViewModel = LoginViewModel.shared
-    //@State var notificationVM = PushNotificationViewModel.shared
+    @State var notificationVM = PushNotificationViewModel.shared
     
     @State var newGroupCreated: Bool = false
     @State var newActivityCreated: Bool = false
@@ -104,14 +104,24 @@ struct HomeView: View {
                                 }
                                 
                                 Button {
-                                    for i in vm.records {
-                                        //notificationVM.unsubscribeToNotification(groupID: i)
+                                    if notificationVM.permitionState {
+                                        for i in vm.records {
+                                            notificationVM.unsubscribeToNotification(groupID: i.recordID.recordName)
+                                        }
                                     }
+                                    else {
+                                        for i in vm.records {
+                                            notificationVM.subscribeToNotification(groupID: i.recordID.recordName
+                                            )
+                                        }
+                                    }
+                                    notificationVM.permitionState.toggle()
                                 } label: {
                                     HStack {
-                                        Image(systemName: "bell.slash")
-                                        Text("Desativar Notificações")
+                                        Image(systemName: notificationVM.permitionState ? "bell.slash" : "bell")
+                                        Text(notificationVM.permitionState ? "Notificações Desativadas" : "Notificações Ativadas")
                                     }
+                                    .contentTransition(.symbolEffect(.replace.magic(fallback: .replace)))
                                 }
                             }
                         } label: {

@@ -12,7 +12,7 @@ struct ContentView2: View {
     @StateObject private var vm =  GroupViewModel.shared
     @State var ckViewModel = LoginViewModel.shared
     @State private var users: Set<String> = []
-    @StateObject private var vmNotification = PushNotificationViewModel()
+    @StateObject private var vmNotification = PushNotificationViewModel.shared
     
     var body: some View {
         Spacer()

@@ -15,6 +15,13 @@ import SwiftUI
 class PushNotificationViewModel: ObservableObject{
     @StateObject private var vm =  GroupViewModel.shared
     
+    static let shared = PushNotificationViewModel()
+    private init() {
+        
+    }
+    
+    @Published var permitionState = false
+    
     func requestNotificationPermission() {
         
         let options: UNAuthorizationOptions = [.alert,.badge,.sound]
@@ -25,12 +32,15 @@ class PushNotificationViewModel: ObservableObject{
                 print("Permissão concedida")
                 DispatchQueue.main.async {
                     UIApplication.shared.registerForRemoteNotifications()
+                    self.permitionState = true
                 }
             } else {
                 print("Permissão negada")
+                self.permitionState = false
             }
             if let error = error {
                 print("Erro: \(error.localizedDescription)")
+                self.permitionState = false
             }
         }
     }
