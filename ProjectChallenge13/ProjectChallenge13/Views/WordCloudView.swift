@@ -26,7 +26,9 @@ struct WordCloudView: View {
                 cloud
             }
         }
-        .onChange(of: viewModel.words) { _ in recalculate() }
+        .onChange(of: viewModel.words) { previous, current in
+            recalculate()
+        }
     }
  
     private var emptyState: some View {
@@ -51,6 +53,8 @@ struct WordCloudView: View {
                         .font(.system(size: word.fontSize, weight: .semibold))
                         .foregroundColor(word.isWinner ? .nightBlue : .ultramarineBlue)
                         .multilineTextAlignment(.center)
+                        .lineLimit(nil)
+                        .fixedSize(horizontal: false, vertical: true)
                         .frame(width: item.frameWidth)
                         .position(item.position)
                 }
@@ -65,8 +69,8 @@ struct WordCloudView: View {
                         availableWidth = geo.size.width
                         recalculate()
                     }
-                    .onChange(of: geo.size.width) { w in
-                        availableWidth = w
+                    .onChange(of: geo.size.width) { previous, current in
+                        availableWidth = current
                         recalculate()
                     }
             }
@@ -78,9 +82,7 @@ struct WordCloudView: View {
         layout = CloudLayout.compute(words: viewModel.words, canvasWidth: availableWidth)
     }
 }
- 
-
- 
+  
 struct CloudLayout {
  
     struct Item {
@@ -92,8 +94,6 @@ struct CloudLayout {
     let totalHeight: CGFloat
  
     static let empty = CloudLayout(items: [], totalHeight: 140)
-  
-    // Gap between the word bounding box and the rectangle border.
     private static let edgePadding: CGFloat = 20
     private static let wordGap: CGFloat = 8
     private static let maxWidthRatio: CGFloat = 0.65
@@ -102,11 +102,9 @@ struct CloudLayout {
     static func compute(words: [WordElement], canvasWidth: CGFloat) -> CloudLayout {
         let innerWidth   = canvasWidth - edgePadding * 2
         let maxWordWidth = innerWidth * maxWidthRatio
- 
         let measurements = words.map { measure($0, maxWidth: maxWordWidth) }
         let sizes        = measurements.map { $0.size }
         let frameWidths  = measurements.map { $0.frameWidth }
- 
         let stackedHeight = sizes.reduce(CGFloat(0)) { $0 + $1.height + wordGap }
         let startHeight   = max(minHeight, stackedHeight * 0.7)
         var canvasHeight  = startHeight
@@ -134,7 +132,7 @@ struct CloudLayout {
         let frameWidth: CGFloat
     }
  
-    /// Breaks text at word boundaries only.
+    /// Breaks text at word boundaries.
     private static func measure(_ word: WordElement, maxWidth: CGFloat) -> Measurement {
         let font   = UIFont.systemFont(ofSize: word.fontSize, weight: .semibold)
         let attrs: [NSAttributedString.Key: Any] = [.font: font]
@@ -161,9 +159,8 @@ struct CloudLayout {
  
         let widestW = lines.map { ($0.joined(separator: " ") as NSString).size(withAttributes: attrs).width }.max() ?? 0
         let totalH  = font.lineHeight * CGFloat(lines.count) + font.leading * CGFloat(Swift.max(lines.count - 1, 0))
- 
         let size = CGSize(width: ceil(widestW) + 4, height: ceil(totalH) + 2)
-        let frameWidth: CGFloat = lines.count == 1 ? size.width : maxWidth
+        let frameWidth: CGFloat = lines.count == 1 ? size.width : ceil(widestW) + 8
  
         return Measurement(size: size, frameWidth: frameWidth)
     }
@@ -180,8 +177,6 @@ struct CloudLayout {
  
         var placed: [CGRect]  = []
         var result: [CGPoint] = []
- 
-        // The usable area for word centres.
         let safeEdge = edgePadding + 4
         let usable = CGRect(
             x: safeEdge,
@@ -190,8 +185,6 @@ struct CloudLayout {
             height: canvasHeight - safeEdge * 2
         )
  
-        // Start from the upper-centre so words cluster toward the top.
-        // After finalize() trims bottom whitespace the result looks compact.
         let startX = canvasWidth / 2
         let startY = edgePadding + usable.height * 0.35
  
@@ -200,7 +193,6 @@ struct CloudLayout {
             let renderW = Swift.max(size.width, frameWidths[idx])
             let halfW = renderW   / 2 + wordGap / 2
             let halfH = size.height / 2 + wordGap / 2
- 
             let diagonal    = sqrt(renderW * renderW + size.height * size.height)
             let radiusStep: CGFloat = 1.5
             let angleStep: CGFloat  = Swift.max(0.15, Swift.min(0.45, 8.0 / diagonal))
@@ -220,7 +212,9 @@ struct CloudLayout {
                     width: halfW * 2, height: halfH * 2
                 )
  
+                // Word must fit entirely inside the usable area.
                 guard usable.contains(rect) else { continue }
+                // Word must not overlap any already-placed word.
                 guard placed.allSatisfy({ !$0.intersects(rect) }) else { continue }
  
                 placed.append(rect)
@@ -235,10 +229,6 @@ struct CloudLayout {
         return result
     }
  
-    // MARK: - Finalize
- 
-    /// Trims vertical whitespace and shifts everything so the top word
-    /// sits exactly at edgePadding from the top of the rectangle.
     private static func finalize(
         positions:   [CGPoint],
         sizes:       [CGSize],

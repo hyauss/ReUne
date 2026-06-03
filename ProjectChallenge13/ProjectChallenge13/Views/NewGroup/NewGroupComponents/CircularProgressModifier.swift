@@ -33,8 +33,8 @@ struct CircularProgressModifier: ViewModifier {
                                 .stroke(Color.nightBlue,
                                         style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
                                 .rotationEffect(.degrees(-90))
-                                .onChange(of: progress >= 1.0) { completed in
-                                    guard completed else { return }
+                                .onChange(of: progress >= 1.0) { previous, current in
+                                    guard current else { return }
                                     withAnimation(.easeInOut(duration: 0.15)) {
                                         done = true
                                     }
