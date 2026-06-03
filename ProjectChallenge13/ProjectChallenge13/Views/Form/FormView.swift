@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CloudKit
+import Aptabase
 
 /// A form where the user selects dates and activities to submit to a group event.
 struct FormView: View {
@@ -30,6 +31,21 @@ struct FormView: View {
         let now = Date.now
         return now...Calendar.current.date(byAdding: .day, value: 2000, to: now)!
     }()
+    
+    /// Helper: name of the day of the week for aptabase
+    private func weekdayName(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "pt_BR")
+        formatter.dateFormat = "EEEE"
+        return formatter.string(from: date)
+    }
+    
+    /// Helper: formated time for aptabase
+    private func hourString(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:00"
+        return formatter.string(from: date)
+    }
     
     var body: some View {
         NavigationStack {
@@ -78,6 +94,15 @@ struct FormView: View {
                         }
                         .onChange(of: formVM.dateList) {
                             print(formVM.dateList)
+                            
+                            let days = formVM.dateList.map { weekdayName(from: $0) }
+                            let hours = formVM.dateList.map { hourString(from: $0) }
+                            // avarege of availability of day and time.
+                            Aptabase.shared.trackEvent("availability_updated", with: [
+                                "days_count": formVM.dateList.count,
+                                "weekdays": days.joined(separator: ", "),
+                                "hours": hours.joined(separator: ", ")
+                            ])
                         }
                         
                         Text("Atividades")
