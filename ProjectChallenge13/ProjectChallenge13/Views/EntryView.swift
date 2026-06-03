@@ -9,11 +9,10 @@ import SwiftUI
 import CloudKit
 
 struct EntryView: View {
-    //@Environment(\.dismiss) var dismiss
     @StateObject var viewModel = EntryViewModel()
 
     @State var ckViewModel = LoginViewModel.shared
-    //@State var notificationVM = PushNotificationViewModel.shared
+    @State var notificationVM = PushNotificationViewModel.shared
         
     @State var cloudKitAlert: Bool = false
     @State var notificationAlert: Bool = false
@@ -50,13 +49,13 @@ struct EntryView: View {
                         }
                         .alert("Permitir o ReUne enviar notificações?", isPresented: $notificationAlert) {
                             Button {
-                                //notificationVM.requestNotificationPermission()
-                                //notificationVM.permissionState = true
+                                notificationVM.requestNotificationPermission()
+                                notificationVM.permitionState = true
                             } label: {
                                 Text("Permitir")
                             }
                             Button(role: .cancel) {
-                                //notificationVM.permissionState = false
+                                notificationVM.permitionState = false
                             } label: {
                                 Text("Não Permitir")
                             }
