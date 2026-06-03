@@ -7,6 +7,8 @@
 
 import Foundation
 
+/// Model for the new group
+///  - Parameter meetingCategories: Array of CategoryModel of possible categories for the enconter
 struct NewGroupModel {
     let meetingCategories: [CategoryModel] = [
         CategoryModel(name: "Ao ar livre"),
