@@ -65,32 +65,12 @@ struct FormView: View {
                             .fontWeight(.semibold)
                             .foregroundStyle(.formSecText)
                         
-                        ForEach(formVM.dateList.enumerated(), id: \.offset) { i, date in
-                            HStack {
-                                DatePicker("", selection: $formVM.dateList[i], in: dateRange)
-                                    .colorInvert()
-                                    .colorMultiply(.formCardText)
-                                    .colorScheme(.light)
-                                    .labelsHidden()
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Button {
-                                    formVM.dateList.remove(at: i)
-                                } label: {
-                                    Image(systemName: "minus")
-                                }
-                                .buttonStyle(.bordered)
-                                
-                                Spacer()
-                            }
-                            .padding(.bottom, 7)
-                        }
-                        
                         Button {
                             formVM.dateList.append(Date())
                         } label: {
                             PlusButton()
-                                .padding(.bottom, 40)
-                                //.padding(.top)
+                                .padding(.bottom)
+                                .padding(.top, 24)
                         }
                         .onChange(of: formVM.dateList) {
                             print(formVM.dateList)
@@ -103,6 +83,28 @@ struct FormView: View {
                                 "weekdays": days.joined(separator: ", "),
                                 "hours": hours.joined(separator: ", ")
                             ])
+                        }
+                        
+                        ForEach(formVM.dateList.enumerated(), id: \.offset) { i, date in
+                            HStack {
+                                DatePicker("", selection: $formVM.dateList[i], in: dateRange)
+                                    .colorInvert()
+                                    .colorMultiply(.formCardText)
+                                    .colorScheme(.light)
+                                    .labelsHidden()
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                Button {
+                                    formVM.dateList.remove(at: i)
+                                } label: {
+                                    Image(systemName: "minus")
+                                        .foregroundStyle(.formCardText)
+                                        .frame(width: 28, height: 28)
+                                        .background(Circle().fill(Color.formCardBack))
+                                }
+                                
+                                Spacer()
+                            }
+                            .padding(.bottom, 7)
                         }
                         
                         Text("Atividades")

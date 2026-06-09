@@ -35,7 +35,7 @@ struct CategoriesMenu: View {
             }
         } label: {
             PlusButton()
-                .padding(.leading, 48)
+                .padding(.leading, 29)
                 .padding(.top)
         }
         .menuActionDismissBehavior(.disabled)

@@ -44,18 +44,21 @@ struct NewGroupSheetView: View {
                     .padding(.leading, 29)
                     .foregroundStyle(.formMainText)
                 
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
-                        ForEach(contactsVM.selectedContacts, id: \.identifier) { contact in
-                            ContactCard(contact: contact)
-                                .environment(contactsVM)
+                HStack (spacing: 20) {
+                    ContactsView()
+                        .environment(contactsVM)
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            ForEach(contactsVM.selectedContacts, id: \.identifier) { contact in
+                                ContactCard(contact: contact)
+                                    .environment(contactsVM)
+                            }
                         }
+                        .padding(.trailing, 16)
                     }
-                    .padding(.leading, 29)
                 }
                 
-                ContactsView()
-                    .environment(contactsVM)
                 
                 Text("Quais categorias você gostaria de adicionar?")
                     .padding(.leading, 29)
