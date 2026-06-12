@@ -44,7 +44,7 @@ struct NewGroupSheetView: View {
                     .padding(.leading, 29)
                     .foregroundStyle(.formMainText)
                 
-                HStack (spacing: 20) {
+                HStack (alignment: .top, spacing: 20) {
                     ContactsView()
                         .environment(contactsVM)
                     
