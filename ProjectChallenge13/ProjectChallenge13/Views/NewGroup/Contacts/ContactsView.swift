@@ -20,8 +20,9 @@ struct ContactsView: View {
                 showPicker = true
             } label: {
                 PlusButton()
-                    .padding(.leading, 48)
-                    .padding(.bottom, 10)
+                    .padding(.leading, 29)
+                    .padding(.top)
+                    .padding(.bottom)
             }
         }
         .sheet(isPresented: $showPicker) {

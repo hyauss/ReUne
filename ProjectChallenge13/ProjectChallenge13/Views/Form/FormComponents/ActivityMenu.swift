@@ -35,6 +35,7 @@ struct ActivityMenu: View {
             }
         } label: {
             PlusButton()
+                .padding(.top)
                 .padding(.bottom)
         }
         .menuActionDismissBehavior(.disabled)

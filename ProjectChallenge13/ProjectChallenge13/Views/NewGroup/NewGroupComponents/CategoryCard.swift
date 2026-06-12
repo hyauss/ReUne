@@ -20,7 +20,7 @@ struct CategoryCard: View {
                 .padding(.vertical, 5)
                 .background(.formCardBack)
                 .clipShape(RoundedRectangle(cornerRadius: 90))
-                .padding(.leading, 48)
+                .padding(.leading, 29)
             Spacer()
         }
     }
