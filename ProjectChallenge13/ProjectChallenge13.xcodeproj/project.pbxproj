@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		064BD7652FBCDCB2007DAB80 /* Aptabase in Frameworks */ = {isa = PBXBuildFile; productRef = 064BD7642FBCDCB2007DAB80 /* Aptabase */; };
+		8FC026DE2FDC4F64005FBA67 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC026DD2FDC4F64005FBA67 /* StoreKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +32,7 @@
 		247136CB2FB66E980001E130 /* ProjectChallenge13.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ProjectChallenge13.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		247136D82FB66E9A0001E130 /* ProjectChallenge13Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ProjectChallenge13Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		247136E22FB66E9A0001E130 /* ProjectChallenge13UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ProjectChallenge13UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8FC026DD2FDC4F64005FBA67 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -70,6 +72,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				064BD7652FBCDCB2007DAB80 /* Aptabase in Frameworks */,
+				8FC026DE2FDC4F64005FBA67 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,6 +99,7 @@
 				247136CD2FB66E980001E130 /* ProjectChallenge13 */,
 				247136DB2FB66E9A0001E130 /* ProjectChallenge13Tests */,
 				247136E52FB66E9A0001E130 /* ProjectChallenge13UITests */,
+				8FC026DC2FDC4F64005FBA67 /* Frameworks */,
 				247136CC2FB66E980001E130 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -108,6 +112,14 @@
 				247136E22FB66E9A0001E130 /* ProjectChallenge13UITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		8FC026DC2FDC4F64005FBA67 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8FC026DD2FDC4F64005FBA67 /* StoreKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

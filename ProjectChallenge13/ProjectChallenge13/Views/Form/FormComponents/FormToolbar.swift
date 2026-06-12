@@ -15,6 +15,9 @@ struct FormToolbar: View {
     /// The shared group view model used to fetch and save CloudKit records.
     @StateObject private var vm =  GroupViewModel.shared
     
+    @StateObject private var store = StoreKitManager.shared
+    @StateObject private var adManager = AdManager.shared
+    
     /// The form view model that holds the selected activities and dates.
     @Environment(FormViewModel.self) var formVM
     
@@ -90,7 +93,7 @@ struct FormToolbar: View {
                                         }
                                         
     
-                                        newActivityCreated.toggle()
+                                        showingCreateAlert = true
                                     }
                                     catch {
                                         print(error.localizedDescription)
@@ -104,7 +107,7 @@ struct FormToolbar: View {
                             .buttonStyle(.borderedProminent)
                             .alert("Atividade inserida com sucesso!", isPresented: $showingCreateAlert) {
                                 Button {
-                                    newActivityCreated.toggle()
+                                    navigateToResult()
                                 } label: {
                                     Text("Ver Resultados")
                                 }
@@ -114,5 +117,15 @@ struct FormToolbar: View {
                 }
         }
     }
+    
+    private func navigateToResult() {
+            if store.isPremium {
+                newActivityCreated = true
+            } else {
+                adManager.showAdAfterVoting {
+                    newActivityCreated = true
+                }
+            }
+        }
 }
 

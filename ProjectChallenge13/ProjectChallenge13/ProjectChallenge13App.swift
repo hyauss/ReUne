@@ -8,6 +8,7 @@
 import SwiftUI
 import CloudKit
 import Aptabase
+import GoogleMobileAds
 
 @main
 struct ProjectChallenge13App: App {
@@ -22,6 +23,7 @@ struct ProjectChallenge13App: App {
     init() {
         Aptabase.shared.initialize(appKey: "A-US-4076296983") // 👈 this is where you enter your App Key
         Aptabase.shared.trackEvent("app_launched") // evento de teste
+        MobileAds.shared.start()
     }
     
     var body: some Scene {

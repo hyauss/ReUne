@@ -14,10 +14,20 @@ struct AddGroupButtonComponent: View {
     @Binding var newGroupCreated: Bool
     @Binding var formRecord: CKRecord
     
+    @StateObject private var store = StoreKitManager.shared
+    @StateObject private var vm = GroupViewModel.shared
+    @State private var showPaywall: Bool = false
+
+        private let freeGroupLimit = 5
+    
     var body: some View {
         Button {
             Aptabase.shared.trackEvent("new_group")
-            newGroupSheet.toggle()
+            if store.isPremium || vm.records.count < freeGroupLimit {
+                newGroupSheet.toggle()
+            } else {
+                showPaywall.toggle()
+            }
         } label: {
             Image(systemName: "plus")
                 .foregroundStyle(.black)
@@ -28,8 +38,10 @@ struct AddGroupButtonComponent: View {
         }
         
         .sheet(isPresented: $newGroupSheet) {
-            //......
             NewGroupSheetView(formRecord: $formRecord, newGroupCreated: $newGroupCreated)
         }
+        .sheet(isPresented: $showPaywall) {
+                    PremiumPaywallView()
+                }
     }
 }
