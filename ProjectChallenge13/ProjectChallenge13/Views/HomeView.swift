@@ -26,7 +26,6 @@ struct HomeView: View {
     @State private var isLogged: Bool = false
     @State private var isActive: Bool = false
     
-    @StateObject private var store = StoreKitManager.shared  
     @StateObject private var adManager = AdManager.shared
     
     var body: some View {
@@ -60,9 +59,7 @@ struct HomeView: View {
                                             "has_dates": !itemVM.dates.isEmpty,
                                             "categories": itemVM.categories.map { $0.name }.joined(separator: ", ")
                                         ])
-                                        if !store.isPremium {
-                                                adManager.trackGroupEntryAndShowAdIfNeeded { }
-                                        }
+                                        adManager.trackGroupEntryAndShowAdIfNeeded { }
                                     })
                                     .id(item.recordID)
                                     .onAppear {

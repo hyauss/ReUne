@@ -15,7 +15,6 @@ struct FormToolbar: View {
     /// The shared group view model used to fetch and save CloudKit records.
     @StateObject private var vm =  GroupViewModel.shared
     
-    @StateObject private var store = StoreKitManager.shared
     @StateObject private var adManager = AdManager.shared
     
     /// The form view model that holds the selected activities and dates.
@@ -119,13 +118,9 @@ struct FormToolbar: View {
     }
     
     private func navigateToResult() {
-            if store.isPremium {
-                newActivityCreated = true
-            } else {
-                adManager.showAdAfterVoting {
-                    newActivityCreated = true
-                }
-            }
+        adManager.showAdAfterVoting {
+            newActivityCreated = true
         }
+    }
 }
 
