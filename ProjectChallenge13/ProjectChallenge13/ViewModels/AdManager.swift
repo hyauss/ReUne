@@ -7,6 +7,7 @@
 
 import GoogleMobileAds
 import SwiftUI
+import Combine
 
 @MainActor
 class AdManager: NSObject, ObservableObject, FullScreenContentDelegate {

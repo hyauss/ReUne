@@ -14,7 +14,7 @@ class StoreKitManager: ObservableObject {
     static let shared = StoreKitManager()
     
     // Coloque aqui o Product ID que você criou no App Store Connect
-    private let productIDs: Set<String> = ["com.seuapp.premium.monthly"]
+    private let productIDs: Set<String> = ["com.reune.premiumtest.monthly"]
     
     @Published var products: [Product] = []
     @Published var isPremium: Bool = false
@@ -121,7 +121,7 @@ class StoreKitManager: ObservableObject {
     }
 }
 
-extension Transaction {
+extension StoreKit.Transaction {
     var isExpired: Bool {
         if let expirationDate = expirationDate {
             return expirationDate < Date()

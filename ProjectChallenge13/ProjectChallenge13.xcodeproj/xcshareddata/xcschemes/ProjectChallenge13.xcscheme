@@ -75,6 +75,9 @@
             ReferencedContainer = "container:ProjectChallenge13.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <StoreKitConfigurationFileReference
+         identifier = "../../ProjectChallenge13/StoreKitProducts.storekit">
+      </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
