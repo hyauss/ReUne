@@ -14,6 +14,8 @@ struct AddGroupButtonComponent: View {
     @Binding var newGroupCreated: Bool
     @Binding var formRecord: CKRecord
     
+    @StateObject private var vm = GroupViewModel.shared
+    
     var body: some View {
         Button {
             Aptabase.shared.trackEvent("new_group")
@@ -28,7 +30,6 @@ struct AddGroupButtonComponent: View {
         }
         
         .sheet(isPresented: $newGroupSheet) {
-            //......
             NewGroupSheetView(formRecord: $formRecord, newGroupCreated: $newGroupCreated)
         }
     }

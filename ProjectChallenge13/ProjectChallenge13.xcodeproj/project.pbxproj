@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		064BD7652FBCDCB2007DAB80 /* Aptabase in Frameworks */ = {isa = PBXBuildFile; productRef = 064BD7642FBCDCB2007DAB80 /* Aptabase */; };
+		8FC026DE2FDC4F64005FBA67 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC026DD2FDC4F64005FBA67 /* StoreKit.framework */; };
+		8FC026E12FDCA081005FBA67 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 8FC026E02FDCA081005FBA67 /* GoogleMobileAds */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +33,7 @@
 		247136CB2FB66E980001E130 /* ProjectChallenge13.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ProjectChallenge13.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		247136D82FB66E9A0001E130 /* ProjectChallenge13Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ProjectChallenge13Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		247136E22FB66E9A0001E130 /* ProjectChallenge13UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ProjectChallenge13UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8FC026DD2FDC4F64005FBA67 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -41,6 +44,20 @@
 			);
 			target = 247136CA2FB66E980001E130 /* ProjectChallenge13 */;
 		};
+		8FC026E62FE06EAA005FBA67 /* Exceptions for "ProjectChallenge13" folder in "ProjectChallenge13Tests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				StoreKitProducts.storekit,
+			);
+			target = 247136D72FB66E9A0001E130 /* ProjectChallenge13Tests */;
+		};
+		8FC026E72FE06EAA005FBA67 /* Exceptions for "ProjectChallenge13" folder in "ProjectChallenge13UITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				StoreKitProducts.storekit,
+			);
+			target = 247136E12FB66E9A0001E130 /* ProjectChallenge13UITests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -48,6 +65,8 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				247139362FBE48960001E130 /* Exceptions for "ProjectChallenge13" folder in "ProjectChallenge13" target */,
+				8FC026E62FE06EAA005FBA67 /* Exceptions for "ProjectChallenge13" folder in "ProjectChallenge13Tests" target */,
+				8FC026E72FE06EAA005FBA67 /* Exceptions for "ProjectChallenge13" folder in "ProjectChallenge13UITests" target */,
 			);
 			path = ProjectChallenge13;
 			sourceTree = "<group>";
@@ -69,7 +88,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8FC026E12FDCA081005FBA67 /* GoogleMobileAds in Frameworks */,
 				064BD7652FBCDCB2007DAB80 /* Aptabase in Frameworks */,
+				8FC026DE2FDC4F64005FBA67 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,6 +117,7 @@
 				247136CD2FB66E980001E130 /* ProjectChallenge13 */,
 				247136DB2FB66E9A0001E130 /* ProjectChallenge13Tests */,
 				247136E52FB66E9A0001E130 /* ProjectChallenge13UITests */,
+				8FC026DC2FDC4F64005FBA67 /* Frameworks */,
 				247136CC2FB66E980001E130 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -108,6 +130,14 @@
 				247136E22FB66E9A0001E130 /* ProjectChallenge13UITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		8FC026DC2FDC4F64005FBA67 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8FC026DD2FDC4F64005FBA67 /* StoreKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -131,6 +161,7 @@
 			name = ProjectChallenge13;
 			packageProductDependencies = (
 				064BD7642FBCDCB2007DAB80 /* Aptabase */,
+				8FC026E02FDCA081005FBA67 /* GoogleMobileAds */,
 			);
 			productName = ProjectChallenge13;
 			productReference = 247136CB2FB66E980001E130 /* ProjectChallenge13.app */;
@@ -216,6 +247,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				064BD7632FBCDCB2007DAB80 /* XCRemoteSwiftPackageReference "aptabase-swift" */,
+				8FC026DF2FDCA081005FBA67 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 247136CC2FB66E980001E130 /* Products */;
@@ -646,6 +678,14 @@
 				minimumVersion = 0.3.11;
 			};
 		};
+		8FC026DF2FDCA081005FBA67 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 13.5.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -653,6 +693,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 064BD7632FBCDCB2007DAB80 /* XCRemoteSwiftPackageReference "aptabase-swift" */;
 			productName = Aptabase;
+		};
+		8FC026E02FDCA081005FBA67 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8FC026DF2FDCA081005FBA67 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

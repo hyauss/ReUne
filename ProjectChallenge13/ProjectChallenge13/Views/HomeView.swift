@@ -26,6 +26,8 @@ struct HomeView: View {
     @State private var isLogged: Bool = false
     @State private var isActive: Bool = false
     
+    @StateObject private var adManager = AdManager.shared
+    
     var body: some View {
         NavigationStack {
             if !isLogged {
@@ -57,6 +59,7 @@ struct HomeView: View {
                                             "has_dates": !itemVM.dates.isEmpty,
                                             "categories": itemVM.categories.map { $0.name }.joined(separator: ", ")
                                         ])
+                                        adManager.trackGroupEntryAndShowAdIfNeeded { }
                                     })
                                     .id(item.recordID)
                                     .onAppear {
