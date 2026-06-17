@@ -10,10 +10,10 @@ import CloudKit
 
 struct EntryView: View {
     @StateObject var viewModel = EntryViewModel()
-
+    
     @State var ckViewModel = LoginViewModel.shared
     @State var notificationVM = PushNotificationViewModel.shared
-        
+    
     @State var cloudKitAlert: Bool = false
     @State var notificationAlert: Bool = false
     
@@ -68,21 +68,23 @@ struct EntryView: View {
                 VStack(spacing: 8) {
                     Image(systemName: "icloud.slash")
                         .font(.largeTitle)
-
+                    
                     Text("Uma conta iCloud não está configurada no dispositivo.")
                         .font(.headline)
-
-                    Text("Por favor configure uma conta iCloud no seu dispositivo e reabra o aplicativo.")
+                    
+                    Text("Por favor configure ou permita acesso uma conta iCloud no seu dispositivo e reabra o aplicativo.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     Button{
-                        if let url = URL(string: UIApplication.openSettingsURLString) {
-                                   UIApplication.shared.open(url)
-                               }
+                        
+                        if let url = URL(string: "App-prefs:") {
+                            UIApplication.shared.open(url)
+                        }
+                        
                     }label: {
                         Text("Configurar iCloud")
                     }
-                        .padding()
+                    .padding()
                 }
                 .multilineTextAlignment(.center)
                 .padding()
