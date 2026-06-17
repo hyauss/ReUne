@@ -52,6 +52,7 @@ class LoginViewModel {
                 self.sendPreferenceToDB(record: newPreference)
             }
             else {
+                
                 print("Fetched iCloudID returned nil")
             }
         }
