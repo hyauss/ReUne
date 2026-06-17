@@ -64,6 +64,33 @@ struct EntryView: View {
                         }
                 }
             }
+            if(!ckViewModel.isLogged){
+                VStack(spacing: 8) {
+                    Image(systemName: "icloud.slash")
+                        .font(.largeTitle)
+
+                    Text("Uma conta iCloud não está configurada no dispositivo.")
+                        .font(.headline)
+
+                    Text("Por favor configure uma conta iCloud no seu dispositivo e reabra o aplicativo.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Button{
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                                   UIApplication.shared.open(url)
+                               }
+                    }label: {
+                        Text("Configurar iCloud")
+                    }
+                        .padding()
+                }
+                .multilineTextAlignment(.center)
+                .padding()
+                .background(.regularMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .padding()
+            }
+            
         }
     }
     
