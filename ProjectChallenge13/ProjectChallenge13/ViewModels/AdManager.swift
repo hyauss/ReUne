@@ -15,7 +15,7 @@ class AdManager: NSObject, ObservableObject, FullScreenContentDelegate {
 
     // Substitua pelos IDs reais do AdMob ao publicar
     // Para testes, esses IDs do Google sempre retornam anúncio
-    private let interstitialAdUnitID = "ca-app-pub-3940256099942544/4411468910"
+    private let interstitialAdUnitID = "ca-app-pub-2410476173536012/6060556592"
 
     private var interstitial: InterstitialAd?
     @Published var isAdReady: Bool = false
