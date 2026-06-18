@@ -26,26 +26,11 @@ struct EntryView: View {
             HomeView()
         }
         else {
-            if !ckViewModel.isLogged {
+            if !cloudKitAlert {
                 NavigationStack {
                     Text("")
                         .onAppear() {
-                            cloudKitAlert.toggle()
                             notificationAlert.toggle()
-                        }
-                        .alert("Permitir utilizar seu iCloud para identificação?", isPresented: $cloudKitAlert) {
-                            Button {
-                                ckViewModel.createPreference(name: "")
-                            } label: {
-                                Text("Permitir")
-                            }
-                            Button(role: .cancel) {
-                                
-                            } label: {
-                                Text("Não Permitir")
-                            }
-                        } message: {
-                            Text("Usaremos suas informações do iCloud para identificar sua conta em nosso app.")
                         }
                         .alert("Permitir o ReUne enviar notificações?", isPresented: $notificationAlert) {
                             Button {
@@ -62,9 +47,49 @@ struct EntryView: View {
                         } message: {
                             Text("Enviaremos notificações a respeito dos grupos criados e resultados de votação.")
                         }
+                    
+                    if(!ckViewModel.isLogged){
+                        VStack(spacing: 8) {
+                            Image(systemName: "icloud")
+                                .font(.largeTitle)
+                            Text("Deseja criar um conta?")
+                                .font(.headline)
+                            
+                            Text("Precisamos utilizar seu iCloud para identificação.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .padding(.bottom, 30)
+                            HStack{
+                                Spacer()
+                                Button {
+                                    ckViewModel.createPreference(name: "")
+                                } label: {
+                                    Text("Sim")
+                                }
+                                Spacer()
+                                Text("|")
+                                    .foregroundStyle(.gray)
+                                Spacer()
+                                Button(role: .cancel) {
+                                    cloudKitAlert = true
+                                } label: {
+                                    Text("Não")
+                                    
+                                }
+                                Spacer()
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                        .background(.regularMaterial)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .padding()
+                    }
+                    
                 }
             }
-            if(!ckViewModel.isLogged){
+            if(cloudKitAlert){
                 VStack(spacing: 8) {
                     Image(systemName: "icloud.slash")
                         .font(.largeTitle)
@@ -75,17 +100,30 @@ struct EntryView: View {
                     Text("Por favor configure ou permita acesso uma conta iCloud no seu dispositivo e reabra o aplicativo.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                    Button{
-                        
-                        if let url = URL(string: "App-prefs:") {
-                            UIApplication.shared.open(url)
+                    HStack{
+                        Spacer()
+                        Button {
+                            ckViewModel.createPreference(name: "")
+                        } label: {
+                            Text("Permitir")
                         }
-                        
-                    }label: {
-                        Text("Configurar iCloud")
+                        Spacer()
+                        Text("|")
+                            .foregroundStyle(.gray)
+                        Spacer()
+                        Button{
+                            
+                            if let url = URL(string: "App-prefs:") {
+                                UIApplication.shared.open(url)
+                            }
+                            
+                        }label: {
+                            Text("Configurar iCloud")
+                        }
+                        Spacer()
                     }
-                    .padding()
                 }
+                .frame(maxWidth: .infinity)
                 .multilineTextAlignment(.center)
                 .padding()
                 .background(.regularMaterial)
