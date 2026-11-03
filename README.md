@@ -114,21 +114,25 @@ ProjectChallenge13/ProjectChallenge13/
         <a href="https://github.com/carolssun"><img src="https://github.com/carolssun.png" width="90" alt="Carolina Sun"/></a>
         <br/><sub><b>Carolina Sun</b></sub><br/><br/>
         <a href="https://github.com/carolssun"><img src="https://skillicons.dev/icons?i=github" alt="GitHub"/></a>
+        <a href="https://www.linkedin.com/in/carolina-sun/"><img src="https://skillicons.dev/icons?i=linkedin" alt="LinkedIn"/></a>
       </td>
       <td align="center" width="20%">
         <a href="https://github.com/LosadaT"><img src="https://github.com/LosadaT.png" width="90" alt="Francisco Totaro"/></a>
         <br/><sub><b>Francisco Totaro</b></sub><br/><br/>
         <a href="https://github.com/LosadaT"><img src="https://skillicons.dev/icons?i=github" alt="GitHub"/></a>
+        <a href="https://www.linkedin.com/in/francisco-losada-totaro/"><img src="https://skillicons.dev/icons?i=linkedin" alt="LinkedIn"/></a>
       </td>
       <td align="center" width="20%">
         <a href="https://github.com/OliveiraRNeves"><img src="https://github.com/OliveiraRNeves.png" width="90" alt="Rafael Neves"/></a>
         <br/><sub><b>Rafael Neves</b></sub><br/><br/>
         <a href="https://github.com/OliveiraRNeves"><img src="https://skillicons.dev/icons?i=github" alt="GitHub"/></a>
+        <a href="https://www.linkedin.com/in/rafael-oneves/"><img src="https://skillicons.dev/icons?i=linkedin" alt="LinkedIn"/></a>
       </td>
       <td align="center" width="20%">
-        <a href="https://github.com/anshuLi"><img src="https://github.com/anshuLi.png" width="90" alt="Anshu Li"/></a>
+        <a href="https://github.com/Anshushu000"><img src="https://avatars.githubusercontent.com/u/162741474?v=4" height="90"></a>
         <br/><sub><b>Anshu Li</b></sub><br/><br/>
-        <a href="https://github.com/anshuLi"><img src="https://skillicons.dev/icons?i=github" alt="GitHub"/></a>
+        <a href="https://github.com/Anshushu000"><img src="https://skillicons.dev/icons?i=github" alt="GitHub"/></a>
+        <a href="https://www.linkedin.com/in/anshu-li/"><img src="https://skillicons.dev/icons?i=linkedin" alt="LinkedIn"/></a>
       </td>
     </tr>
   </table>
