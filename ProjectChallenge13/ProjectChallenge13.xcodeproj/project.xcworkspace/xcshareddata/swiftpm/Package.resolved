@@ -1,0 +1,33 @@
+{
+  "originHash" : "68ee2b6e95dcb88881c34cf4875bca1afbf024b437162fc024d6b695697a1664",
+  "pins" : [
+    {
+      "identity" : "aptabase-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/aptabase/aptabase-swift",
+      "state" : {
+        "revision" : "cfd67fac2a228d448d9d2ac92ffc71589cc3ef00",
+        "version" : "0.3.11"
+      }
+    },
+    {
+      "identity" : "swift-package-manager-google-mobile-ads",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/googleads/swift-package-manager-google-mobile-ads",
+      "state" : {
+        "revision" : "166a2dcff33c893b22e4bfccbbdd0ed00a248c24",
+        "version" : "13.5.0"
+      }
+    },
+    {
+      "identity" : "swift-package-manager-google-user-messaging-platform",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/googleads/swift-package-manager-google-user-messaging-platform.git",
+      "state" : {
+        "revision" : "13b248eaa73b7826f0efb1bcf455e251d65ecb1b",
+        "version" : "3.1.0"
+      }
+    }
+  ],
+  "version" : 3
+}

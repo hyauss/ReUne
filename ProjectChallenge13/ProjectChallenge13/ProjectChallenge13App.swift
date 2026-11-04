@@ -6,12 +6,70 @@
 //
 
 import SwiftUI
+import CloudKit
+import Aptabase
+import GoogleMobileAds
 
 @main
 struct ProjectChallenge13App: App {
+    @StateObject private var vm =  GroupViewModel.shared
+    @State var ckViewModel = LoginViewModel.shared
+    @State private var showLogin = false
+    @State var openForm: Bool = false
+    @State var groupInvitation: EventGroup?
+    @State var newActivityCreated: Bool = false
+    @State var formRecord: CKRecord = CKRecord(recordType: "SeuTipo")
+    
+    init() {
+        Aptabase.shared.initialize(appKey: "A-US-4076296983") // 👈 this is where you enter your App Key
+        Aptabase.shared.trackEvent("app_launched") // evento de teste
+        MobileAds.shared.start()
+    }
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack {
+                ContentView()
+                    .onOpenURL { url in
+                        print("opened:", url.absoluteString)
+                        guard let recordID = url.host else {
+                            return
+                        }
+                        print(recordID)
+                        Task{
+                            do {
+                                let groupRecord = try await vm.fetchGroupsWithId(groupID: recordID)
+                                var group = EventGroup.fromRecord(groupRecord)
+                                if(ckViewModel.isLogged) {
+                                    group?.users.insert(ckViewModel.preference?.userID ?? "Não Logado")
+                                    groupRecord["users"] = Array(group?.users ?? [])
+                                    await vm.save(groupRecord: groupRecord)
+                                    groupInvitation = group
+                                }
+                                else {
+                                    showLogin = true
+                                }
+                                
+                            }
+                            catch{
+                                print(error.localizedDescription)
+                            }
+                        }
+                    }
+                    .onChange(of: groupInvitation) {
+                        openForm.toggle()
+                    }
+                    .navigationDestination(isPresented: $openForm) {
+                        if ckViewModel.isLogged && groupInvitation != nil {
+                            FormView(newActivityCreated: $newActivityCreated, groupCKRecord: $formRecord, group: groupInvitation)
+                        }
+                    }
+                    .navigationDestination(isPresented: $newActivityCreated) {
+                        if newActivityCreated == true {
+                            GroupResultView(group: ItemViewModel(itemListing: EventGroup.fromRecord(formRecord)!))
+                        }
+                    }
+            }
         }
     }
 }

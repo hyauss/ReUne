@@ -1,0 +1,159 @@
+//
+//  itemListViewModel.swift
+//  PocCloudKit
+//
+//  Created by Vinicius Marques on 13/05/26.
+//
+
+import Foundation
+import CloudKit
+import Combine
+import SwiftUI
+
+enum RecordType: String{
+    case itemListing = "ItemListing"
+}
+
+
+class GroupViewModel: ObservableObject {
+
+    var ckViewModel = LoginViewModel.shared
+    static let shared = GroupViewModel()
+    private var database: CKDatabase
+    private var contaniner: CKContainer
+    
+    @Published var needFetch: Bool = false
+    @Published var items: [ItemViewModel] = []
+    @Published var records: [CKRecord] = []
+    
+    private init() {
+        self.contaniner = CKContainer.default()
+        self.database = self.contaniner.publicCloudDatabase
+        
+    }
+    
+    func save(groupRecord: CKRecord) async{
+        do{
+            try await self.database.save(groupRecord)
+            needFetch = true
+        }catch{
+            print(error.localizedDescription)
+        }
+    }
+    
+    func saveItem (categories: [CategoryModel], activities: [ActivitiesModel], dates: [Date],users: Set<String>, owner: String) -> CKRecord{
+        let record = CKRecord(recordType: RecordType.itemListing.rawValue)
+        let itemListing = EventGroup(recordId: record.recordID, users: users, categories: categories, activities: activities, dates: dates, owner: owner)
+        record.setValuesForKeys(itemListing.toDictionary())
+        
+        self.database.save(record){ newRecord, error in
+            if let error = error{
+                print(error)
+            }else{
+                if let _ = newRecord{
+                    print(newRecord?.recordID.recordName)
+                    print("SAVED")
+                    DispatchQueue.main.async {
+                        self.needFetch = true
+                    }
+                }
+            }
+        }
+        return record
+    }
+    
+    func fetchGroupsWithUserId(){
+        
+        var items: [EventGroup] = []
+        var records : [CKRecord] = []
+        
+        let query = CKQuery(recordType: RecordType.itemListing.rawValue, predicate: NSPredicate(format: "ANY users == %@", ckViewModel.preference?.userID ?? ""))
+        
+        database.fetch(withQuery: query){ result in
+            switch result{
+            case .success(let result):
+                result.matchResults.compactMap{$0.1}
+                    .forEach{
+                        switch $0 {
+                        case .success(let record):
+                            if let itemListing  = EventGroup.fromRecord(record){
+                                items.append(itemListing)
+                                records.append(record)
+                                
+                            }
+                        case .failure(let error):
+                            print(error)
+                        }
+                    }
+                
+                DispatchQueue.main.async {
+                    self.items = items.map(ItemViewModel.init)
+                    self.records = records.sorted {
+                        ($0.creationDate ?? .distantPast) > ($1.creationDate ?? .distantPast)
+                    }
+                }
+                
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    func fetchGroupsWithId(groupID: String) async throws -> CKRecord {
+            
+        let recordID = CKRecord.ID(recordName: groupID)
+
+        return try await database.record(for: recordID)
+    }
+    
+    func deleteGroup(record: CKRecord) async {
+        guard let userID = ckViewModel.preference?.userID else { return }
+
+        var users = record["users"] as? [String] ?? []
+        users.removeAll { $0 == userID }
+
+        do {
+            if users.isEmpty {
+                try await database.deleteRecord(withID: record.recordID)
+            } else {
+                record["users"] = users as CKRecordValue
+                try await database.save(record)
+            }
+            DispatchQueue.main.async {
+                self.needFetch = true
+            }
+        } catch {
+            print("Erro ao sair/deletar grupo: \(error.localizedDescription)")
+        }
+    }
+}
+
+struct ItemViewModel{
+    let itemListing: EventGroup
+    
+    var recordId: CKRecord.ID?{
+        itemListing.recordId
+    }
+    
+    var categories: [CategoryModel] {
+        itemListing.categories
+    }
+    
+    var actitivies: [ActivitiesModel]{
+        itemListing.activities
+    }
+    
+    var users: Set<String>{
+        itemListing.users
+    }
+    
+    var dates: [Date]{
+        itemListing.dates
+    }
+    
+    var owner: String{
+        itemListing.owner
+    }
+}
+
+
