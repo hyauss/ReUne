@@ -12,8 +12,8 @@
 
 Coordinate plans and social get-togethers effortlessly: create groups, propose activities, vote on schedules, and reach group consensus in real time.
 
-<a href="https://testflight.apple.com/join/rEHfCnNt">
-  <img src="https://img.shields.io/badge/TestFlight-Join%20Beta-007AFF?style=for-the-badge&logo=apple&logoColor=white" height="38" alt="Available on TestFlight"/>
+<a href="https://apps.apple.com/br/app/reune-junte-seus-amigos/id6771074080">
+  <img src="https://developer.apple.com/app-store/marketing/guidelines/images/badge-download-on-the-app-store.svg" height="48" alt="Download on the App Store"/>
 </a>
 
 </div>
